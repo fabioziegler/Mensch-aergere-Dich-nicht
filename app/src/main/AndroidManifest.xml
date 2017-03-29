@@ -18,7 +18,8 @@
         </activity>
         <activity android:name=".Hauptmenue" />
         <activity android:name=".Mitspielerauswahl" />
-        <activity android:name=".Spieloberflaeche"></activity>
+        <activity android:name=".Spieloberflaeche" />
+        <activity android:name=".Einstellungen"></activity>
     </application>
 
 </manifest>

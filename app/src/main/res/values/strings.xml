@@ -17,4 +17,12 @@
     <string name="TXTspieler3">name3</string>
     <string name="TXTspieler4">name4</string>
     <string name="TXTspielzug">name1 ist dran</string>
+    <string name="TXTeinstellungen">Einstellungen</string>
+    <string name="TXTton">Ton</string>
+    <string name="TXTschummelfunkAn">Schummelfunktion</string>
+    <string name="TXTdesign">Design</string>
+    <string name="TXTdesign1">Vintage</string>
+    <string name="TXTdesign2">Classic</string>
+    <string name="TXTspeichern">Speichern</string>
+
 </resources>
