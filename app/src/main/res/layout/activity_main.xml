@@ -7,12 +7,43 @@
     tools:context="com.vintagetechnologies.menschaergeredichnicht.MainActivity">
 
     <TextView
+        android:id="@+id/TextView_titel"
+        android:layout_width="264dp"
+        android:layout_height="189dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="@string/TXTlable"
+        android:textSize="45sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="60dp"
+        tools:ignore="RtlHardcoded" />
+
+    <EditText
+        android:id="@+id/editText_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/TXTnameneingabe"
+        android:layout_marginLeft="0dp"
+        app:layout_constraintLeft_toLeftOf="@+id/TextView_titel"
+        android:layout_marginTop="60dp"
+        app:layout_constraintTop_toBottomOf="@+id/TextView_titel"
+        tools:ignore="RtlHardcoded" />
+
+    <Button
+        android:id="@+id/BTN_go_hauptmenue"
+        android:layout_width="49dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:text="@string/TXTgoBTN"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/editText_name"
+        app:layout_constraintLeft_toRightOf="@+id/editText_name"
+        app:layout_constraintTop_toTopOf="@+id/editText_name"
+        tools:ignore="RtlHardcoded" />
 
 </android.support.constraint.ConstraintLayout>

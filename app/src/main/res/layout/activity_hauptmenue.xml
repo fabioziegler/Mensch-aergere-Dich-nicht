@@ -67,7 +67,8 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="15dp" />
+        android:layout_marginStart="15dp"
+        tools:ignore="RtlHardcoded" />
 
 
 
