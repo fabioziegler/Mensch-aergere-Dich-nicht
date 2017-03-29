@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MenschAergereDichNicht</string>
+    <string name="TXTneues_Spiel">Neues Spiel</string>
+    <string name="TXTspielregeln">Spielregeln</string>
+    <string name="TXTeinstellungen">Einstellungen</string>
+    <string name="TXTspielaufruf">Gib den Ton an und Starte ein neues Spiel</string>
+    <string name="TXTlable">Mensch ärgere dich nicht! </string>
+
 </resources>
