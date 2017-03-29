@@ -5,5 +5,8 @@
     <string name="TXTeinstellungen">Einstellungen</string>
     <string name="TXTspielaufruf">Gib den Ton an und Starte ein neues Spiel</string>
     <string name="TXTlable">Mensch ärgere dich nicht! </string>
-
+    <string name="TXTtitelMitspielerwahl">Wähle deine Mitspieler</string>
+    <string name="TXTonline">online</string>
+    <string name="TXTspielerauswahl">gewählt: 0/3</string>
+    <string name="TXTspielstarten">Spiel START</string>
 </resources>
