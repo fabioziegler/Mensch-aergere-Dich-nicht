@@ -23,16 +23,15 @@
         tools:ignore="RtlHardcoded" />
 
     <ListView
+        android:id="@+id/listView"
         android:layout_width="263dp"
         android:layout_height="212dp"
+        android:background="?attr/colorButtonNormal"
         android:clickable="true"
-        android:entries="namen"
-        android:scrollbars="horizontal"
-        android:id="@+id/listView"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView_online"
@@ -54,7 +53,7 @@
         android:id="@+id/BTN_spielstarten"
         android:layout_width="162dp"
         android:layout_height="52dp"
-        android:text="@string/TXTspielstarten"
+        android:text="@string/TXTspielstartenBTN"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listView"
         app:layout_constraintRight_toRightOf="parent"
@@ -68,7 +67,7 @@
         android:layout_marginRight="3dp"
         android:layout_marginTop="3dp"
         android:background="@android:color/background_light"
-        android:contentDescription="@string/TXTinfobutton"
+        android:contentDescription="@string/TXTinfoBTN"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_info_details"

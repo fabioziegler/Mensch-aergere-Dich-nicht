@@ -12,4 +12,9 @@
     <string name="TXTinfoBTN">info</string>
     <string name="TXTnameneingabe">Bitte gebe einen Namen</string>
     <string name="TXTgoBTN">go</string>
+    <string name="TXTspieler1">name1</string>
+    <string name="TXTspieler2">name2</string>
+    <string name="TXTspieler3">name3</string>
+    <string name="TXTspieler4">name4</string>
+    <string name="TXTspielzug">name1 ist dran</string>
 </resources>

@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Hauptmenue" />
-        <activity android:name=".Mitspielerauswahl"></activity>
+        <activity android:name=".Mitspielerauswahl" />
+        <activity android:name=".Spieloberflaeche"></activity>
     </application>
 
 </manifest>
