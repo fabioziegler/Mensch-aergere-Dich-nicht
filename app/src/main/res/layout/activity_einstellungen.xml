@@ -78,7 +78,7 @@
         tools:ignore="RtlHardcoded" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/BTN_speichern"
         android:layout_width="116dp"
         android:layout_height="43dp"
         android:text="@string/TXTspeichern"
