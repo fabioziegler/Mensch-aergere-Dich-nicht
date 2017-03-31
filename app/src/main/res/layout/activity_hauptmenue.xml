@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.vintagetechnologies.menschaergeredichnicht.Hauptmenue">
+
+    <Button
+        android:id="@+id/BTN_spielregeln"
+        android:layout_width="153dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/TXTspielregelnBTN"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/BTN_einstellungen" />
+
+    <Button
+        android:id="@+id/BTN_einstellungen"
+        android:layout_width="152dp"
+        android:layout_height="48dp"
+        android:text="@string/TXTeinstellungenBTN"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="170dp" />
+
+    <Button
+        android:id="@+id/BTN_neues_spiel"
+        android:layout_width="152dp"
+        android:layout_height="48dp"
+        android:text="@string/TXTneues_SpielBTN"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="100dp" />
+
+    <TextView
+        android:id="@+id/textView_neues_spiel"
+        android:layout_width="261dp"
+        android:layout_height="20dp"
+        android:text="@string/TXTspielaufruf"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/BTN_neues_spiel" />
+
+    <TextView
+        android:id="@+id/textView_lable"
+        android:layout_width="235dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="@string/TXTlable"
+        android:textAlignment="textStart"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="15dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="15dp"
+        tools:ignore="RtlHardcoded" />
+
+
+
+
+
+
+</android.support.constraint.ConstraintLayout>
