@@ -5,19 +5,19 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  */
 
 public class RegularSpot extends Spot {
-    private Spot nextSpot;
+    private RegularSpot nextSpot;
     private EndSpot endSpot;
 
-    public RegularSpot(int x, int y, Spot nextSpot) {
+    public RegularSpot(int x, int y, RegularSpot nextSpot) {
         super(x, y);
         this.nextSpot = nextSpot;
     }
 
-    public Spot getNextSpot() {
+    public RegularSpot getNextSpot() {
         return nextSpot;
     }
 
-    public void setNextSpot(Spot nextSpot) {
+    public void setNextSpot(RegularSpot nextSpot) {
         this.nextSpot = nextSpot;
     }
 
