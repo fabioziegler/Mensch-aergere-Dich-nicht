@@ -93,10 +93,10 @@ public class Board {
         board[71] = new EndSpot(5, 9, PlayerColor.YELLOW, (EndSpot) board[70]);
 
 
-        ((RegularSpot)board[43]).setEndSpot(board[63]); //Blue
-        ((RegularSpot)board[23]).setEndSpot(board[71]); //Yellow
-        ((RegularSpot)board[13]).setEndSpot(board[59]); //Red
-        ((RegularSpot)board[33]).setEndSpot(board[67]); //Green
+        ((RegularSpot)board[43]).setEndSpot((EndSpot)board[63]); //Blue
+        ((RegularSpot)board[23]).setEndSpot((EndSpot)board[71]); //Yellow
+        ((RegularSpot)board[13]).setEndSpot((EndSpot)board[59]); //Red
+        ((RegularSpot)board[33]).setEndSpot((EndSpot)board[67]); //Green
 
     }
 
