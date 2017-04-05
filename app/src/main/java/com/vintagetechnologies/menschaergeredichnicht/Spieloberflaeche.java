@@ -6,12 +6,28 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+
+import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 public class Spieloberflaeche extends AppCompatActivity {
 
-    ImageButton btnExit;
     // toDO: alle Spielfunktionen ect. hinzufügen
-    ImageButton btnWuerfel;
+    private ImageButton btnExit;
+    private ImageButton btnWuerfel;
+    private ImageView imgViewDice;
+
+    // Dice
+    private Dice dice;
+
+    /**
+     * wird aufgerufen wenn btnWuerfel betätigt wird
+     */
+    private void btnWuerfelClicked(){
+        imgViewDice.setVisibility(View.VISIBLE);
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +36,7 @@ public class Spieloberflaeche extends AppCompatActivity {
 
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel));
         btnExit = (ImageButton)(findViewById(R.id.imageButton_exit));
+        imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -28,5 +45,15 @@ public class Spieloberflaeche extends AppCompatActivity {
                 startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
             }
         });
+
+        btnWuerfel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnWuerfelClicked();
+            }
+        });
+
+        // init dice
+        dice = new Dice();
     }
 }
