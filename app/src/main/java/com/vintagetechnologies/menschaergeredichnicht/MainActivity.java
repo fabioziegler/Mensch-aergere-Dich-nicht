@@ -6,27 +6,52 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnGo;
-    EditText name;
+
+    private Button btnGo;
+    private EditText txtName;
+
+    private GameSettings gameSettings;
+
+    /**
+     * called when the user clicks the go button
+     */
+    private void btnGoClicked(){
+
+        String playerName = txtName.getText().toString().trim();
+
+        if(!playerName.equals("")){   // show main menu
+
+            // save settings
+            gameSettings = new GameSettings(playerName);
+            DataHolder.getInstance().save("GAMESETTINGS", gameSettings);
+
+            Intent intent = new Intent(this, Hauptmenue.class);
+            //intent.putExtra("USERNAME", name);
+            startActivity(intent);
+
+        }else{  // display error message
+            Toast.makeText(getApplicationContext(), R.string.msgEnterUsername, Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        name = (EditText)(findViewById(R.id.editText_name));
-        btnGo = (Button)(findViewById(R.id.BTN_go_hauptmenue));
+        txtName = (EditText)(findViewById(R.id.txtName));
+        btnGo = (Button)(findViewById(R.id.btnOpenMainMenue));
 
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // toDO: Einfügen der Bedingung "nur wenn name != null" sonst Fehlermeldung
-                startActivity(new Intent(MainActivity.this, Hauptmenue.class));
+               btnGoClicked();
             }
         });
-
     }
 }
