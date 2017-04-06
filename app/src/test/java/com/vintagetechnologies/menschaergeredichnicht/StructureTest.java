@@ -17,32 +17,31 @@ import static org.junit.Assert.assertEquals;
  */
 
 
-
 public class StructureTest {
 
     Board board;
 
     @Before
-    public void before(){
-        board = new Board();
+    public void before() {
+        board = Board.get();
     }
 
     @Test
-    public void testCount(){
-        int cYE=0, cGE=0, cRE=0, cBE=0;
-        int cYS=0, cGS=0, cRS=0, cBS=0;
+    public void testCount() {
+        int cYE = 0, cGE = 0, cRE = 0, cBE = 0;
+        int cYS = 0, cGS = 0, cRS = 0, cBS = 0;
 
-        for(Spot s : board.getBoard()){
-            if(s instanceof EndSpot){
-                switch(((EndSpot) s).getColor()) {
+        for (Spot s : board.getBoard()) {
+            if (s instanceof EndSpot) {
+                switch (((EndSpot) s).getColor()) {
                     case RED: {
                         cRE++;
                         break;
                     }
-                    case GREEN:{
+                    case GREEN: {
                         cGE++;
                         break;
-                }
+                    }
                     case BLUE: {
                         cBE++;
                         break;
@@ -52,9 +51,8 @@ public class StructureTest {
                         break;
                     }
                 }
-            }
-            else if(s instanceof StartingSpot){
-                switch(((StartingSpot) s).getColor()){
+            } else if (s instanceof StartingSpot) {
+                switch (((StartingSpot) s).getColor()) {
                     case RED:
                         cRS++;
                         break;
@@ -88,13 +86,13 @@ public class StructureTest {
 
 
     @Test
-    public void testCycle(){
-        RegularSpot s = (RegularSpot)board.getBoard()[0];
+    public void testCycle() {
+        RegularSpot s = (RegularSpot) board.getBoard()[0];
         RegularSpot n = s.getNextSpot();
 
         int c = 1;
 
-        while(s != n){
+        while (s != n) {
             n = n.getNextSpot();
             c++;
         }

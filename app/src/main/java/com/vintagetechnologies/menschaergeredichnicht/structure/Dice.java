@@ -11,14 +11,14 @@ public class Dice {
 
     private DiceNumber diceNumber;
 
-    public Dice(){
+    public Dice() {
 
     }
 
-    public void roll(){
+    public void roll() {
         int length = DiceNumber.values().length;
 
-        int n = (int)(Math.random()*length);
+        int n = (int) (Math.random() * length);
 
         this.diceNumber = DiceNumber.values()[n];
     }

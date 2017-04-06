@@ -9,6 +9,10 @@ public class GamePiece {
 
     private Spot spot;
 
+    public GamePiece(PlayerColor playerColor) {
+        this.playerColor = playerColor;
+    }
+
     public PlayerColor getPlayerColor() {
         return playerColor;
     }
