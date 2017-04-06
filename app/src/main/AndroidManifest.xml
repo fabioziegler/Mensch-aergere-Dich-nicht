@@ -8,6 +8,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:uiOptions="none"
+        android:isGame="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -16,11 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Hauptmenue" />
-        <activity android:name=".Mitspielerauswahl" />
-        <activity android:name=".Spieloberflaeche" />
+        <activity android:name=".Hauptmenue" android:launchMode="singleTask" />
+        <activity android:name=".Mitspielerauswahl" android:launchMode="singleTask" />
+        <activity android:name=".Spieloberflaeche" android:launchMode="singleTask" />
         <activity android:name=".Einstellungen" />
-        <activity android:name=".Spielregeln"></activity>
     </application>
 
 </manifest>

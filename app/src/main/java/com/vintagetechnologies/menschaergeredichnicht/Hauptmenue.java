@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.RadioGroup;
 
 public class Hauptmenue extends AppCompatActivity {
 
-    Button btnSpielregeln;
-    Button btnEinstellung;
-    Button btnNeuesSpiel;
+
+    private Button btnSpielregeln;
+    private Button btnEinstellung;
+    private Button btnNeuesSpiel;
+
+    private GameSettings gameSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,7 @@ public class Hauptmenue extends AppCompatActivity {
                 //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
             }
         });
+
         btnEinstellung.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,8 +47,8 @@ public class Hauptmenue extends AppCompatActivity {
             }
         });
 
-
-
-
+        // retrieve game settings (from data holder)
+        gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
     }
+
 }
