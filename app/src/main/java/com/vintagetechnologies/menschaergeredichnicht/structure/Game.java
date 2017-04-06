@@ -10,14 +10,33 @@ public class Game {
 
     int currentPlayer;
     Player players[];
+    Board board;
 
     public Game(String... names) {
         players = new Player[names.length];
-
+        board = Board.get();
 
         for(int i = 0; i < names.length; i++){
-            players[i] = new Player(PlayerColor.values()[i], names[i]);
+            PlayerColor cColor = PlayerColor.values()[i];
+            players[i] = new Player(cColor, names[i]);
+
+            int c = 0;
+
+            for(Spot spot : board.getBoard()){
+                if(spot instanceof StartingSpot){
+                    StartingSpot sSpot  = (StartingSpot)spot;
+                    if(sSpot.getColor() == cColor){
+                        players[i].getPieces()[c].setSpot(spot);
+                        c++;
+                    }
+                }
+            }
+
+
         }
+
+
+
     }
 
 
@@ -27,7 +46,7 @@ public class Game {
 
         currentPlayer = (currentPlayer+1)%players.length;
 
-        
+
 
 
 

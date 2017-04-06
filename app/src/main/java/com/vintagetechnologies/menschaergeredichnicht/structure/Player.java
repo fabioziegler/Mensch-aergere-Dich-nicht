@@ -30,5 +30,11 @@ public class Player {
         return name;
     }
 
+    public GamePiece[] getPieces() {
+        return pieces;
+    }
 
+    public void setPieces(GamePiece[] pieces) {
+        this.pieces = pieces;
+    }
 }
