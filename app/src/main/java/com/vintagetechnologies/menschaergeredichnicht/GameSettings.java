@@ -92,11 +92,12 @@ public class GameSettings {
      * Save settings to disk
      */
     public void savePermanently(Context context){
+
         FileOutputStream outputStream;
         String json = new Gson().toJson(this);
 
         try {
-            outputStream = context.openFileOutput(settingsFilename, context.MODE_PRIVATE);
+            outputStream = context.openFileOutput(settingsFilename, Context.MODE_PRIVATE);
             outputStream.write(json.getBytes());
         } catch (Exception e) {
             System.err.print("Failed to save settings file.");

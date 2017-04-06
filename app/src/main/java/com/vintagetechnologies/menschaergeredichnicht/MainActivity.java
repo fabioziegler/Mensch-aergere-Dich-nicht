@@ -56,4 +56,5 @@ public class MainActivity extends AppCompatActivity {
         // create game settings instance (loads settings from disk if available)
         gameSettings = new GameSettings(getApplicationContext());
     }
+
 }
