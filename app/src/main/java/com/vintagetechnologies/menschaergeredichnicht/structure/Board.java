@@ -4,10 +4,21 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  * Created by johannesholzl on 30.03.17.
  */
 
-public class Board {
-    private Spot[] board = new Spot[72];
+public final class Board {
 
-    public Board() {
+    private  Spot[] board = new Spot[72];
+
+    private static Board boardItself;
+
+    public static Board get(){
+        if(boardItself == null){
+            boardItself = new Board();
+        }
+
+        return boardItself;
+    }
+
+    private Board() {
 
         board[0] = new RegularSpot(4, 0, null);
         board[1] = new StartingSpot(0, 0, PlayerColor.RED, board[0]);

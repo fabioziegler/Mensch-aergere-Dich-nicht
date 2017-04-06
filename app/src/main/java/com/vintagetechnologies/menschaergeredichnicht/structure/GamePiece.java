@@ -9,6 +9,10 @@ public class GamePiece {
 
     private Spot spot;
 
+    public GamePiece(PlayerColor playerColor) {
+        this.playerColor = playerColor;
+    }
+
     public PlayerColor getPlayerColor() {
         return playerColor;
     }
@@ -23,12 +27,16 @@ public class GamePiece {
 
     public void setSpot(Spot spot) {
         if(this.getSpot() != null) {
-            this.spot.setGamePiece(null);
+            this.spot.nullGamePiece();
         }
         this.spot = spot;
 
         if(this.getSpot() != null) {
             this.spot.setGamePiece(this);
         }
+    }
+
+    public void nullSpot(){
+        this.spot = null;
     }
 }

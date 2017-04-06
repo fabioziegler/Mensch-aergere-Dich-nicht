@@ -4,7 +4,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  * Created by johannesholzl on 30.03.17.
  */
 
-public class StartingSpot extends Spot {
+public class StartingSpot extends Spot implements Colorful{
 
     private PlayerColor color;
     private Spot entrance;
