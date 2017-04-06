@@ -8,11 +8,25 @@ import java.util.ArrayList;
 
 public class Game {
 
-    int currentPlayer;
-    Player players[];
-    Board board;
+    private static Game gameInstance;
 
-    public Game(String... names) {
+    private int currentPlayer;
+    private Player players[];
+    private Board board;
+
+    private boolean initialized = false;
+
+    public Game getInstance(){
+        if(gameInstance == null){
+            this.gameInstance = new Game();
+        }
+        return this.gameInstance;
+    }
+
+    private Game() {
+    }
+
+    public void init(String... names){
         players = new Player[names.length];
         board = Board.get();
 
@@ -34,7 +48,7 @@ public class Game {
 
 
         }
-
+        initialized = true;
 
 
     }
@@ -44,11 +58,12 @@ public class Game {
 
         Player cp = players[currentPlayer];
 
+        cp.getPieces();
+
+
+
+
         currentPlayer = (currentPlayer+1)%players.length;
-
-
-
-
 
     }
 

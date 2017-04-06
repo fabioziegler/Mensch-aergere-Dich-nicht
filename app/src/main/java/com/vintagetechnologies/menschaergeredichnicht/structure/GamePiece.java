@@ -6,7 +6,6 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 public class GamePiece {
     private PlayerColor playerColor;
-
     private Spot spot;
 
     public GamePiece(PlayerColor playerColor) {
@@ -26,17 +25,36 @@ public class GamePiece {
     }
 
     public void setSpot(Spot spot) {
-        if(this.getSpot() != null) {
+        if (this.getSpot() != null) {
             this.spot.nullGamePiece();
         }
         this.spot = spot;
 
-        if(this.getSpot() != null) {
+        if (this.getSpot() != null) {
             this.spot.setGamePiece(this);
         }
     }
 
-    public void nullSpot(){
+    public void nullSpot() {
         this.spot = null;
+    }
+
+    public void moveTo(Spot targetSpot) {  //Voraussetzung: check returned not null
+        if(targetSpot != null){
+            if(targetSpot.getGamePiece() == null){
+               this.setSpot(targetSpot);
+            }else{
+                if(targetSpot.getGamePiece().getPlayerColor() == this.getPlayerColor()){
+                    //ungültig
+                }else{
+                    targetSpot.getGamePiece().returnToStart();
+                    this.setSpot(targetSpot);
+                }
+            }
+        }
+    }
+
+    public void returnToStart(){
+        //...
     }
 }
