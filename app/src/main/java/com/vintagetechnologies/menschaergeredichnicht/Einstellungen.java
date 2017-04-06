@@ -66,5 +66,4 @@ public class Einstellungen extends AppCompatActivity {
         radioBtnDesignClassic.setChecked(gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC ? true : false);
         radioBtnDesignVintage.setChecked(gameSettings.getBoardDesign() == GameSettings.BoardDesign.VINTAGE ? true : false);
     }
-
 }

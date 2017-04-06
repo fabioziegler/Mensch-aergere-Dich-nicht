@@ -147,5 +147,4 @@ public class GameSettings {
 
         return false;
     }
-
 }
