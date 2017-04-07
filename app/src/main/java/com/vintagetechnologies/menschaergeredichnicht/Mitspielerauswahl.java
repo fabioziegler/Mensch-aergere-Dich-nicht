@@ -1,5 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -31,9 +32,9 @@ public class Mitspielerauswahl extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener,
+        Connections.MessageListener/*,
         Connections.ConnectionRequestListener,
-        Connections.MessageListener,
-        Connections.EndpointDiscoveryListener {
+        Connections.EndpointDiscoveryListener */ {
 
 
     private GameSettings gameSettings;
@@ -48,6 +49,9 @@ public class Mitspielerauswahl extends AppCompatActivity implements
 
     /* GoogleApiClient for connecting to the Nearby Connections API */
     private GoogleApiClient mGoogleApiClient;
+
+    private Connections.ConnectionRequestListener myConnectionRequestListener;
+    private Connections.EndpointDiscoveryListener myEndpointDiscoveryListener;
 
 
     private void btnStartGameClicked(){
@@ -78,6 +82,33 @@ public class Mitspielerauswahl extends AppCompatActivity implements
         players = new HashMap<>(4);
 
         mIsHost = true;
+
+        myConnectionRequestListener =
+                new Connections.ConnectionRequestListener() {
+                    @Override
+                    public void onConnectionRequest(String remoteEndpointId, String
+                            remoteEndpointName, byte[] bytes) {
+                        Mitspielerauswahl.this.onConnectionRequest(remoteEndpointId,
+                                remoteEndpointName, bytes);
+                    }
+                };
+
+        myEndpointDiscoveryListener =
+                new Connections.EndpointDiscoveryListener() {
+                    @Override
+                    public void onEndpointFound(String endpointId,
+                                                String serviceId,
+                                                String name) {
+                        Mitspielerauswahl.this.onEndpointFound(endpointId,serviceId,
+                                name);
+                    }
+
+                    @Override
+                    public void onEndpointLost(String remoteEndpointId) {
+                        Mitspielerauswahl.this.onEndpointLost(remoteEndpointId);
+                    }
+                };
+
 
         // init google api client
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -137,8 +168,8 @@ public class Mitspielerauswahl extends AppCompatActivity implements
      * @param remoteEndpointName The human readable name of the remote endpoint.
      * @param handshakeData Bytes of a custom message sent with the connection request.
      */
-    @Override
-    public void onConnectionRequest(String remoteEndpointId, String remoteEndpointName, byte[] handshakeData) {
+    /*@Override*/
+    public void onConnectionRequest(String remoteEndpointId, final String remoteEndpointName, byte[] handshakeData) {
         if (mIsHost) {
             byte[] myPayload = null;
             // Automatically accept all requests
@@ -167,7 +198,7 @@ public class Mitspielerauswahl extends AppCompatActivity implements
      * @param serviceId The ID of the service of the remote endpoint.
      * @param endpointName The human readable name of the remote endpoint.
      */
-    @Override
+    /*@Override*/
     public void onEndpointFound(final String endpointId, String serviceId, final String endpointName) {
         // This device is discovering endpoints and has located an advertiser.
         // Write your logic to initiate a connection with the device at
@@ -182,7 +213,7 @@ public class Mitspielerauswahl extends AppCompatActivity implements
      * Called when a remote endpoint is no longer discoverable; only called for endpoints that previously had been passed to onEndpointFound()
      * @param endpointid
      */
-    @Override
+    /*@Override*/
     public void onEndpointLost(String endpointid) {
 
     }
@@ -247,7 +278,7 @@ public class Mitspielerauswahl extends AppCompatActivity implements
 
         String name = null;
         Nearby.Connections.startAdvertising(mGoogleApiClient, name, appMetadata, NO_TIMEOUT,
-                this).setResultCallback(new ResultCallback<Connections.StartAdvertisingResult>() {
+                myConnectionRequestListener).setResultCallback(new ResultCallback<Connections.StartAdvertisingResult>() {
             @Override
             public void onResult(Connections.StartAdvertisingResult result) {
                 if (result.getStatus().isSuccess()) {
@@ -271,7 +302,7 @@ public class Mitspielerauswahl extends AppCompatActivity implements
         long DISCOVER_TIMEOUT = 1000L;
 
         // Discover nearby apps that are advertising with the required service ID.
-        Nearby.Connections.startDiscovery(mGoogleApiClient, serviceId, DISCOVER_TIMEOUT, this)
+        Nearby.Connections.startDiscovery(mGoogleApiClient, serviceId, DISCOVER_TIMEOUT, myEndpointDiscoveryListener)
                 .setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
