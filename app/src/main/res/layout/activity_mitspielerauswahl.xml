@@ -23,7 +23,7 @@
         tools:ignore="RtlHardcoded" />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/listViewPlayers"
         android:layout_width="263dp"
         android:layout_height="212dp"
         android:background="?attr/colorButtonNormal"
@@ -38,29 +38,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/TXTonline"
-        app:layout_constraintBottom_toTopOf="@+id/listView"
-        app:layout_constraintLeft_toLeftOf="@+id/listView" />
+        app:layout_constraintBottom_toTopOf="@+id/listViewPlayers"
+        app:layout_constraintLeft_toLeftOf="@+id/listViewPlayers" />
 
     <TextView
-        android:id="@+id/textView_spielerauswahl"
+        android:id="@+id/lblSelectedPlayers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/TXTspielerauswahl"
-        app:layout_constraintRight_toRightOf="@+id/listView"
-        app:layout_constraintBottom_toTopOf="@+id/listView" />
+        app:layout_constraintBottom_toTopOf="@+id/listViewPlayers"
+        app:layout_constraintRight_toRightOf="@+id/listViewPlayers" />
 
     <Button
-        android:id="@+id/BTN_spielstarten"
+        android:id="@+id/btnStartGame"
         android:layout_width="162dp"
         android:layout_height="52dp"
         android:text="@string/TXTspielstartenBTN"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/listViewPlayers" />
 
     <ImageButton
-        android:id="@+id/BTN_info"
+        android:id="@+id/btnShowInfo"
         android:layout_width="44dp"
         android:layout_height="39dp"
         android:layout_marginEnd="3dp"

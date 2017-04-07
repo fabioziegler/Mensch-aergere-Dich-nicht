@@ -6,44 +6,70 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.RadioGroup;
 
 public class Hauptmenue extends AppCompatActivity {
 
 
-    private Button btnSpielregeln;
-    private Button btnEinstellung;
-    private Button btnNeuesSpiel;
+    private Button btnShowRules;
+    private Button btnOpenSettings;
+    private Button btnHostGame;
+    private Button btnJoinGame;
 
     private GameSettings gameSettings;
+
+
+    private void btnShowRulesClicked(){
+        // TODO: implement
+        //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
+    }
+
+    private void btnOpenSettingsClicked(){
+        startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
+    }
+
+    private void btnHostGameClicked(){
+        startActivity(new Intent(Hauptmenue.this, Mitspielerauswahl.class));
+    }
+
+    private void btnJoinGameClicked(){
+        // TODO: implement
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hauptmenue);
 
-        btnSpielregeln = (Button)(findViewById(R.id.BTN_spielregeln));
-        btnEinstellung = (Button)(findViewById(R.id.BTN_einstellungen));
-        btnNeuesSpiel = (Button)(findViewById(R.id.BTN_neues_spiel));
+        btnShowRules = (Button)(findViewById(R.id.btnShowRules));
+        btnOpenSettings = (Button)(findViewById(R.id.btnOpenSettings));
+        btnHostGame = (Button)(findViewById(R.id.btnHostGame));
+        btnJoinGame = (Button)(findViewById(R.id.btnJoinGame));
 
-        btnSpielregeln.setOnClickListener(new OnClickListener() {
+        btnShowRules.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
+                btnShowRulesClicked();
             }
         });
 
-        btnEinstellung.setOnClickListener(new OnClickListener() {
+        btnOpenSettings.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
+                btnOpenSettingsClicked();
             }
         });
 
-        btnNeuesSpiel.setOnClickListener(new OnClickListener() {
+        btnHostGame.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Hauptmenue.this, Mitspielerauswahl.class));
+                btnHostGameClicked();
+            }
+        });
+
+        btnJoinGame.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnJoinGameClicked();
             }
         });
 
