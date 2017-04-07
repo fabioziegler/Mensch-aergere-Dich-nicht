@@ -1,15 +1,17 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -41,11 +43,15 @@ public class Mitspielerauswahl extends AppCompatActivity implements
     private Button btnStartGame;
     private TextView lblStatus;
     private ListView listViewPlayers;
+    private ArrayAdapter<String> listAdapter;
 
     // Identify if the device is the host
     private boolean mIsHost = false;
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private HashMap<String, String> players;
+    private ArrayList<String> playerNames;
 
     /* GoogleApiClient for connecting to the Nearby Connections API */
     private GoogleApiClient mGoogleApiClient;
@@ -69,6 +75,10 @@ public class Mitspielerauswahl extends AppCompatActivity implements
         btnStartGame = (Button) findViewById(R.id.btnStartGame);
         lblStatus = (TextView) findViewById(R.id.lblStatus);
         listViewPlayers = (ListView) findViewById(R.id.listViewPlayers);
+
+        playerNames = new ArrayList<>(4);
+        listAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, playerNames);
+        listViewPlayers.setAdapter(listAdapter);
 
         btnStartGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,20 +127,22 @@ public class Mitspielerauswahl extends AppCompatActivity implements
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
 
-        // start advertising (game hosting)
-        startAdvertising();
 
         // prevent phone from entering sleep mode
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        lblStatus.setText("Suche Mitspieler...");
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
+
+        lblStatus.setText("Laden...");
+
+        // connect to Google Play services
         mGoogleApiClient.connect();
+
+        Log.i(TAG, "Connecting to Google Play services...");
     }
 
     @Override
@@ -147,9 +159,17 @@ public class Mitspielerauswahl extends AppCompatActivity implements
 
     }
 
+    /**
+     * Called when the connection to Google Play service was successful
+     * @param bundle
+     */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        // start advertising (game hosting)
+        startAdvertising();
 
+        lblStatus.setText("Suche Mitspieler...");
+        Log.i(TAG, "Started advertising...");
     }
 
     @Override
@@ -169,28 +189,40 @@ public class Mitspielerauswahl extends AppCompatActivity implements
      * @param handshakeData Bytes of a custom message sent with the connection request.
      */
     /*@Override*/
-    public void onConnectionRequest(String remoteEndpointId, final String remoteEndpointName, byte[] handshakeData) {
+    public void onConnectionRequest(final String remoteEndpointId, final String remoteEndpointName, byte[] handshakeData) {
+
         if (mIsHost) {
             byte[] myPayload = null;
+
             // Automatically accept all requests
             Nearby.Connections.acceptConnectionRequest(mGoogleApiClient, remoteEndpointId,
                     myPayload, this).setResultCallback(new ResultCallback<Status>() {
                 @Override
                 public void onResult(Status status) {
+
                     if (status.isSuccess()) {
-                        Toast.makeText(getApplicationContext(), "Connected to " + remoteEndpointName,
-                                Toast.LENGTH_SHORT).show();
+
+                        Log.i(TAG, "Connected to player: " + remoteEndpointName);
+                        players.put(remoteEndpointId, remoteEndpointName);
+
+                        // update player list view
+                        playerNames.add(remoteEndpointName);
+                        listAdapter.notifyDataSetChanged();
+
                     } else {
                         Toast.makeText(getApplicationContext(), "Failed to connect to: " + remoteEndpointName,
                                 Toast.LENGTH_SHORT).show();
                     }
+
                 }
             });
+
         } else {
             // Clients should not be advertising and will reject all connection requests.
             Nearby.Connections.rejectConnectionRequest(mGoogleApiClient, remoteEndpointId);
         }
     }
+
 
     /**
      * Called when a host is found
@@ -206,6 +238,8 @@ public class Mitspielerauswahl extends AppCompatActivity implements
 
         // TODO: create new layout with list for hosts and button to connect, then use this method
         // to display the endpointName in the list and a button to connect (call connectTo()).
+
+        Log.i(TAG, "Found endpoint: " + endpointName);
     }
 
 
@@ -256,10 +290,16 @@ public class Mitspielerauswahl extends AppCompatActivity implements
     }
 
 
+    /**
+     * Called by the host to start advertising itself on the network
+     */
     private void startAdvertising() {
         if (!isConnectedToWiFiNetwork()) {
             // Implement logic when device is not connected to a network
-
+            lblStatus.setText("Kein Netzwerk!");
+            lblStatus.setTextColor(Color.RED);
+            Toast.makeText(getApplicationContext(), "Bitte stelle vorher eine WiFi Verbindung her", Toast.LENGTH_LONG).show();
+            return;
         }
 
         // Identify that this device is the host
@@ -291,9 +331,16 @@ public class Mitspielerauswahl extends AppCompatActivity implements
         });
     }
 
+
+    /**
+     * Called by the clients/players to discover the host(s) in the WiFi network
+     */
     private void startDiscovery() {
+
         if (!isConnectedToWiFiNetwork()) {
             // Implement logic when device is not connected to a network
+            Toast.makeText(getApplicationContext(), "Bitte stelle vorher eine WiFi Verbindung her", Toast.LENGTH_LONG).show();
+            return;
         }
 
         String serviceId = getString(R.string.service_id);
@@ -318,15 +365,15 @@ public class Mitspielerauswahl extends AppCompatActivity implements
 
 
     /**
-     * Check if the device is connected (or connecting) to a WiFi network.
-     * @return true if connected or connecting, false otherwise.
+     * Check if the device is connected (and not currently connecting) to a WiFi network.
+     * @return true if connected, false otherwise.
      */
     private boolean isConnectedToWiFiNetwork() {
-        ConnectivityManager connManager = (ConnectivityManager)
-                getSystemService(CONNECTIVITY_SERVICE);
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo info = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        return (info != null && info.isConnectedOrConnecting());
+        //return (info != null && info.isConnectedOrConnecting());
+        return (info != null && info.isConnected());
     }
 
 }
