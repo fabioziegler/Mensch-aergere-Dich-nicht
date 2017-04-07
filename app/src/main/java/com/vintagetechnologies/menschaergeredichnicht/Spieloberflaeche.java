@@ -9,9 +9,16 @@ import android.widget.ImageButton;
 
 public class Spieloberflaeche extends AppCompatActivity {
 
-    ImageButton btnExit;
+    private ImageButton btnExit;
     // toDO: alle Spielfunktionen ect. hinzufügen
-    ImageButton btnWuerfel;
+    private ImageButton btnWuerfel;
+
+
+    private void btnExitClicked(){
+        // toDO: Warnung das man das Spielverlässt (bzw. es beendet)
+        startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +31,9 @@ public class Spieloberflaeche extends AppCompatActivity {
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // toDO: Warnung das man das Spielverlässt (bzw. es beendet)
-                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+                btnExitClicked();
             }
         });
     }
+
 }
