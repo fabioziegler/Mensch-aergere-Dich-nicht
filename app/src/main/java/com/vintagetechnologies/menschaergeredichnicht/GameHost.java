@@ -22,13 +22,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.Nearby;
-import com.google.android.gms.nearby.connection.AppIdentifier;
-import com.google.android.gms.nearby.connection.AppMetadata;
 import com.google.android.gms.nearby.connection.Connections;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Fabio on 08.04.17.
@@ -66,9 +63,13 @@ public class GameHost extends AppCompatActivity implements
      * Called when the user clicks "Spiel starten"
      */
     private void btnStartGameClicked(){
-        // toDo: Bedingung "mind 1 Mitspieler ist ausgewählt" hinzufügen, sonst fehler meldung "mind. 1 muss ausgewählt werden"
-        // toDo: Mitspielerauswahl übernehmen
-        //startActivity(new Intent(Mitspielerauswahl.this, Spieloberflaeche.class));
+
+        // there must be at least one player connected to the host
+        if(gameLogic.getDevices().getCountConnectedDevices() < 1){
+            // display error message
+            Toast.makeText(getApplicationContext(), "Warte auf weitere Spieler...", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         // stop advertising
         Nearby.Connections.stopAdvertising(mGoogleApiClient);
@@ -82,6 +83,7 @@ public class GameHost extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gamehost);
 
+        // get controls
         btnStartGame = (Button) findViewById(R.id.btnStartGame);
         lblStatus = (TextView) findViewById(R.id.lblStatus);
         listViewPlayers = (ListView) findViewById(R.id.listViewPlayers);
@@ -103,7 +105,7 @@ public class GameHost extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // create new game logic for the host
-        gameLogic = new GameLogic(this, true);
+        gameLogic = new GameLogic(this, mGoogleApiClient, true);
 
         // retrieve game settings (from data holder)
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
@@ -147,6 +149,7 @@ public class GameHost extends AppCompatActivity implements
         }
     }
 
+
     /**
      * Called when the connection to Google Play service was successful
      * @param bundle
@@ -169,6 +172,7 @@ public class GameHost extends AppCompatActivity implements
 
     }
 
+
     /**
      * Called when a player tries to connect to the host
      * @param remoteEndpointId The ID of the remote endpoint requesting a connection.
@@ -189,7 +193,7 @@ public class GameHost extends AppCompatActivity implements
                 if (status.isSuccess()) {
 
                     Log.i(TAG, "Connected to player: " + remoteEndpointName);
-                    gameLogic.getPlayers().put(remoteEndpointId, remoteEndpointName);
+                    gameLogic.getDevices().addDevice(new Device(remoteEndpointId, remoteEndpointName, false));
 
                     if(!gameLogic.isGameStarted()) {
                         // update player list view
@@ -198,8 +202,8 @@ public class GameHost extends AppCompatActivity implements
                     }
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "Failed to connect to: " + remoteEndpointName,
-                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Failed to connect to client: " + remoteEndpointName);
+                    Toast.makeText(getApplicationContext(), "Failed to connect to: " + remoteEndpointName, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -231,7 +235,6 @@ public class GameHost extends AppCompatActivity implements
     }
 
 
-
     /**
      * Called by the host to start advertising itself on the network
      */
@@ -240,7 +243,7 @@ public class GameHost extends AppCompatActivity implements
         if (!isConnectedToWiFiNetwork()) {  // When device is not connected to a network:
             lblStatus.setText("Kein Netzwerk!");
             lblStatus.setTextColor(Color.RED);
-            Toast.makeText(getApplicationContext(), "Bitte stelle vorher eine WiFi Verbindung her", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Bitte stelle eine WiFi Verbindung her!", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -271,9 +274,11 @@ public class GameHost extends AppCompatActivity implements
                     Log.i(TAG, "Started advertising...");
                     lblStatus.setTextColor(colorsLabelStatus);
                     lblStatus.setText("Suche Mitspieler...");
+
                 } else {
-                    int statusCode = result.getStatus().getStatusCode();
+
                     // Advertising failed - see statusCode for more details
+                    int statusCode = result.getStatus().getStatusCode();
 
                     Log.e(TAG, "Advertising failed with status code: " + statusCode);
                     lblStatus.setTextColor(Color.RED);
@@ -282,7 +287,6 @@ public class GameHost extends AppCompatActivity implements
             }
         });
     }
-
 
 
     /**

@@ -2,7 +2,9 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.support.v7.app.AppCompatActivity;
 
-import java.util.HashMap;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.nearby.Nearby;
+import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 
 /**
  * Created by Fabio on 08.04.17.
@@ -21,17 +23,21 @@ public class GameLogic {
     private boolean gameStarted;
 
     /* A list which maps each player name to a corresponding ID */
-    private HashMap<String, String> players;
+    private DeviceList connectedDevices;
 
     /* The activity which sends/receives messages. Used to change layouts. */
     private AppCompatActivity activity;
 
+    /* Google API client, used to stop connections, ... */
+    private GoogleApiClient googleApiClient;
 
-    public GameLogic(AppCompatActivity activity, boolean isHost){
+
+    public GameLogic(AppCompatActivity activity, GoogleApiClient googleApiClient, boolean isHost){
         this.activity = activity;
+        this.googleApiClient = googleApiClient;
         this.isHost = isHost;
         gameStarted = false;
-        players = new HashMap<>(4);
+        connectedDevices = new DeviceList();
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
     }
 
@@ -64,6 +70,13 @@ public class GameLogic {
      */
     public void endGame(){
         // TODO: implement
+
+        if(isHost){
+            // if host -> stop all connectedDevices
+            Nearby.Connections.stopAllEndpoints(googleApiClient);
+        } else {
+
+        }
     }
 
 
@@ -107,8 +120,8 @@ public class GameLogic {
      * Get a list of player names with their corresponding ID
      * @return A list of player names with their corresponding ID
      */
-    public HashMap<String, String> getPlayers(){
-        return players;
+    public DeviceList getDevices(){
+        return connectedDevices;
     }
 
 }
