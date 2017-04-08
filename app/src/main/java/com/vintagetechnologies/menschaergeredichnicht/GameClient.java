@@ -49,7 +49,7 @@ public class GameClient extends AppCompatActivity implements
     private GameLogic gameLogic;
 
     private GameSettings gameSettings;
-    private TextView lblStatus;
+    private TextView lblStatus, lblSelectGame;
     private ProgressBar pbLoading;
     private ListView listViewHosts;
     private ColorStateList colorsLabelStatus;
@@ -74,9 +74,12 @@ public class GameClient extends AppCompatActivity implements
 
         // get controls
         lblStatus = (TextView) findViewById(R.id.lblJoinStatus);
+        lblSelectGame = (TextView) findViewById(R.id.lblSelectHostFromList);
         listViewHosts = (ListView) findViewById(R.id.listViewHosts);
         pbLoading = (ProgressBar) findViewById(R.id.pbLoading);
 
+        //lblSelectGame.setVisibility(View.INVISIBLE);
+        lblSelectGame.setText(getString(R.string.strSelectGameFromList));
         colorsLabelStatus = lblStatus.getTextColors();   // save textview color for restoring when changed
 
         hostNames = new ArrayList<>();
@@ -210,6 +213,7 @@ public class GameClient extends AppCompatActivity implements
         Log.i(TAG, "Found host: " + endpointName);
         hostNames.add(endpointName);
         listAdapter.notifyDataSetChanged();
+        lblSelectGame.setVisibility(View.VISIBLE);
     }
 
 
@@ -236,6 +240,9 @@ public class GameClient extends AppCompatActivity implements
                     }
                 }
             }
+
+            if(hostNames.isEmpty())
+                lblSelectGame.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -299,7 +306,6 @@ public class GameClient extends AppCompatActivity implements
             return;
         }
 
-        isDiscovering = true;
         String serviceId = getString(R.string.service_id);
 
         // Set an appropriate timeout length in milliseconds
@@ -315,18 +321,20 @@ public class GameClient extends AppCompatActivity implements
                     public void onResult(Status status) {
                         if (status.isSuccess()) {
                             // Device is discovering
-                            lblStatus.setText("Suche Spiel...");
+                            lblStatus.setText(getString(R.string.msgSearchingGameHost));
                             lblStatus.setTextColor(colorsLabelStatus);
                             pbLoading.setVisibility(View.VISIBLE);
                             Log.i(TAG, "Started discovery...");
+                            isDiscovering = true;
 
                         } else {
                             int statusCode = status.getStatusCode();
                             // Advertising failed - see statusCode for more details
                             Log.e(TAG, "Discovery failed with status code: " + statusCode);
-                            lblStatus.setText("Suche fehlgeschlagen");
+                            lblStatus.setText(getString(R.string.msgHostSearchFailed));
                             lblStatus.setTextColor(Color.RED);
                             pbLoading.setVisibility(View.INVISIBLE);
+                            isDiscovering = false;
                         }
                     }
                 });
@@ -352,6 +360,10 @@ public class GameClient extends AppCompatActivity implements
         //moveTaskToBack(true);
 
         stopDiscovery();
+
+        // disconnect from Google Play services
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
 
         startActivity(new Intent(this, Hauptmenue.class));
 

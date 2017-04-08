@@ -11,6 +11,7 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
  * Created by Fabio on 08.04.17.
  *
  * Implements the game rules and logic. Sends and receives messages to/from other players.
+ * TODO: implement own classes GameLogicClient, GameLogicHost which extend GameLogic...
  */
 public class GameLogic {
 

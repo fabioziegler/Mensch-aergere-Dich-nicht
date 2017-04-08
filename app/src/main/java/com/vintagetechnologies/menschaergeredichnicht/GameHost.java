@@ -1,5 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -7,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -90,7 +93,7 @@ public class GameHost extends AppCompatActivity implements
 
         colorsLabelStatus = lblStatus.getTextColors();   // save textview color for restoring when changed
         
-        playerNames = new ArrayList<>(4);
+        playerNames = new ArrayList<>(3);
         listAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, playerNames);
         listViewPlayers.setAdapter(listAdapter);
 
@@ -235,6 +238,8 @@ public class GameHost extends AppCompatActivity implements
     }
 
 
+    private boolean isAdvertising = false;
+
     /**
      * Called by the host to start advertising itself on the network
      */
@@ -253,7 +258,6 @@ public class GameHost extends AppCompatActivity implements
         appIdentifierList.add(new AppIdentifier(getPackageName()));
         AppMetadata appMetadata = new AppMetadata(appIdentifierList);
         */
-
         // The advertising timeout is set to run indefinitely, positive values represent timeout in milliseconds
         long NO_TIMEOUT = 0L;
 
@@ -272,6 +276,7 @@ public class GameHost extends AppCompatActivity implements
                 if (result.getStatus().isSuccess()) {
                     // Device is advertising
                     Log.i(TAG, "Started advertising...");
+                    isAdvertising = true;
                     lblStatus.setTextColor(colorsLabelStatus);
                     lblStatus.setText("Suche Mitspieler...");
 
@@ -286,6 +291,57 @@ public class GameHost extends AppCompatActivity implements
                 }
             }
         });
+    }
+
+
+    /**
+     * Stop advertising
+     */
+    private void stopAdvertising(){
+        if(isAdvertising){
+            Nearby.Connections.stopAdvertising(mGoogleApiClient);
+        }
+    }
+
+    /**
+     * Called when the user pressed the back button
+     */
+    @Override
+    public void onBackPressed() {
+
+        if(gameLogic.isGameStarted()){
+
+            // ask user if he really wants to exit
+            boolean sure = false;
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+
+                            // disconnect from Google Play services
+                            if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+                                mGoogleApiClient.disconnect();
+
+                            startActivity(new Intent(GameHost.this, Hauptmenue.class));
+
+                            finish();
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(GameHost.this);
+
+            builder.setMessage(getString(R.string.msgConfirmExit)).setPositiveButton("Ja", dialogClickListener)
+                    .setNegativeButton("Nein", dialogClickListener).show();
+        }else {
+            stopAdvertising();
+        }
     }
 
 

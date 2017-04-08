@@ -22,7 +22,10 @@
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlHardcoded" />
+        tools:ignore="RtlHardcoded"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.062" />
 
     <ListView
         android:id="@+id/listViewHosts"
@@ -45,26 +48,38 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="@string/msgSearchingGameHost"
-        android:layout_marginLeft="153dp"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
         app:layout_constraintVertical_bias="0.993"
         app:layout_constraintRight_toLeftOf="@+id/pbLoading"
         android:layout_marginRight="8dp"
-        app:layout_constraintHorizontal_bias="0.0" />
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.978" />
 
     <ProgressBar
         android:id="@+id/pbLoading"
         style="?android:attr/progressBarStyle"
         android:layout_width="30dp"
         android:layout_height="24dp"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="69dp"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
         app:layout_constraintVertical_bias="1.0"
-        android:layout_marginRight="89dp" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="60dp" />
+
+    <TextView
+        android:id="@+id/lblSelectHostFromList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic"
+        tools:text="@string/strSelectGameFromList"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        app:layout_constraintLeft_toLeftOf="@+id/listViewHosts"
+        app:layout_constraintBottom_toTopOf="@+id/listViewHosts" />
 
 </android.support.constraint.ConstraintLayout>
