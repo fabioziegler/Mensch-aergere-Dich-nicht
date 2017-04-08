@@ -44,4 +44,18 @@ public class DeviceList {
         return devices.size();
     }
 
+    /**
+     * Check if a ID belongs to the host of the game
+     * @param playerID The id of the player
+     * @return True if the ID belongs to the host
+     */
+    public boolean isHost(String playerID){
+        Device dev = getHost();
+
+        if(dev != null && dev.getId().equals(playerID))
+            return true;
+
+        return false;
+    }
+
 }

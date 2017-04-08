@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.nearby.Nearby;
@@ -42,13 +43,23 @@ public class GameLogic {
     }
 
 
+    /**
+     * Calle when the player receives a message from another player
+     * @param player
+     * @param messsage
+     */
     public void receivedMessage(String player, String messsage){
 
     }
 
 
+    /**
+     * Sends a message to a player
+     * @param playerID The ID of the receiver
+     * @param messsage A message with the max. length of 4096
+     */
     public void sendMessage(String playerID, String messsage){
-
+        Nearby.Connections.sendReliableMessage(googleApiClient, playerID, messsage.getBytes());
     }
 
 
@@ -73,9 +84,12 @@ public class GameLogic {
 
         if(isHost){
             // if host -> stop all connectedDevices
+            Log.i(TAG, "Host: disconnecting all devices.");
             Nearby.Connections.stopAllEndpoints(googleApiClient);
-        } else {
 
+        } else {
+            Log.i(TAG, "Disconnecting from host");
+            Nearby.Connections.disconnectFromEndpoint(googleApiClient, connectedDevices.getHost().getId());
         }
     }
 
@@ -124,4 +138,5 @@ public class GameLogic {
         return connectedDevices;
     }
 
+    private static final String TAG = MainActivity.class.getSimpleName();
 }
