@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intent = new Intent(this, Hauptmenue.class);
             startActivity(intent);
+            finish();
 
         }else{  // display error message
             Toast.makeText(getApplicationContext(), R.string.msgEnterUsername, Toast.LENGTH_LONG).show();

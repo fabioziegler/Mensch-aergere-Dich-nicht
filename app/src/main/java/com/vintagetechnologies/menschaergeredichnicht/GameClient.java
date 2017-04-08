@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,7 +30,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Mitspielerauswahl extends AppCompatActivity implements
+/**
+ * Created by Fabio on 08.04.17.
+ */
+
+public class GameClient extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener,
@@ -70,7 +74,7 @@ public class Mitspielerauswahl extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mitspielerauswahl);
+        setContentView(R.layout.activity_gamehost);
 
         btnStartGame = (Button) findViewById(R.id.btnStartGame);
         lblStatus = (TextView) findViewById(R.id.lblStatus);

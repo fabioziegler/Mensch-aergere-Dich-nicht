@@ -27,5 +27,7 @@
     <string name="msgEnterUsername">Bitte gib einen Spielernamen an</string>
     <string name="strJoinGame">Spiel Beitreten</string>
     <string name="service_id">com.vintagetechnologies.menschaergeredichnicht</string>
+    <string name="strJoinTitle">Wähle ein Spiel aus</string>
+    <string name="msgSearchingGameHost">Suche Spiel</string>
 
 </resources>

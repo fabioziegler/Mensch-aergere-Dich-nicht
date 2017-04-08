@@ -16,24 +16,36 @@ public class Hauptmenue extends AppCompatActivity {
     private Button btnHostGame;
     private Button btnJoinGame;
 
-    private GameSettings gameSettings;
-
 
     private void btnShowRulesClicked(){
         // TODO: implement
         //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
     }
 
+    /**
+     * Called when the button "Spielregeln" is clicked
+     */
     private void btnOpenSettingsClicked(){
         startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
     }
 
+    /**
+     * Called when the button "Neues Spiel" is clicked
+     */
     private void btnHostGameClicked(){
-        startActivity(new Intent(Hauptmenue.this, Mitspielerauswahl.class));
+        Intent intent = new Intent(this, GameHost.class);
+        startActivity(intent);
+        finish();
     }
 
+
+    /**
+     * Called when the button "Spiel beitreten" is clicked
+     */
     private void btnJoinGameClicked(){
-        // TODO: implement
+        Intent intent = new Intent(this, GameClient.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -73,9 +85,6 @@ public class Hauptmenue extends AppCompatActivity {
                 btnJoinGameClicked();
             }
         });
-
-        // retrieve game settings (from data holder)
-        gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
     }
 
 }
