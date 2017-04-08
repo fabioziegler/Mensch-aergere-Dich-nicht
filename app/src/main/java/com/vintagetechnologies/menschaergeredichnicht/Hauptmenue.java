@@ -18,16 +18,10 @@ public class Hauptmenue extends AppCompatActivity {
 
 
     private void btnShowRulesClicked(){
-        // TODO: implement
+        // TODO: implement layout
         //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
     }
 
-    /**
-     * Called when the button "Spielregeln" is clicked
-     */
-    private void btnOpenSettingsClicked(){
-        startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
-    }
 
     /**
      * Called when the button "Neues Spiel" is clicked
@@ -46,6 +40,14 @@ public class Hauptmenue extends AppCompatActivity {
         Intent intent = new Intent(this, GameClient.class);
         startActivity(intent);
         finish();
+    }
+
+
+    /**
+     * Called when the button "Spielregeln" is clicked
+     */
+    private void btnOpenSettingsClicked(){
+        startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
     }
 
     @Override

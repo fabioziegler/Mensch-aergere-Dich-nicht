@@ -1,6 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -37,37 +37,43 @@ import java.util.List;
 public class GameHost extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener,
         Connections.MessageListener/*,
         Connections.ConnectionRequestListener,
         Connections.EndpointDiscoveryListener */ {
 
 
+    private GameLogic gameLogic;
+
     private GameSettings gameSettings;
     private Button btnStartGame;
     private TextView lblStatus;
+    private ColorStateList colorsLabelStatus;
     private ListView listViewPlayers;
     private ArrayAdapter<String> listAdapter;
 
-    // Identify if the device is the host
-    private boolean mIsHost = true;
-
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private HashMap<String, String> players;
+    /* for displaying connected devices in the layout */
     private ArrayList<String> playerNames;
 
     /* GoogleApiClient for connecting to the Nearby Connections API */
     private GoogleApiClient mGoogleApiClient;
 
     private Connections.ConnectionRequestListener myConnectionRequestListener;
-    private Connections.EndpointDiscoveryListener myEndpointDiscoveryListener;
 
 
+    /**
+     * Called when the user clicks "Spiel starten"
+     */
     private void btnStartGameClicked(){
         // toDo: Bedingung "mind 1 Mitspieler ist ausgewählt" hinzufügen, sonst fehler meldung "mind. 1 muss ausgewählt werden"
         // toDo: Mitspielerauswahl übernehmen
-        startActivity(new Intent(Mitspielerauswahl.this, Spieloberflaeche.class));
+        //startActivity(new Intent(Mitspielerauswahl.this, Spieloberflaeche.class));
+
+        // stop advertising
+        Nearby.Connections.stopAdvertising(mGoogleApiClient);
+
+        gameLogic.startGame();
     }
 
 
@@ -80,6 +86,8 @@ public class GameHost extends AppCompatActivity implements
         lblStatus = (TextView) findViewById(R.id.lblStatus);
         listViewPlayers = (ListView) findViewById(R.id.listViewPlayers);
 
+        colorsLabelStatus = lblStatus.getTextColors();   // save textview color for restoring when changed
+        
         playerNames = new ArrayList<>(4);
         listAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, playerNames);
         listViewPlayers.setAdapter(listAdapter);
@@ -91,12 +99,14 @@ public class GameHost extends AppCompatActivity implements
             }
         });
 
+        // prevent phone from entering sleep mode
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // create new game logic for the host
+        gameLogic = new GameLogic(this, true);
+
         // retrieve game settings (from data holder)
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
-
-        players = new HashMap<>(4);
-
-        mIsHost = true;
 
         myConnectionRequestListener =
                 new Connections.ConnectionRequestListener() {
@@ -108,22 +118,6 @@ public class GameHost extends AppCompatActivity implements
                     }
                 };
 
-        myEndpointDiscoveryListener =
-                new Connections.EndpointDiscoveryListener() {
-                    @Override
-                    public void onEndpointFound(String endpointId,
-                                                String serviceId,
-                                                String name) {
-                        GameHost.this.onEndpointFound(endpointId,serviceId,
-                                name);
-                    }
-
-                    @Override
-                    public void onEndpointLost(String remoteEndpointId) {
-                        GameHost.this.onEndpointLost(remoteEndpointId);
-                    }
-                };
-
 
         // init google api client
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -131,10 +125,6 @@ public class GameHost extends AppCompatActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
-
-
-        // prevent phone from entering sleep mode
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
 
@@ -142,12 +132,11 @@ public class GameHost extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
 
-        lblStatus.setText("Laden...");
+        lblStatus.setText("Lade...");
+        Log.i(TAG, "Connecting to Google Play services...");
 
         // connect to Google Play services
         mGoogleApiClient.connect();
-
-        Log.i(TAG, "Connecting to Google Play services...");
     }
 
     @Override
@@ -158,12 +147,6 @@ public class GameHost extends AppCompatActivity implements
         }
     }
 
-
-    @Override
-    public void onClick(View v) {
-
-    }
-
     /**
      * Called when the connection to Google Play service was successful
      * @param bundle
@@ -172,15 +155,14 @@ public class GameHost extends AppCompatActivity implements
     public void onConnected(@Nullable Bundle bundle) {
         // start advertising (game hosting)
         startAdvertising();
-
-        lblStatus.setText("Suche Mitspieler...");
-        Log.i(TAG, "Started advertising...");
     }
+
 
     @Override
     public void onConnectionSuspended(int i) {
 
     }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -196,141 +178,28 @@ public class GameHost extends AppCompatActivity implements
     /*@Override*/
     public void onConnectionRequest(final String remoteEndpointId, final String remoteEndpointName, byte[] handshakeData) {
 
-        if (mIsHost) {
-            byte[] myPayload = null;
+        byte[] myPayload = null;
 
-            // Automatically accept all requests
-            Nearby.Connections.acceptConnectionRequest(mGoogleApiClient, remoteEndpointId,
-                    myPayload, this).setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(Status status) {
+        // Automatically accept all requests
+        Nearby.Connections.acceptConnectionRequest(mGoogleApiClient, remoteEndpointId,
+                myPayload, this).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
 
-                    if (status.isSuccess()) {
+                if (status.isSuccess()) {
 
-                        Log.i(TAG, "Connected to player: " + remoteEndpointName);
-                        players.put(remoteEndpointId, remoteEndpointName);
+                    Log.i(TAG, "Connected to player: " + remoteEndpointName);
+                    gameLogic.getPlayers().put(remoteEndpointId, remoteEndpointName);
 
+                    if(!gameLogic.isGameStarted()) {
                         // update player list view
                         playerNames.add(remoteEndpointName);
                         listAdapter.notifyDataSetChanged();
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Failed to connect to: " + remoteEndpointName,
-                                Toast.LENGTH_SHORT).show();
                     }
 
-                }
-            });
-
-        } else {
-            // Clients should not be advertising and will reject all connection requests.
-            Nearby.Connections.rejectConnectionRequest(mGoogleApiClient, remoteEndpointId);
-        }
-    }
-
-
-    /**
-     * Called when a host is found
-     * @param endpointId The ID of the remote endpoint that was discovered.
-     * @param serviceId The ID of the service of the remote endpoint.
-     * @param endpointName The human readable name of the remote endpoint.
-     */
-    /*@Override*/
-    public void onEndpointFound(final String endpointId, String serviceId, final String endpointName) {
-        // This device is discovering endpoints and has located an advertiser.
-        // Write your logic to initiate a connection with the device at
-        // the endpoint ID
-
-        // TODO: create new layout with list for hosts and button to connect, then use this method
-        // to display the endpointName in the list and a button to connect (call connectTo()).
-
-        Log.i(TAG, "Found endpoint: " + endpointName);
-    }
-
-
-    /**
-     * Called when a remote endpoint is no longer discoverable; only called for endpoints that previously had been passed to onEndpointFound()
-     * @param endpointid
-     */
-    /*@Override*/
-    public void onEndpointLost(String endpointid) {
-
-    }
-
-    @Override
-    public void onMessageReceived(String s, byte[] bytes, boolean b) {
-
-    }
-
-    @Override
-    public void onDisconnected(String s) {
-
-    }
-
-
-    /**
-     * Called when a player connects to the host
-     * @param remoteEndpointId The ID to which connect to
-     * @param endpointName
-     */
-    private void connectTo(String remoteEndpointId, final String endpointName) {
-        // Send a connection request to a remote endpoint. By passing 'null' for
-        // the name, the Nearby Connections API will construct a default name
-        // based on device model such as 'LGE Nexus 5'.
-        String myName = gameSettings.getPlayerName();
-        byte[] myPayload = null;
-
-        Nearby.Connections.sendConnectionRequest(mGoogleApiClient, myName,
-                remoteEndpointId, myPayload, new Connections.ConnectionResponseCallback() {
-                    @Override
-                    public void onConnectionResponse(String remoteEndpointId, Status status,
-                                                     byte[] bytes) {
-                        if (status.isSuccess()) {
-                            // Successful connection
-                        } else {
-                            // Failed connection
-                        }
-                    }
-                }, this);
-    }
-
-
-    /**
-     * Called by the host to start advertising itself on the network
-     */
-    private void startAdvertising() {
-        if (!isConnectedToWiFiNetwork()) {
-            // Implement logic when device is not connected to a network
-            lblStatus.setText("Kein Netzwerk!");
-            lblStatus.setTextColor(Color.RED);
-            Toast.makeText(getApplicationContext(), "Bitte stelle vorher eine WiFi Verbindung her", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // Identify that this device is the host
-        mIsHost = true;
-
-        // Advertising with an AppIdentifer lets other devices on the
-        // network discover this application and prompt the user to
-        // install the application.
-        List<AppIdentifier> appIdentifierList = new ArrayList<>();
-        appIdentifierList.add(new AppIdentifier(getPackageName()));
-        AppMetadata appMetadata = new AppMetadata(appIdentifierList);
-
-        // The advertising timeout is set to run indefinitely
-        // Positive values represent timeout in milliseconds
-        long NO_TIMEOUT = 0L;
-
-        String name = null;
-        Nearby.Connections.startAdvertising(mGoogleApiClient, name, appMetadata, NO_TIMEOUT,
-                myConnectionRequestListener).setResultCallback(new ResultCallback<Connections.StartAdvertisingResult>() {
-            @Override
-            public void onResult(Connections.StartAdvertisingResult result) {
-                if (result.getStatus().isSuccess()) {
-                    // Device is advertising
                 } else {
-                    int statusCode = result.getStatus().getStatusCode();
-                    // Advertising failed - see statusCode for more details
+                    Toast.makeText(getApplicationContext(), "Failed to connect to: " + remoteEndpointName,
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -338,35 +207,82 @@ public class GameHost extends AppCompatActivity implements
 
 
     /**
-     * Called by the clients/players to discover the host(s) in the WiFi network
+     * Called when a message is received from a remote endpoint.
+     * @param remoteEndpointId The identifier for the remote endpoint that sent the message.
+     * @param payload The bytes of the message sent by the remote endpoint. This array will not exceed MAX_RELIABLE_MESSAGE_LEN bytes for reliable messages, or MAX_UNRELIABLE_MESSAGE_LEN for unreliable ones.
+     * @param isReliable True if the message was sent reliably, false otherwise.
      */
-    private void startDiscovery() {
+    @Override
+    public void onMessageReceived(String remoteEndpointId, byte[] payload, boolean isReliable) {
 
-        if (!isConnectedToWiFiNetwork()) {
-            // Implement logic when device is not connected to a network
+        // send received message for processing to 'game logic'
+        gameLogic.receivedMessage(remoteEndpointId, new String(payload));
+    }
+
+
+    /**
+     * Called when a remote endpoint is disconnected / becomes unreachable.
+     * @param remoteEndpointId The identifier for the remote endpoint that disconnected.
+     */
+    @Override
+    public void onDisconnected(String remoteEndpointId) {
+        // forward to game logic
+        gameLogic.playerDisconnected(remoteEndpointId);
+    }
+
+
+
+    /**
+     * Called by the host to start advertising itself on the network
+     */
+    private void startAdvertising() {
+
+        if (!isConnectedToWiFiNetwork()) {  // When device is not connected to a network:
+            lblStatus.setText("Kein Netzwerk!");
+            lblStatus.setTextColor(Color.RED);
             Toast.makeText(getApplicationContext(), "Bitte stelle vorher eine WiFi Verbindung her", Toast.LENGTH_LONG).show();
             return;
         }
 
-        String serviceId = getString(R.string.service_id);
+        // Advertising with an AppIdentifer lets other devices on the network discover this application and prompt the user to install the application.
+        /*
+        List<AppIdentifier> appIdentifierList = new ArrayList<>();
+        appIdentifierList.add(new AppIdentifier(getPackageName()));
+        AppMetadata appMetadata = new AppMetadata(appIdentifierList);
+        */
 
-        // Set an appropriate timeout length in milliseconds
-        long DISCOVER_TIMEOUT = 1000L;
+        // The advertising timeout is set to run indefinitely, positive values represent timeout in milliseconds
+        long NO_TIMEOUT = 0L;
 
-        // Discover nearby apps that are advertising with the required service ID.
-        Nearby.Connections.startDiscovery(mGoogleApiClient, serviceId, DISCOVER_TIMEOUT, myEndpointDiscoveryListener)
-                .setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        if (status.isSuccess()) {
-                            // Device is discovering
-                        } else {
-                            int statusCode = status.getStatusCode();
-                            // Advertising failed - see statusCode for more details
-                        }
-                    }
-                });
+        // name of the host (appears on other devices)
+        String name = gameSettings.getPlayerName() + "'s Spiel";
+
+        Nearby.Connections.startAdvertising(mGoogleApiClient,   // The GoogleApiClient to service the call.
+                                            name,               // A human readable name for this endpoint, to appear on other devices. If null or empty, a name will be generated based on the device name or model.
+                                            null, /*appMetadata,*/  // Metadata which can be used to prompt the user to launch or install the application. If null, only applications looking for the specified service ID will be able to discover this endpoint.
+                                            NO_TIMEOUT,         // The duration of the advertisement in milliseconds, unless stopAdvertising() is called first.
+                                                                // If DURATION_INDEFINITE is passed in, the advertisement will continue indefinitely until stopAdvertising() is called.
+                                            myConnectionRequestListener)    // A listener notified when remote endpoints request a connection to this endpoint.
+                                            .setResultCallback(new ResultCallback<Connections.StartAdvertisingResult>() {
+            @Override
+            public void onResult(Connections.StartAdvertisingResult result) {
+                if (result.getStatus().isSuccess()) {
+                    // Device is advertising
+                    Log.i(TAG, "Started advertising...");
+                    lblStatus.setTextColor(colorsLabelStatus);
+                    lblStatus.setText("Suche Mitspieler...");
+                } else {
+                    int statusCode = result.getStatus().getStatusCode();
+                    // Advertising failed - see statusCode for more details
+
+                    Log.e(TAG, "Advertising failed with status code: " + statusCode);
+                    lblStatus.setTextColor(Color.RED);
+                    lblStatus.setText("Fehler: " + statusCode);
+                }
+            }
+        });
     }
+
 
 
     /**
