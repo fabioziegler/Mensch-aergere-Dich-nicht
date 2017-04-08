@@ -1,9 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -27,14 +30,17 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 
 import java.util.ArrayList;
 
+import static com.google.android.gms.nearby.connection.Connections.DURATION_INDEFINITE;
+
 /**
  * Created by Fabio on 08.04.17.
+ *
+ * Class that searches for available hosts nearby and displays them in a list.
+ * The user can click on a host in the list to join the game of the host.
  */
-
 public class GameClient extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener,
         Connections.MessageListener/*,
         Connections.ConnectionRequestListener,
         Connections.EndpointDiscoveryListener */ {
@@ -57,6 +63,7 @@ public class GameClient extends AppCompatActivity implements
     /* GoogleApiClient for connecting to the Nearby Connections API */
     private GoogleApiClient mGoogleApiClient;
 
+    /* For host discovery */
     private Connections.EndpointDiscoveryListener myEndpointDiscoveryListener;
 
 
@@ -84,14 +91,21 @@ public class GameClient extends AppCompatActivity implements
 
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
 
+        listViewHosts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = (String) parent.getItemAtPosition(position);
+                hostsListItemClicked(item);
+            }
+        });
+
         myEndpointDiscoveryListener =
                 new Connections.EndpointDiscoveryListener() {
                     @Override
                     public void onEndpointFound(String endpointId,
                                                 String serviceId,
                                                 String name) {
-                        GameClient.this.onEndpointFound(endpointId,serviceId,
-                                name);
+                        GameClient.this.onEndpointFound(endpointId,serviceId, name);
                     }
 
                     @Override
@@ -107,6 +121,25 @@ public class GameClient extends AppCompatActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
+
+        // for testing:
+        hostNames.add(gameSettings.getPlayerName());
+        listAdapter.notifyDataSetChanged();
+    }
+
+
+    /**
+     * Called when the users clicks on a host in the host list to connect
+     * @param endpointName
+     */
+    private void hostsListItemClicked(String endpointName){
+
+        Log.i(TAG, "Connecting to host: " + endpointName);
+
+        String endpointId = gameLogic.getDevices().getDeviceByPlayerName(endpointName).getId();
+
+        // initiate connection to the host
+        connectTo(endpointId, endpointName);
     }
 
 
@@ -131,38 +164,38 @@ public class GameClient extends AppCompatActivity implements
     }
 
 
-    @Override
-    public void onClick(View v) {
-
-    }
-
-
     /**
      * Called when the connection to Google Play service was successful
      * @param bundle
      */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.i(TAG, "Connected to Google Play services.");
+
+        if(isDiscovering)
+            return;
 
         // search for hosts
         startDiscovery();
     }
 
+    private boolean isDiscovering = false;
+
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.e(TAG, "onConnectionSuspended()");
     }
 
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.e(TAG, "onConnectionFailed()");
     }
 
 
     /**
-     * Called when a host is found
+     * Called when a host is found. Adds the host to the list of available hosts.
      * @param endpointId The ID of the remote endpoint that was discovered.
      * @param serviceId The ID of the service of the remote endpoint.
      * @param endpointName The human readable name of the remote endpoint.
@@ -175,10 +208,8 @@ public class GameClient extends AppCompatActivity implements
         // to display the endpointName in the list and a button to connect (call connectTo()).
 
         Log.i(TAG, "Found host: " + endpointName);
-        Log.i(TAG, "Connecting to host: " + endpointName);
-
-        // initiate connection
-        connectTo(endpointId, endpointName);
+        hostNames.add(endpointName);
+        listAdapter.notifyDataSetChanged();
     }
 
 
@@ -189,6 +220,23 @@ public class GameClient extends AppCompatActivity implements
     /*@Override*/
     public void onEndpointLost(String endpointid) {
 
+        if(!gameLogic.isGameStarted()){
+
+            // get device
+            Device disconnectedDevice = gameLogic.getDevices().getDeviceByPlayerID(endpointid);
+            String deviceName = disconnectedDevice.getName();
+
+            // remove from host list
+            if(disconnectedDevice != null){
+                for (int i = 0; i < hostNames.size(); i++) {
+                    if(hostNames.get(i).equals(deviceName)){
+                        hostNames.remove(i);
+                        listAdapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -202,7 +250,7 @@ public class GameClient extends AppCompatActivity implements
 
     @Override
     public void onDisconnected(String s) {
-
+        Log.d(TAG, "onDisconnected()");
     }
 
 
@@ -221,12 +269,12 @@ public class GameClient extends AppCompatActivity implements
         Nearby.Connections.sendConnectionRequest(mGoogleApiClient, myName,
                 remoteEndpointId, myPayload, new Connections.ConnectionResponseCallback() {
                     @Override
-                    public void onConnectionResponse(String remoteEndpointId, Status status,
-                                                     byte[] bytes) {
+                    public void onConnectionResponse(String remoteEndpointId, Status status, byte[] bytes) {
+
                         if (status.isSuccess()) {
                             // Successful connection
-
                             gameLogic.getDevices().addDevice(new Device(remoteEndpointId, endpointName, true));
+                            stopDiscovery();
 
                         } else {
                             // Failed connection
@@ -251,13 +299,17 @@ public class GameClient extends AppCompatActivity implements
             return;
         }
 
+        isDiscovering = true;
         String serviceId = getString(R.string.service_id);
 
         // Set an appropriate timeout length in milliseconds
-        long DISCOVER_TIMEOUT = 1000L;
+        long DISCOVER_TIMEOUT = DURATION_INDEFINITE;    //1000L;
 
         // Discover nearby apps that are advertising with the required service ID.
-        Nearby.Connections.startDiscovery(mGoogleApiClient, serviceId, DISCOVER_TIMEOUT, myEndpointDiscoveryListener)
+        Nearby.Connections.startDiscovery(mGoogleApiClient,     // The GoogleApiClient to service the call.
+                serviceId,                                      // The ID for the service to be discovered, as specified in its manifest.
+                DISCOVER_TIMEOUT,       // The duration of discovery in milliseconds, unless stopDiscovery() is called first. If DURATION_INDEFINITE is passed in, discovery will continue indefinitely until stopDiscovery() is called.
+                myEndpointDiscoveryListener)                    // A listener notified when a remote endpoint is discovered.
                 .setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
@@ -278,6 +330,32 @@ public class GameClient extends AppCompatActivity implements
                         }
                     }
                 });
+    }
+
+
+    /**
+     * Call to end the discovery
+     */
+    private void stopDiscovery(){
+        if(isDiscovering){
+            Nearby.Connections.stopDiscovery(mGoogleApiClient, getString(R.string.service_id));
+            isDiscovering = false;
+        }
+    }
+
+
+    /**
+     * Called when the user pressed the back button
+     */
+    @Override
+    public void onBackPressed() {
+        //moveTaskToBack(true);
+
+        stopDiscovery();
+
+        startActivity(new Intent(this, Hauptmenue.class));
+
+        finish();
     }
 
 

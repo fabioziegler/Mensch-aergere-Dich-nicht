@@ -50,6 +50,18 @@ public class Hauptmenue extends AppCompatActivity {
         startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
     }
 
+
+    /**
+     * Called when the user pressed the back button
+     */
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, MainActivity.class));
+
+        finish();
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

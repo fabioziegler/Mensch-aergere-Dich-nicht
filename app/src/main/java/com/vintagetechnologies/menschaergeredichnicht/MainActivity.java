@@ -1,5 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import android.app.Application;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -56,5 +57,14 @@ public class MainActivity extends AppCompatActivity {
 
         // create game settings instance (loads settings from disk if available)
         gameSettings = new GameSettings(getApplicationContext());
+    }
+
+
+    /**
+     * Called when the user pressed the back button
+     */
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

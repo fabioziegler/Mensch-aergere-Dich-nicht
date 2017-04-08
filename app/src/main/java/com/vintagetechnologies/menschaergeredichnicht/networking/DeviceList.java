@@ -58,4 +58,48 @@ public class DeviceList {
         return false;
     }
 
+    /**
+     * Get device by player name.
+     * @param playerName A player name.
+     * @return The device associated with the player name or null if there is no such device.
+     */
+    public Device getDeviceByPlayerName(String playerName){
+        for (int i = 0; i < devices.size(); i++) {
+            if(playerName.equals(devices.get(i).getName())){
+                return devices.get(i);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get device by ID.
+     * @param playerID A player name.
+     * @return The device associated with the player ID or null if there is no such device.
+     */
+    public Device getDeviceByPlayerID(String playerID){
+        for (int i = 0; i < devices.size(); i++) {
+            if(playerID.equals(devices.get(i).getId())){
+                return devices.get(i);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Remove a device by ID.
+     * @param playerID ID of the player to be removed.
+     */
+    public void removeDeviceByID(String playerID){
+        if (playerID == null || playerID.equals("")) return;
+
+        for (int i = 0; i < devices.size(); i++) {
+            if(devices.get(i).getId().equals(playerID)){
+                devices.remove(i);
+                break;
+            }
+        }
+    }
 }
