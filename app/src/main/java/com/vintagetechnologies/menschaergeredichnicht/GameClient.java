@@ -83,7 +83,7 @@ public class GameClient extends AppCompatActivity implements
         colorsLabelStatus = lblStatus.getTextColors();   // save textview color for restoring when changed
 
         hostNames = new ArrayList<>();
-        listAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, hostNames);
+        listAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.my_listview_item, hostNames);    /* original layout: android.R.layout.simple_spinner_item */
         listViewHosts.setAdapter(listAdapter);
 
         // prevent phone from entering sleep mode
@@ -348,6 +348,7 @@ public class GameClient extends AppCompatActivity implements
         if(isDiscovering){
             Nearby.Connections.stopDiscovery(mGoogleApiClient, getString(R.string.service_id));
             isDiscovering = false;
+            Log.i(TAG, "Stopped discovery");
         }
     }
 

@@ -94,7 +94,7 @@ public class GameHost extends AppCompatActivity implements
         colorsLabelStatus = lblStatus.getTextColors();   // save textview color for restoring when changed
         
         playerNames = new ArrayList<>(3);
-        listAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, playerNames);
+        listAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.my_listview_item, playerNames);  /* original layout: android.R.layout.simple_spinner_item */
         listViewPlayers.setAdapter(listAdapter);
 
         btnStartGame.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +133,9 @@ public class GameHost extends AppCompatActivity implements
     }
 
 
+    /**
+     * Called after onCreate(Bundle) — or after onRestart() when the activity had been stopped, but is now again being displayed to the user. It will be followed by onResume().
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -144,6 +147,10 @@ public class GameHost extends AppCompatActivity implements
         mGoogleApiClient.connect();
     }
 
+
+    /**
+     * Called when you are no longer visible to the user. You will next receive either onRestart(), onDestroy(), or nothing, depending on later user activity.
+     */
     @Override
     public void onStop() {
         super.onStop();
@@ -341,6 +348,13 @@ public class GameHost extends AppCompatActivity implements
                     .setNegativeButton("Nein", dialogClickListener).show();
         }else {
             stopAdvertising();
+
+            // disconnect from Google Play services
+            if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+                mGoogleApiClient.disconnect();
+
+            startActivity(new Intent(GameHost.this, Hauptmenue.class));
+            finish();
         }
     }
 
