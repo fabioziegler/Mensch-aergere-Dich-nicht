@@ -7,8 +7,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
-public class Spieloberflaeche extends AppCompatActivity {
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.widget.TextView;
 
+public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener{
+
+    Sensor LightSensor;
+    SensorManager SM;
+
+    TextView state;
     ImageButton btnExit;
     // toDO: alle Spielfunktionen ect. hinzufügen
     ImageButton btnWuerfel;
@@ -18,6 +28,13 @@ public class Spieloberflaeche extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+        //Sensor Manager erstellen
+        SM = (SensorManager)getSystemService(SENSOR_SERVICE);
+        //Licht Sensor erstellen
+        LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
+        SM.registerListener(this,LightSensor,SensorManager.SENSOR_DELAY_GAME);
+
+        state = (TextView)(findViewById(R.id.textView_status));
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel));
         btnExit = (ImageButton)(findViewById(R.id.imageButton_exit));
 
@@ -28,5 +45,32 @@ public class Spieloberflaeche extends AppCompatActivity {
                 startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
             }
         });
+    }
+
+    // float alterWert
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        // zum testen:
+        if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
+            state.setText("Licht: " + event.values[0]);
+        }
+        //ToDO: Funktioniert es??
+        //wenn ja:
+        /*
+        if (alterWert == null){
+            alterWert = event.values zu float konvertiert
+        } else {
+            differenz = alterWert (heller) - event.values[0] //eventuell differenz mit betrag analysieren
+            if ( differenz >= ab welcher änderung reagiert wird) {
+                setSummeln(true);
+            }
+            alterWert = event.values zu float konvertiert
+        }
+         */
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //nicht in verwendung
     }
 }
