@@ -29,6 +29,8 @@ public class Einstellungen extends AppCompatActivity {
         else
             gameSettings.setBoardDesign(GameSettings.BoardDesign.VINTAGE);
 
+        gameSettings.savePermanently(this.getApplicationContext()); // save settings to disk
+
         finish();   // end settings activity
     }
 

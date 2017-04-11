@@ -144,4 +144,13 @@ public final class Board {
 
         return targetSpot;
     }
+
+    public static Spot getStartingSpot(PlayerColor color){
+        for(Spot s : getBoard()){
+            if(s instanceof StartingSpot && ((StartingSpot) s).getColor() == color && s.getGamePiece() == null){
+                return s;
+            }
+        }
+        return null;
+    }
 }

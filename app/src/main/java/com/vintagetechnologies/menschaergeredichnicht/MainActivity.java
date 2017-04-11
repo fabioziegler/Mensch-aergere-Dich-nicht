@@ -26,11 +26,10 @@ public class MainActivity extends AppCompatActivity {
         if(!playerName.equals("")){   // show main menu
 
             // save settings
-            gameSettings = new GameSettings(playerName);
+            gameSettings.setPlayerName(playerName);
             DataHolder.getInstance().save("GAMESETTINGS", gameSettings);
 
             Intent intent = new Intent(this, Hauptmenue.class);
-            //intent.putExtra("USERNAME", name);
             startActivity(intent);
 
         }else{  // display error message
@@ -53,5 +52,8 @@ public class MainActivity extends AppCompatActivity {
                btnGoClicked();
             }
         });
+
+        // create game settings instance (loads settings from disk if available)
+        gameSettings = new GameSettings(getApplicationContext());
     }
 }
