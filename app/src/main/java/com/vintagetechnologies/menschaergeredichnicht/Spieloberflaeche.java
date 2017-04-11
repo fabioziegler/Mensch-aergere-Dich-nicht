@@ -19,7 +19,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     SensorManager SM;
 
     TextView state;
-    ImageButton btnExit;
     // toDO: alle Spielfunktionen ect. hinzufügen
     ImageButton btnWuerfel;
 
@@ -36,15 +35,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         state = (TextView)(findViewById(R.id.textView_status));
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel));
-        btnExit = (ImageButton)(findViewById(R.id.imageButton_exit));
 
-        btnExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // toDO: Warnung das man das Spielverlässt (bzw. es beendet)
-                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-            }
-        });
+
     }
 
     // float alterWert

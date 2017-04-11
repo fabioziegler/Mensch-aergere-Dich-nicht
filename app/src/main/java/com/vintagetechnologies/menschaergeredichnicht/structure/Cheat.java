@@ -8,16 +8,30 @@ public class Cheat {
 
     //Merkt sich ob geschummelt wurde. Muss nach jedem Personen wechsel auf false gesetzt werden
 
-    boolean cheat;
+    boolean playerCheating;
     public Cheat (boolean c){
-        this.cheat = c;
+        this.playerCheating = c;
     }
 
-    public void setCheat(boolean c){
-        this.cheat = c;
+    public void setPlayerCheating(boolean c){
+        this.playerCheating = c;
     }
-    public boolean getCheat() { return cheat; }
 
-    //Man brauch auch einen Speicher für Accusing (hier?!)
+    /**
+     * Für Würfel; stellt fest ob lokaler Player gecheatet hat
+     * @return
+     */
+    public boolean isPlayerCheating() { return playerCheating; }
+
+
+
+    /**
+     * Für Aufdecken stellt fest ob aktuell spielender Spieler gecheatet hat
+     * @return
+     */
+    public boolean hasRemotePlayerCheated(){
+        // TODO: implement
+        return false;
+    }
 
 }
