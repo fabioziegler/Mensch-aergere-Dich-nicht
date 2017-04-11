@@ -33,7 +33,7 @@
         />
         <!-- app:srcCompat="@mipmap/exit" -->
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/imageView"
         android:layout_width="384dp"
         android:layout_height="337dp"
@@ -42,7 +42,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
-        <!--app:srcCompat="@mipmap/spielbrett_vintage" -->
+        app:srcCompat="@mipmap/spielbrett_vintage" -->
+
+    <com.vintagetechnologies.menschaergeredichnicht.view.BoardView
+        android:id="@+id/imageView"
+        android:layout_width="337dp"
+        android:layout_height="337dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:id="@+id/textView_spieler2"

@@ -1,16 +1,16 @@
 <resources>
-    <string name="app_name">MenschAergereDichNicht</string>
+    <string name="app_name">Mensch ärgere Dich nicht!</string>
     <string name="TXTneues_SpielBTN">Neues Spiel</string>
     <string name="TXTspielregelnBTN">Spielregeln</string>
     <string name="TXTeinstellungenBTN">Einstellungen</string>
-    <string name="TXTspielaufruf">Gib den Ton an und Starte ein neues Spiel</string>
-    <string name="TXTlable">Mensch ärgere dich nicht! </string>
+    <string name="TXTspielaufruf">Gib den Ton an und Starte ein neues Spiel!</string>
+    <string name="TXTlable">Mensch ärgere Dich nicht!</string>
     <string name="TXTtitelMitspielerwahl">Wähle deine Mitspieler</string>
     <string name="TXTonline">online</string>
     <string name="TXTspielerauswahl">gewählt: 0/3</string>
-    <string name="TXTspielstartenBTN">Spiel START</string>
+    <string name="TXTspielstartenBTN">STARTEN</string>
     <string name="TXTinfoBTN">info</string>
-    <string name="TXTnameneingabe">Bitte gebe einen Namen</string>
+    <string name="TXTnameneingabe">Spielername</string>
     <string name="TXTgoBTN">go</string>
     <string name="TXTspieler1">name1</string>
     <string name="TXTspieler2">name2</string>
@@ -24,5 +24,7 @@
     <string name="TXTdesign1">Vintage</string>
     <string name="TXTdesign2">Classic</string>
     <string name="TXTspeichern">Speichern</string>
+    <string name="msgEnterUsername">Bitte gib einen Spielernamen an</string>
+    <string name="strJoinGame">Spiel Beitreten</string>
 
 </resources>

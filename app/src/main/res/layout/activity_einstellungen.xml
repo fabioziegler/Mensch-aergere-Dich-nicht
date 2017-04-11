@@ -20,11 +20,12 @@
         tools:ignore="RtlHardcoded" />
 
     <CheckBox
-        android:id="@+id/checkBox_ton"
+        android:id="@+id/cbMusic"
         android:layout_width="131dp"
         android:layout_height="32dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="41dp"
+        android:checked="true"
         android:text="@string/TXTton"
         android:textSize="15sp"
         app:layout_constraintLeft_toLeftOf="@+id/textView_design"
@@ -32,15 +33,16 @@
         tools:ignore="RtlHardcoded" />
 
     <CheckBox
-        android:id="@+id/checkBox_schummeln"
+        android:id="@+id/cbCheating"
         android:layout_width="192dp"
         android:layout_height="33dp"
+        android:layout_marginLeft="-12dp"
+        android:layout_marginTop="7dp"
+        android:checked="true"
         android:text="@string/TXTschummelfunkAn"
         android:textSize="15sp"
-        android:layout_marginTop="7dp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox_ton"
-        android:layout_marginLeft="-12dp"
-        app:layout_constraintLeft_toLeftOf="@+id/checkBox_ton"
+        app:layout_constraintLeft_toLeftOf="@+id/cbMusic"
+        app:layout_constraintTop_toBottomOf="@+id/cbMusic"
         tools:ignore="RtlHardcoded" />
 
     <TextView
@@ -50,32 +52,47 @@
         android:text="@string/TXTdesign"
         android:textSize="17sp"
         android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox_schummeln"
+        app:layout_constraintTop_toBottomOf="@+id/cbCheating"
         android:layout_marginLeft="50dp"
         app:layout_constraintLeft_toLeftOf="parent"
         tools:ignore="RtlHardcoded" />
 
-    <RadioButton
-        android:id="@+id/radioButton_design1"
-        android:layout_width="122dp"
-        android:layout_height="34dp"
-        android:text="@string/TXTdesign1"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@+id/textView_design"
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="@+id/textView_design"
-        tools:ignore="RtlHardcoded" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView_design"
+        app:layout_constraintHorizontal_bias="0.204">
 
-    <RadioButton
-        android:id="@+id/radioButton_design2"
-        android:layout_width="123dp"
-        android:layout_height="29dp"
-        android:text="@string/TXTdesign2"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/radioButton_design1"
-        android:layout_marginLeft="0dp"
-        app:layout_constraintLeft_toLeftOf="@+id/radioButton_design1"
-        tools:ignore="RtlHardcoded" />
+        <RadioButton
+            android:id="@+id/radioBtnDesignClassic"
+            android:layout_width="123dp"
+            android:layout_height="29dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="8dp"
+            android:checked="true"
+            android:text="@string/TXTdesign2"
+            app:layout_constraintLeft_toLeftOf="@+id/radioBtnDesignVintage"
+            app:layout_constraintTop_toBottomOf="@+id/radioBtnDesignVintage"
+            tools:ignore="RtlHardcoded" />
+
+        <RadioButton
+            android:id="@+id/radioBtnDesignVintage"
+            android:layout_width="122dp"
+            android:layout_height="34dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/TXTdesign1"
+            app:layout_constraintLeft_toLeftOf="@+id/textView_design"
+            app:layout_constraintTop_toBottomOf="@+id/textView_design"
+            tools:ignore="RtlHardcoded" />
+
+    </RadioGroup>
 
     <Button
         android:id="@+id/BTN_speichern"

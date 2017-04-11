@@ -16,14 +16,14 @@ public class Dice implements Runnable {
     private DiceNumber diceNumber;
     private Handler mHandler;
 
-    public Dice(){
+    public Dice() {
 
     }
 
-    public void roll(){
+    public void roll() {
         int length = DiceNumber.values().length;
 
-        int n = (int)(Math.random()*length);
+        int n = (int) (Math.random() * length);
 
         this.diceNumber = DiceNumber.values()[n];
     }
