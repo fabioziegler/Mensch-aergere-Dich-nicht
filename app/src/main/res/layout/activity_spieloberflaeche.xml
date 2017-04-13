@@ -10,7 +10,7 @@
         android:id="@+id/imageButton_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/background_light"
+        android:background="#00000000"
         android:contentDescription="@string/TXTinfoBTN"
         app:srcCompat="@android:drawable/ic_menu_info_details"
         app:layout_constraintTop_toTopOf="parent"
@@ -103,12 +103,15 @@
         android:id="@+id/imageButton_wuerfel"
         android:layout_width="55dp"
         android:layout_height="55dp"
-        android:background="@android:color/background_light"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="17dp"
+        android:layout_marginStart="17dp"
+        android:adjustViewBounds="true"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="17dp" />
+        app:srcCompat="@drawable/dice_undefined" />
     <!--app:srcCompat="@mipmap/dice_icon"-->
 
 
@@ -116,7 +119,7 @@
         android:id="@+id/imageButton_aufdecken"
         android:layout_width="56dp"
         android:layout_height="45dp"
-        android:background="@android:color/background_light"
+        android:background="#00000000"
         app:srcCompat="@android:drawable/ic_search_category_default"
         android:layout_marginRight="17dp"
         app:layout_constraintRight_toRightOf="parent"
@@ -130,13 +133,9 @@
         android:layout_height="wrap_content"
         android:visibility="invisible"
         app:srcCompat="@drawable/dice1"
-        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

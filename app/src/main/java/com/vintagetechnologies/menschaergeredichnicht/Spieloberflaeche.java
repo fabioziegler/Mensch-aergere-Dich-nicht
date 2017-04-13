@@ -28,35 +28,63 @@ public class Spieloberflaeche extends AppCompatActivity {
 
     /**
      * wird aufgerufen wenn btnWuerfel betätigt wird
+     * UI Updates finden auf dem Main Thread statt
      */
     private void btnWuerfelClicked(){
-        imgViewDice.setVisibility(View.VISIBLE);
+        // ui elementes must be updated on main thread:
+        runOnUiThread(new Runnable() {
+            public void run() {
+                // Update UI elements
+                imgViewDice.setVisibility(View.VISIBLE);
+                btnWuerfel.setEnabled(false);
+                btnWuerfel.setImageResource(R.drawable.dice_undefined);
+                imgViewDice.setImageResource(R.drawable.dice_undefined);
+            }
+        });
 
         dice.roll();
 
-        int result = dice.getDiceNumber().getNumber();
+        final int result = dice.getDiceNumber().getNumber() - 1;
 
         // dice rolls for 3 seconds, and changes 5x a second it's number
 
-        // animateion:
+        // "roll" animation
         for (int i = 0; i < 3; i++) {       // 3 seconds
             for (int j = 0; j < 5; j++) {   // 1 second (5 changes)
-                int randomIndex = rand.nextInt(6);
-                imgViewDice.setImageResource(diceImages[randomIndex]);
+                final int randomIndex = rand.nextInt(6);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() { imgViewDice.setImageResource(diceImages[randomIndex]); }
+                });
+
                 SystemClock.sleep(200);
             }
         }
 
-        // setze Egebnis des Würfelns
-        imgViewDice.setImageResource(diceImages[result]);
 
-        btnWuerfel.setImageResource(diceImages[result]);
+        // setze Egebnis des Würfelns
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Update UI elements
+                imgViewDice.setImageResource(diceImages[result]);
+            }
+        });
+
 
         // zeige Ergebnis für 1 Sekunde
         SystemClock.sleep(1000);
 
-        // ausblenden
-        imgViewDice.setVisibility(View.INVISIBLE);
+        // hide dice
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                imgViewDice.setVisibility(View.INVISIBLE);
+                btnWuerfel.setEnabled(true);
+                btnWuerfel.setImageResource(diceImages[result]);
+            }
+        });
     }
 
 
@@ -72,7 +100,13 @@ public class Spieloberflaeche extends AppCompatActivity {
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btnWuerfelClicked();
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        btnWuerfelClicked();
+                    } // This is your code
+                };
+                new Thread(myRunnable).start();
             }
         });
 
