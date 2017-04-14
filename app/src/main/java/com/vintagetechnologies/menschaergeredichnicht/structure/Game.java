@@ -34,18 +34,6 @@ public class Game {
             PlayerColor cColor = PlayerColor.values()[i];
             players[i] = new Player(cColor, names[i]);
 
-            int c = 0;
-
-            for(Spot spot : board.getBoard()){
-                if(spot instanceof StartingSpot){
-                    StartingSpot sSpot  = (StartingSpot)spot;
-                    if(sSpot.getColor() == cColor){
-                        players[i].getPieces()[c].setSpot(spot);
-                        c++;
-                    }
-                }
-            }
-
 
         }
         initialized = true;

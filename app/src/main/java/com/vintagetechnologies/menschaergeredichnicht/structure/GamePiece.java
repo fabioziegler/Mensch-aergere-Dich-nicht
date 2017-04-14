@@ -12,6 +12,7 @@ public class GamePiece {
 
     public GamePiece(PlayerColor playerColor) {
         this.playerColor = playerColor;
+        this.returnToStart();
     }
 
     public PlayerColor getPlayerColor() {
