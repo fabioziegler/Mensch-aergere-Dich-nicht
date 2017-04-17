@@ -2,6 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -29,6 +30,8 @@ import com.google.android.gms.nearby.connection.Connections;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Fabio on 08.04.17.
@@ -52,6 +55,9 @@ public class GameHost extends AppCompatActivity implements
     private ArrayAdapter<String> listAdapter;
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+	/* used to store client names (value) with their id's (key) */
+	private Map<String, String> clients;
 
     /* for displaying connected devices in the layout */
     private ArrayList<String> playerNames;
@@ -97,6 +103,8 @@ public class GameHost extends AppCompatActivity implements
         listAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.my_listview_item, playerNames);  /* original layout: android.R.layout.simple_spinner_item */
         listViewPlayers.setAdapter(listAdapter);
 
+		clients = new HashMap<>(3);
+
         btnStartGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,9 +114,6 @@ public class GameHost extends AppCompatActivity implements
 
         // prevent phone from entering sleep mode
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // create new game logic for the host
-        gameLogic = new GameLogic(this, mGoogleApiClient, true);
 
         // retrieve game settings (from data holder)
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
@@ -130,11 +135,15 @@ public class GameHost extends AppCompatActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
+
+        // create new game logic for the host
+        gameLogic = new GameLogic(this, mGoogleApiClient, true);
     }
 
 
     /**
-     * Called after onCreate(Bundle) — or after onRestart() when the activity had been stopped, but is now again being displayed to the user. It will be followed by onResume().
+     * Called after onCreate(Bundle) — or after onRestart() when the activity had been stopped,
+     * but is now again being displayed to the user. It will be followed by onResume().
      */
     @Override
     public void onStart() {
@@ -149,12 +158,16 @@ public class GameHost extends AppCompatActivity implements
 
 
     /**
-     * Called when you are no longer visible to the user. You will next receive either onRestart(), onDestroy(), or nothing, depending on later user activity.
+     * Called when you are no longer visible to the user.
+     * You will next receive either onRestart(), onDestroy(), or nothing, depending on later user activity.
      */
     @Override
     public void onStop() {
         super.onStop();
+
+        // disconnect
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Log.i(TAG, "Disconnecting from Google Play Services");
             mGoogleApiClient.disconnect();
         }
     }
@@ -162,25 +175,78 @@ public class GameHost extends AppCompatActivity implements
 
     /**
      * Called when the connection to Google Play service was successful
-     * @param bundle
+     * @param connectionHint
      */
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onConnected(@Nullable Bundle connectionHint) {
+        Log.i(TAG, "Connected to Google Play services.");
+
         // start advertising (game hosting)
         startAdvertising();
     }
 
 
+    /**
+     * Called when the client is temporarily in a disconnected state.
+     * This can happen if there is a problem with the remote service
+     * (e.g. a crash or resource problem causes it to be killed by the system).
+     * When called, all requests have been canceled and no outstanding listeners will be executed.
+     * GoogleApiClient will automatically attempt to restore the connection.
+     * Applications should disable UI components that require the service,
+     * and wait for a call to onConnected(Bundle) to re-enable them.
+     * @param cause The reason for the disconnection. Defined by constants CAUSE_*.
+     */
     @Override
-    public void onConnectionSuspended(int i) {
-
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "Host: Temporarily disconnected from Google Play service");
+        Toast.makeText(getApplicationContext(), "Verbindung zu Play Service temporär unterbrochen (Fehler " + cause + ")", Toast.LENGTH_LONG).show();
     }
 
+    private final int RESOLUTION_CONNECTION = 1;
 
+    /**
+     * Called when there was an error connecting the client to the service.
+	 * For example if the user is not logged in to his gmail account.
+     * @param connectionResult A ConnectionResult that can be used for resolving the error, and deciding what sort of error occurred.
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
+        Log.e(TAG, "Connection to Google Play service failed: " + connectionResult.getErrorMessage() + " (" + connectionResult.getErrorCode() + ")");
+        Toast.makeText(getApplicationContext(), "Verbindungsaufbau fehlgeschlagen", Toast.LENGTH_LONG).show();
+
+		if(connectionResult.hasResolution()) {	// check if calling startResolutionForResult() will start any intents requiring user interaction.
+			try {
+				connectionResult.startResolutionForResult(this, RESOLUTION_CONNECTION);
+
+			} catch (IntentSender.SendIntentException e) {
+				Log.e(TAG, "Failed to resolve connection error.");
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+	/**
+	 * When the user is done with the subsequent activity and returns, the system calls your activity's onActivityResult() method.
+	 * @param requestCode
+	 * @param resultCode
+	 * @param data
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Check which request we're responding to
+		if (requestCode == RESOLUTION_CONNECTION) {
+
+			// Make sure the request was successful
+			if (resultCode == RESULT_OK) {
+				// The Intent's data Uri identifies which contact was selected.
+
+				if(!mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected())
+					mGoogleApiClient.connect();
+			}
+		}
+	}
 
 
     /**
@@ -192,31 +258,40 @@ public class GameHost extends AppCompatActivity implements
     /*@Override*/
     public void onConnectionRequest(final String remoteEndpointId, final String remoteEndpointName, byte[] handshakeData) {
 
-        byte[] myPayload = null;
+		if(gameLogic.getDevices().getList().size() < 4) {
+			byte[] myPayload = null;
 
-        // Automatically accept all requests
-        Nearby.Connections.acceptConnectionRequest(mGoogleApiClient, remoteEndpointId,
-                myPayload, this).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(Status status) {
+			// Automatically accept all requests
+			Nearby.Connections.acceptConnectionRequest(mGoogleApiClient, remoteEndpointId,
+					myPayload, this).setResultCallback(new ResultCallback<Status>() {
+				@Override
+				public void onResult(Status status) {
 
-                if (status.isSuccess()) {
+					if (status.isSuccess()) {   // player connected
 
-                    Log.i(TAG, "Connected to player: " + remoteEndpointName);
-                    gameLogic.getDevices().addDevice(new Device(remoteEndpointId, remoteEndpointName, false));
+						Log.i(TAG, "Connected to player: " + remoteEndpointName);
+						Toast.makeText(getApplicationContext(), remoteEndpointName + getString(R.string.msgPlayerJustJoinedTheGame), Toast.LENGTH_LONG).show();
 
-                    if(!gameLogic.isGameStarted()) {
-                        // update player list view
-                        playerNames.add(remoteEndpointName);
-                        listAdapter.notifyDataSetChanged();
-                    }
+						gameLogic.getDevices().addDevice(new Device(remoteEndpointId, remoteEndpointName, false));
 
-                } else {
-                    Log.e(TAG, "Failed to connect to client: " + remoteEndpointName);
-                    Toast.makeText(getApplicationContext(), "Failed to connect to: " + remoteEndpointName, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+						if (!gameLogic.isGameStarted()) {
+							// update player list view
+							playerNames.add(remoteEndpointName);
+							listAdapter.notifyDataSetChanged();
+							clients.put(remoteEndpointId, remoteEndpointName);
+						}
+
+					} else {
+						Log.e(TAG, "Failed to connect to client: " + remoteEndpointName);
+						Toast.makeText(getApplicationContext(), "Verbindung mit '" + remoteEndpointName + "' fehlgeschlagen.", Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
+
+		} else {	// max. user limit of 4 reached
+			Log.i(TAG, "Rejecting connection attempt from player: " + remoteEndpointName + " Max. player limit of 4.");
+			Nearby.Connections.rejectConnectionRequest(mGoogleApiClient, remoteEndpointId);
+		}
     }
 
 
@@ -235,11 +310,24 @@ public class GameHost extends AppCompatActivity implements
 
 
     /**
-     * Called when a remote endpoint is disconnected / becomes unreachable.
+     * Called when a remote player is disconnected / becomes unreachable.
      * @param remoteEndpointId The identifier for the remote endpoint that disconnected.
      */
     @Override
     public void onDisconnected(String remoteEndpointId) {
+
+		String playerName = clients.get(remoteEndpointId);
+
+		for (int i = 0; i < playerNames.size(); i++) {
+			if(playerNames.get(i).equals(playerName)){
+				playerNames.remove(i);
+				listAdapter.notifyDataSetChanged();
+				break;
+			}
+		}
+
+		clients.remove(remoteEndpointId);
+
         // forward to game logic
         gameLogic.playerDisconnected(remoteEndpointId);
     }
@@ -280,16 +368,15 @@ public class GameHost extends AppCompatActivity implements
                                             .setResultCallback(new ResultCallback<Connections.StartAdvertisingResult>() {
             @Override
             public void onResult(Connections.StartAdvertisingResult result) {
-                if (result.getStatus().isSuccess()) {
-                    // Device is advertising
+
+                if (result.getStatus().isSuccess()) {	// Device is advertising
                     Log.i(TAG, "Started advertising...");
                     isAdvertising = true;
                     lblStatus.setTextColor(colorsLabelStatus);
                     lblStatus.setText("Suche Mitspieler...");
 
-                } else {
+                } else {	// Advertising failed - see statusCode for more details
 
-                    // Advertising failed - see statusCode for more details
                     int statusCode = result.getStatus().getStatusCode();
 
                     Log.e(TAG, "Advertising failed with status code: " + statusCode);
@@ -325,6 +412,9 @@ public class GameHost extends AppCompatActivity implements
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which){
                         case DialogInterface.BUTTON_POSITIVE:
+
+                        	// close connection to all clients
+                        	Nearby.Connections.stopAllEndpoints(mGoogleApiClient);
 
                             // disconnect from Google Play services
                             if(mGoogleApiClient != null && mGoogleApiClient.isConnected())

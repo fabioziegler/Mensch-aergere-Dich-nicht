@@ -89,6 +89,14 @@ public class DeviceList {
     }
 
     /**
+     * Get devices as an array list
+     * @return
+     */
+    public ArrayList<Device> getList(){
+        return devices;
+    }
+
+    /**
      * Remove a device by ID.
      * @param playerID ID of the player to be removed.
      */

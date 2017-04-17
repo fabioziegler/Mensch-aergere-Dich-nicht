@@ -1,7 +1,9 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.nearby.Nearby;
@@ -50,7 +52,8 @@ public class GameLogic {
      * @param messsage
      */
     public void receivedMessage(String player, String messsage){
-
+		Log.i(TAG, "Received message from " + player + ": " + messsage);
+        Toast.makeText(activity.getApplicationContext(), "Received message: " + messsage, Toast.LENGTH_LONG).show();
     }
 
 
@@ -74,6 +77,11 @@ public class GameLogic {
         activity.setContentView(R.layout.activity_spieloberflaeche);
 
         // TODO: implement game rules/logic
+
+        //TODO: remove!!!!
+        //activity.startActivity(new Intent(activity, Spieloberflaeche.class));
+
+        sendMessage(getDevices().getList().get(0).getId(), "Start Game");
     }
 
 
@@ -109,6 +117,12 @@ public class GameLogic {
      */
     public void playerDisconnected(String playerID){
 
+        // show info that a player left
+        Toast.makeText(activity.getApplicationContext(),
+                connectedDevices.getDeviceByPlayerID(playerID).getName() +
+                activity.getString(R.string.msgPlayerJustLeftTheGame), Toast.LENGTH_LONG).show();
+
+        connectedDevices.removeDeviceByID(playerID);
     }
 
 

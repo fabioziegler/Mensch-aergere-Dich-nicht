@@ -32,6 +32,7 @@
     <string name="msgHostSearchFailed">"Suche fehlgeschlagen"</string>
     <string name="msgConfirmExit">"Möchtest du das Spiel wirklich beenden?"</string>
     <string name="strSelectGameFromList">Gefundene Spiele:</string>
-
+    <string name="msgPlayerJustJoinedTheGame">\u0020ist beigetreten!</string>
+    <string name="msgPlayerJustLeftTheGame">\u0020hat das Spiel verlassen</string>
 
 </resources>

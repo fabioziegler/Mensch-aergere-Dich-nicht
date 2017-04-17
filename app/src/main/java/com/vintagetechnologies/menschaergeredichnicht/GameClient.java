@@ -2,11 +2,14 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +32,9 @@ import com.google.android.gms.nearby.connection.Connections;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static com.google.android.gms.nearby.connection.Connections.DURATION_INDEFINITE;
 
@@ -55,9 +61,12 @@ public class GameClient extends AppCompatActivity implements
     private ColorStateList colorsLabelStatus;
     private ArrayAdapter<String> listAdapter;
 
+	/* used to store a host's (value) with it's name (key) as it is in the list view */
+	private Map<String, String> hosts;
+
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    /* used to display a list of hosts */
+    /* used to display found hosts in a list view */
     private ArrayList<String> hostNames;
 
     /* GoogleApiClient for connecting to the Nearby Connections API */
@@ -78,7 +87,6 @@ public class GameClient extends AppCompatActivity implements
         listViewHosts = (ListView) findViewById(R.id.listViewHosts);
         pbLoading = (ProgressBar) findViewById(R.id.pbLoading);
 
-        //lblSelectGame.setVisibility(View.INVISIBLE);
         lblSelectGame.setText(getString(R.string.strSelectGameFromList));
         colorsLabelStatus = lblStatus.getTextColors();   // save textview color for restoring when changed
 
@@ -86,11 +94,10 @@ public class GameClient extends AppCompatActivity implements
         listAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.my_listview_item, hostNames);    /* original layout: android.R.layout.simple_spinner_item */
         listViewHosts.setAdapter(listAdapter);
 
+		hosts = new HashMap<>(1);
+
         // prevent phone from entering sleep mode
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // create new game logic for the host
-        gameLogic = new GameLogic(this, mGoogleApiClient, false);
 
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
 
@@ -125,9 +132,8 @@ public class GameClient extends AppCompatActivity implements
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
 
-        // for testing:
-        hostNames.add(gameSettings.getPlayerName());
-        listAdapter.notifyDataSetChanged();
+        // create new game logic for the host
+        gameLogic = new GameLogic(this, mGoogleApiClient, false);
     }
 
 
@@ -137,9 +143,11 @@ public class GameClient extends AppCompatActivity implements
      */
     private void hostsListItemClicked(String endpointName){
 
+		endpointName = endpointName.substring(0, endpointName.length() - "'s Spiel".length());
+
         Log.i(TAG, "Connecting to host: " + endpointName);
 
-        String endpointId = gameLogic.getDevices().getDeviceByPlayerName(endpointName).getId();
+        String endpointId = hosts.get(endpointName);
 
         // initiate connection to the host
         connectTo(endpointId, endpointName);
@@ -169,14 +177,18 @@ public class GameClient extends AppCompatActivity implements
 
     /**
      * Called when the connection to Google Play service was successful
-     * @param bundle
+     * @param connectionHint
      */
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onConnected(@Nullable Bundle connectionHint) {
         Log.i(TAG, "Connected to Google Play services.");
 
         if(isDiscovering)
             return;
+
+		hostNames.clear();
+		listViewHosts.deferNotifyDataSetChanged();
+		hosts.clear();
 
         // search for hosts
         startDiscovery();
@@ -185,35 +197,66 @@ public class GameClient extends AppCompatActivity implements
     private boolean isDiscovering = false;
 
 
+    /**
+     * Called when the client is temporarily in a disconnected state.
+     * This can happen if there is a problem with the remote service
+     * (e.g. a crash or resource problem causes it to be killed by the system).
+     * When called, all requests have been canceled and no outstanding listeners will be executed.
+     * GoogleApiClient will automatically attempt to restore the connection.
+     * Applications should disable UI components that require the service,
+     * and wait for a call to onConnected(Bundle) to re-enable them.
+	 * https://developers.google.com/android/reference/com/google/android/gms/common/api/GoogleApiClient.ConnectionCallbacks.html#onConnectionSuspended(int)
+	 * CAUSE_NETWORK_LOST = 2			A suspension cause informing you that a peer device connection was lost.
+	 * CAUSE_SERVICE_DISCONNECTED = 1	A suspension cause informing that the service has been killed.
+     * @param cause The reason for the disconnection. Defined by constants CAUSE_*.
+     */
     @Override
-    public void onConnectionSuspended(int i) {
-        Log.e(TAG, "onConnectionSuspended()");
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "Temporarily disconnected from Google Play service (cause = " + cause + ").");
+        Toast.makeText(getApplicationContext(), "Verbindung zu Play Service temporär unterbrochen (Grund " + cause + ")", Toast.LENGTH_LONG).show();
+
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				mGoogleApiClient.connect();
+			}
+		}, 1000);
     }
 
 
+    /**
+     * Called when there was an error connecting the client to the service.
+     * @param connectionResult A ConnectionResult that can be used for resolving the error, and deciding what sort of error occurred.
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, "onConnectionFailed()");
+		Toast.makeText(getApplicationContext(), "Verbindung zum Host fehlgeschlagen. Bitte erneut versuchen.", Toast.LENGTH_LONG).show();
     }
 
 
     /**
      * Called when a host is found. Adds the host to the list of available hosts.
-     * @param endpointId The ID of the remote endpoint that was discovered.
+     * @param remoteEndpointId The ID of the remote endpoint that was discovered.
      * @param serviceId The ID of the service of the remote endpoint.
      * @param endpointName The human readable name of the remote endpoint.
      */
     /*@Override*/
-    public void onEndpointFound(final String endpointId, String serviceId, final String endpointName) {
+    public void onEndpointFound(final String remoteEndpointId, String serviceId, final String endpointName) {
         // This device is discovering endpoints and has located an advertiser.
 
-        // TODO: create new layout with list for hosts and button to connect, then use this method
-        // to display the endpointName in the list and a button to connect (call connectTo()).
+		// add to visual list
+		hostNames.add(endpointName);
+		listAdapter.notifyDataSetChanged();
+		lblSelectGame.setVisibility(View.VISIBLE);
 
-        Log.i(TAG, "Found host: " + endpointName);
-        hostNames.add(endpointName);
-        listAdapter.notifyDataSetChanged();
-        lblSelectGame.setVisibility(View.VISIBLE);
+        // make "Max's Spiel" to "Max"
+        String realName = endpointName.substring(0, endpointName.length() - "'s Spiel".length());
+
+        Log.i(TAG, "Found host: " + realName);
+
+		// add to host list
+		hosts.put(realName, remoteEndpointId);
     }
 
 
@@ -224,26 +267,46 @@ public class GameClient extends AppCompatActivity implements
     /*@Override*/
     public void onEndpointLost(String endpointid) {
 
-        if(!gameLogic.isGameStarted()){
+		// get device name from id
+		String deviceName = null;
 
-            // get device
-            Device disconnectedDevice = gameLogic.getDevices().getDeviceByPlayerID(endpointid);
-            String deviceName = disconnectedDevice.getName();
+		Iterator it = hosts.keySet().iterator();
+		while (it.hasNext()){
+			String value = String.valueOf(it.next());
+			String key = hosts.get(value);
+			if(key.equals(endpointid)){
+				deviceName = value;
+				break;
+			}
+		}
 
-            // remove from host list
-            if(disconnectedDevice != null){
-                for (int i = 0; i < hostNames.size(); i++) {
-                    if(hostNames.get(i).equals(deviceName)){
-                        hostNames.remove(i);
-                        listAdapter.notifyDataSetChanged();
-                        break;
-                    }
-                }
-            }
+		hosts.remove(deviceName);
 
-            if(hostNames.isEmpty())
-                lblSelectGame.setVisibility(View.INVISIBLE);
-        }
+		if(!gameLogic.isGameStarted()){		// game started
+
+			Toast.makeText(getApplicationContext(), "Verbindung zum Host '" + deviceName + "' verloren! Spiel abgebrochen.", Toast.LENGTH_LONG).show();
+
+			gameLogic.endGame();
+
+			// start discovery again
+			if(hostNames.isEmpty()){
+				lblSelectGame.setText("Gefundene Spiele:");
+				if(!isDiscovering)
+					startDiscovery();
+			}
+
+		} else {	// game not started
+
+			// remove from host list
+			String listName = deviceName + "'s Spiel";
+			for (int i = 0; i < hostNames.size(); i++) {
+				if(hostNames.get(i).equals(listName)){
+					hostNames.remove(i);
+					listAdapter.notifyDataSetChanged();
+					break;
+				}
+			}
+		}
     }
 
 
@@ -278,13 +341,20 @@ public class GameClient extends AppCompatActivity implements
                     @Override
                     public void onConnectionResponse(String remoteEndpointId, Status status, byte[] bytes) {
 
-                        if (status.isSuccess()) {
-                            // Successful connection
+                        if (status.isSuccess()) {	// Successfully connected to host
+
                             gameLogic.getDevices().addDevice(new Device(remoteEndpointId, endpointName, true));
                             stopDiscovery();
+							//Toast.makeText(getApplicationContext(), "Verbunden", Toast.LENGTH_LONG).show();
+							Log.i(TAG, "Connected to host: " + endpointName);
+							lblSelectGame.setText("Verbunden mit " + endpointName);
+							lblStatus.setTextColor(colorsLabelStatus);
+							lblStatus.setText("Warte auf Spielstart...");
+							pbLoading.setVisibility(View.VISIBLE);
 
-                        } else {
-                            // Failed connection
+
+                        } else {	// Failed connection
+
                             lblStatus.setText("Verbindung fehlgeschlagen");
                             lblStatus.setTextColor(Color.RED);
                             pbLoading.setVisibility(View.INVISIBLE);
@@ -317,19 +387,21 @@ public class GameClient extends AppCompatActivity implements
                 DISCOVER_TIMEOUT,       // The duration of discovery in milliseconds, unless stopDiscovery() is called first. If DURATION_INDEFINITE is passed in, discovery will continue indefinitely until stopDiscovery() is called.
                 myEndpointDiscoveryListener)                    // A listener notified when a remote endpoint is discovered.
                 .setResultCallback(new ResultCallback<Status>() {
+
                     @Override
                     public void onResult(Status status) {
-                        if (status.isSuccess()) {
-                            // Device is discovering
+
+                        if (status.isSuccess()) {   // Device is discovering
+
                             lblStatus.setText(getString(R.string.msgSearchingGameHost));
                             lblStatus.setTextColor(colorsLabelStatus);
                             pbLoading.setVisibility(View.VISIBLE);
                             Log.i(TAG, "Started discovery...");
                             isDiscovering = true;
 
-                        } else {
+                        } else {    // Advertising failed - see statusCode for more details
+
                             int statusCode = status.getStatusCode();
-                            // Advertising failed - see statusCode for more details
                             Log.e(TAG, "Discovery failed with status code: " + statusCode);
                             lblStatus.setText(getString(R.string.msgHostSearchFailed));
                             lblStatus.setTextColor(Color.RED);
@@ -362,6 +434,11 @@ public class GameClient extends AppCompatActivity implements
 
         stopDiscovery();
 
+		// disconnect from host
+		if(gameLogic.isGameStarted()){
+			//Nearby.Connections.disconnectFromEndpoint(mGoogleApiClient, gameLogic.getDevices().getHost().getId());	// only for host??
+		}
+
         // disconnect from Google Play services
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
@@ -382,6 +459,26 @@ public class GameClient extends AppCompatActivity implements
 
         //return (info != null && info.isConnectedOrConnecting());
         return (info != null && info.isConnected());
+    }
+
+
+    /**
+     * Called when the orientation changes (i.e. from portrait to landscape mode)
+     * @param newConfig
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // check https://developer.android.com/guide/components/activities/activity-lifecycle.html
+        // on how to recover activity state -> What when activity destroyed while discovering? So... don't support landscape for game search/join?
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            //setContentView(R.layout.activity_join_game);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            //setContentView(R.layout.activity_join_game);
+        }
     }
 
 }

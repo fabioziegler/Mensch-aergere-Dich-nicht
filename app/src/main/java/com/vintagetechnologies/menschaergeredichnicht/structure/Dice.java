@@ -30,4 +30,5 @@ public class Dice {
     public void setDiceNumber(DiceNumber diceNumber) {
         this.diceNumber = diceNumber;
     }
+
 }
