@@ -2,11 +2,13 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +30,8 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.Connections;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
+import com.vintagetechnologies.menschaergeredichnicht.networking.WifiListener;
+import com.vintagetechnologies.menschaergeredichnicht.networking.WifiReceiver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +42,7 @@ import java.util.Map;
  */
 
 public class GameHost extends AppCompatActivity implements
+		WifiListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         Connections.MessageListener/*,
@@ -65,7 +70,11 @@ public class GameHost extends AppCompatActivity implements
     /* GoogleApiClient for connecting to the Nearby Connections API */
     private GoogleApiClient mGoogleApiClient;
 
+	/* For advertising and handling connection requests from clients */
     private Connections.ConnectionRequestListener myConnectionRequestListener;
+
+	/* For receiving wifi connection status changes */
+	private WifiReceiver wifiReceiver;
 
 
     /**
@@ -117,6 +126,14 @@ public class GameHost extends AppCompatActivity implements
 
         // retrieve game settings (from data holder)
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
+
+		wifiReceiver = new WifiReceiver();
+		wifiReceiver.addReceiver(this);
+
+		// register receiver for wifi changes
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+		registerReceiver(wifiReceiver, intentFilter);
 
         myConnectionRequestListener =
                 new Connections.ConnectionRequestListener() {
@@ -398,7 +415,7 @@ public class GameHost extends AppCompatActivity implements
     }
 
     /**
-     * Called when the user pressed the back button
+     * Called when the user pressed the back button (wants to exit the activity)
      */
     @Override
     public void onBackPressed() {
@@ -419,6 +436,8 @@ public class GameHost extends AppCompatActivity implements
                             // disconnect from Google Play services
                             if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
                                 mGoogleApiClient.disconnect();
+
+							unregisterReceiver(wifiReceiver);
 
                             startActivity(new Intent(GameHost.this, Hauptmenue.class));
 
@@ -443,6 +462,8 @@ public class GameHost extends AppCompatActivity implements
             if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
                 mGoogleApiClient.disconnect();
 
+			unregisterReceiver(wifiReceiver);
+
             startActivity(new Intent(GameHost.this, Hauptmenue.class));
             finish();
         }
@@ -461,4 +482,15 @@ public class GameHost extends AppCompatActivity implements
         return (info != null && info.isConnected());
     }
 
+
+
+	@Override
+	public void hasWiFiConnectionEstablished() {
+		Log.i(TAG, "Wifi connection just established.");
+	}
+
+	@Override
+	public void hasWiFiConnectionLost() {
+		Log.i(TAG, "Wifi connection lost.");
+	}
 }

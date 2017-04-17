@@ -2,21 +2,16 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 
 import android.animation.Animator;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.Random;
@@ -37,7 +32,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
-    ImageButton btnWuerfel;
     Cheat Schummeln = null;
 
     // toDO: alle Spielfunktionen ect. hinzufügen
@@ -58,7 +52,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     // duration of the animation in ms
     private final int ANIMATION_DURATION = 1600;
-  
+
+
     /**
      * wird aufgerufen wenn btnWuerfel betätigt wird
      * UI Updates finden auf dem Main Thread statt
@@ -160,7 +155,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
     }
-  
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,9 +166,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         //Sensor Manager erstellen
         SM = (SensorManager)getSystemService(SENSOR_SERVICE);
+
         //Licht Sensor erstellen
         LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
-        SM.registerListener(this,LightSensor,SensorManager.SENSOR_DELAY_GAME);
+        SM.registerListener(this, LightSensor, SensorManager.SENSOR_DELAY_GAME);
 
         state = (TextView)(findViewById(R.id.textView_status));
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel));
@@ -212,6 +209,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         getScreenDimensions();
     }
 
+
     /**
      * Determines the screen height and width
      */
@@ -222,6 +220,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         screenWidth = size.x;
         screenHeight = size.y;
     }
+
 
     /**
      * Called when the orientation changes (i.e. from portrait to landscape mode)
@@ -234,6 +233,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         // refresh screen dimensions when screen orientation changes
         getScreenDimensions();
     }
+
 
     /**
      * Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
@@ -257,6 +257,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         }
 
     }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

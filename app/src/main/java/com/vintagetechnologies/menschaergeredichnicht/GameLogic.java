@@ -107,7 +107,7 @@ public class GameLogic {
      * Called when the game is over
      */
     public void gameOver(){
-        // TODO: implement: return to main or menu/show stats/points/winner
+        // TODO: implement: return to main or menu/show stats/points/winner; host stop client connections
     }
 
 

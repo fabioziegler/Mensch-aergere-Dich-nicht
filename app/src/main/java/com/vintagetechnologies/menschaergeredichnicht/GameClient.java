@@ -1,11 +1,13 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +32,8 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.Connections;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
+import com.vintagetechnologies.menschaergeredichnicht.networking.WifiListener;
+import com.vintagetechnologies.menschaergeredichnicht.networking.WifiReceiver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +49,7 @@ import static com.google.android.gms.nearby.connection.Connections.DURATION_INDE
  * The user can click on a host in the list to join the game of the host.
  */
 public class GameClient extends AppCompatActivity implements
+		WifiListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         Connections.MessageListener/*,
@@ -75,6 +80,9 @@ public class GameClient extends AppCompatActivity implements
     /* For host discovery */
     private Connections.EndpointDiscoveryListener myEndpointDiscoveryListener;
 
+	/* For receiving wifi connection status changes */
+	private WifiReceiver wifiReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +108,14 @@ public class GameClient extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
+
+		wifiReceiver = new WifiReceiver();
+		wifiReceiver.addReceiver(this);
+
+		// register receiver for wifi changes
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+		registerReceiver(wifiReceiver, intentFilter);
 
         listViewHosts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -282,18 +298,20 @@ public class GameClient extends AppCompatActivity implements
 
 		hosts.remove(deviceName);
 
-		if(!gameLogic.isGameStarted()){		// game started
+		if(gameLogic.isGameStarted()){		// game started
 
 			Toast.makeText(getApplicationContext(), "Verbindung zum Host '" + deviceName + "' verloren! Spiel abgebrochen.", Toast.LENGTH_LONG).show();
 
 			gameLogic.endGame();
 
+			/*
 			// start discovery again
 			if(hostNames.isEmpty()){
 				lblSelectGame.setText("Gefundene Spiele:");
 				if(!isDiscovering)
 					startDiscovery();
 			}
+			*/
 
 		} else {	// game not started
 
@@ -443,6 +461,8 @@ public class GameClient extends AppCompatActivity implements
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
 
+		unregisterReceiver(wifiReceiver);
+
         startActivity(new Intent(this, Hauptmenue.class));
 
         finish();
@@ -480,5 +500,16 @@ public class GameClient extends AppCompatActivity implements
             //setContentView(R.layout.activity_join_game);
         }
     }
+
+
+	@Override
+	public void hasWiFiConnectionEstablished() {
+		Log.i(TAG, "Wifi connection just established.");
+	}
+
+	@Override
+	public void hasWiFiConnectionLost() {
+		Log.i(TAG, "Wifi connection lost.");
+	}
 
 }
