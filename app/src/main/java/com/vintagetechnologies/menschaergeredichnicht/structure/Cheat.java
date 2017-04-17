@@ -17,16 +17,16 @@ public class Cheat {
         this.playerCheating = c;
     }
 
+
     /**
-     * Für Würfel; stellt fest ob lokaler Player gecheatet hat
+     * Für WÜRFEL; stellt fest ob lokaler Player gecheatet hat
      * @return
      */
     public boolean isPlayerCheating() { return playerCheating; }
 
 
-
     /**
-     * Für Aufdecken stellt fest ob aktuell spielender Spieler gecheatet hat
+     * Für AUFDECKEN stellt fest ob aktuell spielender Spieler gecheatet hat
      * @return
      */
     public boolean hasRemotePlayerCheated(){
