@@ -8,10 +8,8 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -174,13 +172,19 @@ public class GameClient extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
 
-        lblStatus.setText("Laden...");
-
-        // connect to Google Play services
-        mGoogleApiClient.connect();
-
-        Log.i(TAG, "Connecting to Google Play services...");
+        connectToGooglePlayService();
     }
+
+
+    private void connectToGooglePlayService(){
+		lblStatus.setText("Laden...");
+
+		// connect to Google Play services
+		if(mGoogleApiClient != null && (!mGoogleApiClient.isConnected() || !mGoogleApiClient.isConnecting())){
+			mGoogleApiClient.connect();
+			Log.i(TAG, "Connecting to Google Play services...");
+		}
+	}
 
     @Override
     public void onStop() {
@@ -411,6 +415,8 @@ public class GameClient extends AppCompatActivity implements
 
                         if (status.isSuccess()) {   // Device is discovering
 
+							lblSelectGame.setText("Gefundene Spiele:");
+							lblSelectGame.setTextColor(colorsLabelStatus);
                             lblStatus.setText(getString(R.string.msgSearchingGameHost));
                             lblStatus.setTextColor(colorsLabelStatus);
                             pbLoading.setVisibility(View.VISIBLE);
@@ -504,12 +510,44 @@ public class GameClient extends AppCompatActivity implements
 
 	@Override
 	public void hasWiFiConnectionEstablished() {
-		Log.i(TAG, "Wifi connection just established.");
+		Log.i(TAG, "WiFi connection just established.");
+
+		final Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+
+
+				if(!gameLogic.isGameStarted()){
+					if(mGoogleApiClient.isConnected())
+						startDiscovery();
+					else
+						connectToGooglePlayService();	// starts discovery after a successful connection
+
+				} else {
+					gameLogic.onWifiConnectionReestablished();
+				}
+
+
+			}
+		}, 5000);
+
+
 	}
 
 	@Override
 	public void hasWiFiConnectionLost() {
-		Log.i(TAG, "Wifi connection lost.");
+		Log.i(TAG, "WiFi connection lost.");
+
+		if(!gameLogic.isGameStarted()){
+			stopDiscovery();
+			lblStatus.setText("Warte auf WiFi Verbindung...");
+			lblSelectGame.setText("Kein Netzwerk!");
+			lblSelectGame.setTextColor(Color.RED);
+			pbLoading.setVisibility(View.VISIBLE);
+		} else {
+			gameLogic.onWifiConnectionLost();
+		}
 	}
 
 }

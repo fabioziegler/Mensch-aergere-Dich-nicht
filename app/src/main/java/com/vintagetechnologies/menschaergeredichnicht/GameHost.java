@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -166,12 +167,18 @@ public class GameHost extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
 
-        lblStatus.setText("Lade...");
-        Log.i(TAG, "Connecting to Google Play services...");
-
-        // connect to Google Play services
-        mGoogleApiClient.connect();
+        connectToGooglePlayService();
     }
+
+	private void connectToGooglePlayService(){
+		lblStatus.setText("Laden...");
+
+		// connect to Google Play services
+		if(mGoogleApiClient != null && (!mGoogleApiClient.isConnected() || !mGoogleApiClient.isConnecting())){
+			mGoogleApiClient.connect();
+			Log.i(TAG, "Connecting to Google Play services...");
+		}
+	}
 
 
     /**
@@ -411,6 +418,8 @@ public class GameHost extends AppCompatActivity implements
     private void stopAdvertising(){
         if(isAdvertising){
             Nearby.Connections.stopAdvertising(mGoogleApiClient);
+			Log.i(TAG, "Stopped advertising.");
+			isAdvertising = false;
         }
     }
 
@@ -487,10 +496,44 @@ public class GameHost extends AppCompatActivity implements
 	@Override
 	public void hasWiFiConnectionEstablished() {
 		Log.i(TAG, "Wifi connection just established.");
+
+
+		final Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+
+
+				if(!gameLogic.isGameStarted()) {
+					if(mGoogleApiClient.isConnected())
+						startAdvertising();
+					else
+						connectToGooglePlayService();
+				}
+				else {    // forward to game logic
+					gameLogic.onWifiConnectionReestablished();
+				}
+
+
+			}
+		}, 5000);
+
+
 	}
+
 
 	@Override
 	public void hasWiFiConnectionLost() {
 		Log.i(TAG, "Wifi connection lost.");
+
+		if(!gameLogic.isGameStarted()){
+			stopAdvertising();
+			lblStatus.setText("Kein Netzwerk!");
+			lblStatus.setTextColor(Color.RED);
+			Toast.makeText(getApplicationContext(), "Bitte stelle eine WiFi Verbindung her!", Toast.LENGTH_LONG).show();
+		}else {
+			gameLogic.onWifiConnectionLost();	// forward to game logic
+		}
 	}
+
 }

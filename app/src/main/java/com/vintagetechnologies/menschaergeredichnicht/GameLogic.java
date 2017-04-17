@@ -104,6 +104,22 @@ public class GameLogic {
 
 
     /**
+     * Called when the wifi connection was lost during a game
+     */
+    public void onWifiConnectionLost(){
+
+    }
+
+
+    /**
+     * Called when the wifi connection was lost during a game and reconnected again
+     */
+    public void onWifiConnectionReestablished(){
+
+    }
+
+
+    /**
      * Called when the game is over
      */
     public void gameOver(){
