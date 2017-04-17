@@ -37,7 +37,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
-    ImageButton btnWuerfel;
     Cheat Schummeln = null;
 
     // toDO: alle Spielfunktionen ect. hinzufügen
@@ -80,7 +79,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         dice.roll();
 
-        final int result = dice.getDiceNumber().getNumber() - 1;
+        int result;
+        if (Schummeln.isPlayerCheating()) {
+            result = 5;
+        }else if (!Schummeln.isPlayerCheating()){
+            result = dice.getDiceNumber().getNumber() - 1;
+        }else {
+            throw new  IllegalStateException();
+        }
 
         // dice rolls for 3 seconds, and changes 5x a second it's number
 
@@ -100,11 +106,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         // setze Egebnis des Würfelns
+        final int finalResult = result;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // Update UI elements
-                imgViewDice.setImageResource(diceImages[result]);
+                imgViewDice.setImageResource(diceImages[finalResult]);
             }
         });
 
@@ -145,7 +152,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                                 imgViewDice.setAlpha(1f);
                                 imgViewDice.setVisibility(View.INVISIBLE);
 
-                                btnWuerfel.setImageResource(diceImages[result]);
+                                btnWuerfel.setImageResource(diceImages[finalResult]);
 
                                 btnWuerfel.setEnabled(true);
                             }
@@ -167,6 +174,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         setContentView(R.layout.activity_spieloberflaeche);
 
         Schummeln = new Cheat(false);
+        Schummeln.setPlayerCheating(false);
 
         //Sensor Manager erstellen
         SM = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -179,7 +187,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
-
+        //ToDo: man sollte nur einmal pro runde Würfeln können
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -249,7 +257,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
          */
         if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
             float Lichtwert = event.values[0];
-            if(Lichtwert <= 1000){
+            if(Lichtwert <= 50){
                 //state.setText("Schummeln: " + true);  //Test
                 Schummeln.setPlayerCheating(true);
             }
