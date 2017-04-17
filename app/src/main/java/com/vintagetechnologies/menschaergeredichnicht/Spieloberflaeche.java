@@ -28,6 +28,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+        Schummeln = new Cheat(false);
+
         //Sensor Manager erstellen
         SM = (SensorManager)getSystemService(SENSOR_SERVICE);
         //Licht Sensor erstellen
@@ -56,7 +58,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
             float Lichtwert = event.values[0];
             if(Lichtwert <= 1000){
-                state.setText("Schummeln: " + true);
+                //state.setText("Schummeln: " + true);  //Test
                 Schummeln.setPlayerCheating(true);
             }
             //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
