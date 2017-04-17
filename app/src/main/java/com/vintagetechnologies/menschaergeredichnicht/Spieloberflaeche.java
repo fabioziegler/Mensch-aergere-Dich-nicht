@@ -1,5 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+
 import android.animation.Animator;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -13,11 +14,31 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.Random;
 
-public class Spieloberflaeche extends AppCompatActivity {
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.widget.TextView;
+
+import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
+
+
+public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
+
+    Sensor LightSensor;
+    SensorManager SM;
+
+    TextView state;
+    // toDO: alle Spielfunktionen ect. hinzufügen
+    ImageButton btnWuerfel;
+    Cheat Schummeln = null;
 
     // toDO: alle Spielfunktionen ect. hinzufügen
     private ImageButton btnWuerfel;
@@ -37,7 +58,7 @@ public class Spieloberflaeche extends AppCompatActivity {
 
     // duration of the animation in ms
     private final int ANIMATION_DURATION = 1600;
-
+  
     /**
      * wird aufgerufen wenn btnWuerfel betätigt wird
      * UI Updates finden auf dem Main Thread statt
@@ -139,14 +160,23 @@ public class Spieloberflaeche extends AppCompatActivity {
             }
         });
     }
-
-
+  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+        Schummeln = new Cheat(false);
+
+        //Sensor Manager erstellen
+        SM = (SensorManager)getSystemService(SENSOR_SERVICE);
+        //Licht Sensor erstellen
+        LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
+        SM.registerListener(this,LightSensor,SensorManager.SENSOR_DELAY_GAME);
+
+        state = (TextView)(findViewById(R.id.textView_status));
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel));
+
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
 
@@ -203,6 +233,34 @@ public class Spieloberflaeche extends AppCompatActivity {
 
         // refresh screen dimensions when screen orientation changes
         getScreenDimensions();
+    }
+
+    /**
+     * Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
+     * Da auf änderung reagiert, dürfte nicht wenn bevor man am zug ist verdunkelt wird nicht reagiert werden.
+     */
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        //ToDO schüttelsensor für würfeln impl.
+
+        /** Für Licht
+         * Reagiert bei änderung wird entsprechender Wert zwischen 0.0 und 40000 angegeben.
+         * wenn schummel funktion ab Dunkel sich einschaltet. Annahme Dunkel ab 1000.
+         */
+        if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
+            float Lichtwert = event.values[0];
+            if(Lichtwert <= 1000){
+                //state.setText("Schummeln: " + true);  //Test
+                Schummeln.setPlayerCheating(true);
+            }
+            //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //nicht in verwendung
     }
 
 }
