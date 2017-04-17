@@ -1,15 +1,20 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+
 /**
  * Created by Rainer on 03.04.2017.
  */
 
-public class Dice {
+public class Dice implements Runnable {
 
     //public static final int min = 1;
     //public static final int max = 6;
 
     private DiceNumber diceNumber;
+    private Handler mHandler;
 
     public Dice() {
 
@@ -30,4 +35,11 @@ public class Dice {
     public void setDiceNumber(DiceNumber diceNumber) {
         this.diceNumber = diceNumber;
     }
+
+
+    @Override
+    public void run() {
+
+    }
+
 }
