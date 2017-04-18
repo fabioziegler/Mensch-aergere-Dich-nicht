@@ -512,11 +512,11 @@ public class GameClient extends AppCompatActivity implements
 	public void hasWiFiConnectionEstablished() {
 		Log.i(TAG, "WiFi connection just established.");
 
-		final Handler handler = new Handler();
+		// wait about 5sec until the WiFi Connection is available
+		final Handler handler = new Handler(getMainLooper());
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-
 
 				if(!gameLogic.isGameStarted()){
 					if(mGoogleApiClient.isConnected())
@@ -528,11 +528,8 @@ public class GameClient extends AppCompatActivity implements
 					gameLogic.onWifiConnectionReestablished();
 				}
 
-
 			}
 		}, 5000);
-
-
 	}
 
 	@Override

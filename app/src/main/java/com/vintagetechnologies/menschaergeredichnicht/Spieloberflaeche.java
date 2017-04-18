@@ -51,7 +51,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private int screenHeight;
 
     // duration of the animation in ms
-    private final int ANIMATION_DURATION = 1600;
+    private final int ANIMATION_DURATION = 1000;
 
 
     /**

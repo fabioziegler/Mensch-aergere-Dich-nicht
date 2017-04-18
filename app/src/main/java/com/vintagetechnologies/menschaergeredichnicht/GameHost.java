@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -495,14 +496,13 @@ public class GameHost extends AppCompatActivity implements
 
 	@Override
 	public void hasWiFiConnectionEstablished() {
-		Log.i(TAG, "Wifi connection just established.");
+		Log.i(TAG, "WiFi connection just established.");
 
-
-		final Handler handler = new Handler();
+		// wait about 5sec until the WiFi Connection is available
+		final Handler handler = new Handler(getMainLooper());	// post on main thread
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-
 
 				if(!gameLogic.isGameStarted()) {
 					if(mGoogleApiClient.isConnected())
@@ -514,17 +514,14 @@ public class GameHost extends AppCompatActivity implements
 					gameLogic.onWifiConnectionReestablished();
 				}
 
-
 			}
 		}, 5000);
-
-
 	}
 
 
 	@Override
 	public void hasWiFiConnectionLost() {
-		Log.i(TAG, "Wifi connection lost.");
+		Log.i(TAG, "WiFi connection lost.");
 
 		if(!gameLogic.isGameStarted()){
 			stopAdvertising();
