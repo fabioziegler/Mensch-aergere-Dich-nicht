@@ -119,15 +119,20 @@ public final class Board {
         return boardItself.board[p];
     }
 
-    public static Spot checkSpot(int steps, GamePiece piece) {
+    public static Spot checkSpot(DiceNumber dn, GamePiece piece) {
+        int steps = dn.getNumber();
         Spot targetSpot = piece.getSpot();
         for (int i = 0; i < steps; i++) {
-            if (targetSpot instanceof RegularSpot) {
-                if (((RegularSpot) targetSpot).getEndSpot() == null) {
-                    targetSpot = ((RegularSpot) targetSpot).getNextSpot();
-                } else if (((RegularSpot) targetSpot).getEndSpot().getColor() == piece.getPlayerColor()) {
-                    targetSpot = ((RegularSpot) targetSpot).getEndSpot();
+            if (targetSpot instanceof RegularSpot) { //ist weißer Punkt
+
+                if (((RegularSpot) targetSpot).getEndSpot() != null && ((RegularSpot) targetSpot).getEndSpot().getColor() == piece.getPlayerColor()) { //Abzweigung und: Farbe der Abzweigung passt
+                        targetSpot = ((RegularSpot) targetSpot).getEndSpot();
                 }
+                else{
+                //if (((RegularSpot) targetSpot).getEndSpot() == null) { //keine Abzweigung
+                    targetSpot = ((RegularSpot) targetSpot).getNextSpot();
+                } //else
+                //}
             } else if (targetSpot instanceof EndSpot) {
                 targetSpot = ((EndSpot) targetSpot).getNextEndSpot();
                 if (targetSpot == null) {
@@ -137,8 +142,10 @@ public final class Board {
         }
 
         if (targetSpot != null) {
-            if (targetSpot.getGamePiece().getPlayerColor() == piece.getPlayerColor()) {
-                return null;
+            if(targetSpot.getGamePiece() != null) {
+             if (targetSpot.getGamePiece().getPlayerColor() == piece.getPlayerColor()) {
+                    return null;
+                }
             }
         }
 

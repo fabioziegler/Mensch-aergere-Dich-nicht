@@ -1,16 +1,21 @@
 package com.vintagetechnologies.menschaergeredichnicht.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
+import android.support.v4.os.CancellationSignal;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.StartingSpot;
@@ -23,10 +28,17 @@ public class BoardView extends View {
 
     private Paint paint;
     private Board board;
+    private boolean boardIsDrawn = false;
+    double spotRadius;
+    double abstand;
 
     private void init(){
         paint = new Paint();
         board = Board.get();
+        Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+
+
+
     }
 
     public BoardView(Context context) {
@@ -48,6 +60,77 @@ public class BoardView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if(!boardIsDrawn){
+            boardIsDrawn = true;
+            Game.getInstance().setBoardView(this);
+            new Thread(){
+
+                public void run(){
+                    try {
+                        Game.getInstance().play();
+                    } catch (IllegalAccessException e)
+
+                    {
+                        e.printStackTrace();
+                    }}}.start();
+        }
+
+        System.out.println(canvas);
+
+
+
+        spotRadius = getWidth()/40.0;
+        abstand = (getWidth()-(22*spotRadius))/22;
+
+        drawBoard(canvas);
+
+        drawGamePieces(canvas);
+    }
+
+    private void drawGamePieces(Canvas canvas){
+        for(Player p : Game.getInstance().getPlayers()){
+            switch (p.getColor()){
+                case RED:{
+                    paint.setColor(Color.RED);
+                    break;}
+                case GREEN:{
+                    paint.setColor(Color.GREEN);
+                    break;}
+                case YELLOW:{
+                    paint.setColor(Color.YELLOW);
+                    break;}
+                case BLUE:{
+                    paint.setColor(Color.BLUE);
+                    break;}
+            }
+            paint.setStyle(Paint.Style.FILL);
+            for(GamePiece gp : p.getPieces()){
+
+                Spot n = gp.getSpot();
+
+                double x = (2*n.getX()+1)*(spotRadius+abstand);
+                double y = (2*n.getY()+1)*(spotRadius+abstand);
+
+                canvas.drawCircle((float)x, (float)y, (float)spotRadius/2, paint);
+            }
+
+
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setColor(Color.BLACK);
+            for(GamePiece gp : p.getPieces()){
+                Spot n = gp.getSpot();
+
+                double x = (2*n.getX()+1)*(spotRadius+abstand);
+                double y = (2*n.getY()+1)*(spotRadius+abstand);
+
+                canvas.drawCircle((float)x, (float)y, (float)spotRadius/2, paint);
+            }
+
+        }
+    }
+
+
+    private void drawBoard(Canvas canvas){
         setBackgroundColor(Color.GRAY);
 
         paint.reset();
@@ -57,8 +140,7 @@ public class BoardView extends View {
         paint.setAntiAlias(true);
 
         //canvas.drawCircle(getWidth()/4, getHeight()/4, getHeight()/4, paint);
-        double spotRadius = getWidth()/40.0;
-        double abstand = (getWidth()-(22*spotRadius))/22;
+
 
         double prev_x = (2*board.getBoard()[0].getX()+1)*(spotRadius+abstand);
         double prev_y = (2*board.getBoard()[0].getY()+1)*(spotRadius+abstand);
@@ -114,7 +196,5 @@ public class BoardView extends View {
             paint.setColor(Color.BLACK);
             canvas.drawCircle((float)x, (float)y, (float)spotRadius, paint);
         }
-
-
     }
 }

@@ -45,8 +45,12 @@ public abstract class Spot {
         this.gamePiece = gamePiece;
 
         if(this.getGamePiece() != null) {
-            this.gamePiece.setSpot(this);
+            this.gamePiece.forceSetSpot(this);
         }
+    }
+
+    public void forceSetGamePiece(GamePiece gamePiece){
+        this.gamePiece = gamePiece;
     }
 
     public void nullGamePiece(){

@@ -1,7 +1,9 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
 import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
@@ -17,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  */
 
 
-public class StructureTest {
+public class BoardTest {
 
     Board board;
 
@@ -99,6 +101,13 @@ public class StructureTest {
 
         assertEquals(s, n);
         assertEquals(40, c);
+    }
+
+    @Test
+    public void testCheckSpot(){
+        GamePiece gp = new GamePiece(PlayerColor.BLUE);
+        gp.setSpot(board.getBoard(0));
+        board.checkSpot(DiceNumber.FIVE, gp);
     }
 
 }

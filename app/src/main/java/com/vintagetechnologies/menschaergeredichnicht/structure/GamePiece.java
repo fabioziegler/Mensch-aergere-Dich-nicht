@@ -34,12 +34,16 @@ public class GamePiece {
         this.spot = spot;
 
         if (this.getSpot() != null) {
-            this.spot.setGamePiece(this);
+            this.spot.forceSetGamePiece(this);
         }
     }
 
     public void nullSpot() {
         this.spot = null;
+    }
+
+    public void forceSetSpot(Spot spot){
+        this.spot = spot;
     }
 
     public void moveTo(Spot targetSpot) {  //Voraussetzung: check returned not null
