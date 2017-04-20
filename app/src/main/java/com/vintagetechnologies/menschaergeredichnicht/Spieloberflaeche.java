@@ -38,8 +38,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
     Cheat Schummeln = null;
+    private ImageButton btnAufdecken;
 
-    // toDO: alle Spielfunktionen ect. hinzufügen
     private ImageButton btnWuerfel;
     private ImageView imgViewDice;
 
@@ -173,6 +173,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+        state = (TextView)(findViewById(R.id.textView_status));
+
+
         Schummeln = new Cheat(false);
         Schummeln.setPlayerCheating(false);
 
@@ -182,12 +185,24 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
         SM.registerListener(this,LightSensor,SensorManager.SENSOR_DELAY_GAME);
 
-        state = (TextView)(findViewById(R.id.textView_status));
-        btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel));
+        //aktuell spielender Spieler wird des Schummelns verdächtigt
+        btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken)); // ToDO: Disable für gerade spielenden Spieler
+        btnAufdecken.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                if(Schummeln.hasRemotePlayerCheated()){
+                    // Spieler, der geschummelt hat, setzt aus
+                } else if (!Schummeln.hasRemotePlayerCheated()){
+                    // Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
+                }
+            }
+        });
+
+
+        btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
-        //ToDo: man sollte nur einmal pro runde Würfeln können
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
