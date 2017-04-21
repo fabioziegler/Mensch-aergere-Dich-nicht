@@ -21,6 +21,7 @@
         <activity android:name=".Hauptmenue" android:launchMode="singleTask" />
         <activity android:name=".Mitspielerauswahl" android:launchMode="singleTask" />
         <activity android:name=".Spieloberflaeche" android:launchMode="singleTask" />
+        <activity android:name=".Regeln" android:launchMode="singleTask" />
         <activity android:name=".Einstellungen" />
     </application>
 

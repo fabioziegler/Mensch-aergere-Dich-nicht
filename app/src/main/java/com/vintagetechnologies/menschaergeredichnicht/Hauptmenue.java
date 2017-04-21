@@ -29,7 +29,7 @@ public class Hauptmenue extends AppCompatActivity {
         btnSpielregeln.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
+                startActivity(new Intent(Hauptmenue.this, Regeln.class));
             }
         });
 

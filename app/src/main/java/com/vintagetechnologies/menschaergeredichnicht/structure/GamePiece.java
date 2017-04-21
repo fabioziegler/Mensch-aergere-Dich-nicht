@@ -34,7 +34,7 @@ public class GamePiece {
         this.spot = spot;
 
         if (this.getSpot() != null) {
-            this.spot.setGamePiece(this);
+            this.spot.forceSetGamePiece(this);
         }
     }
 
@@ -42,13 +42,17 @@ public class GamePiece {
         this.spot = null;
     }
 
-    public void moveTo(Spot targetSpot) {  //Voraussetzung: checkSpot in Board returned not null
+    public void forceSetSpot(Spot spot){
+        this.spot = spot;
+    }
+
+    public void moveTo(Spot targetSpot) {  //Voraussetzung: check returned not null
         if(targetSpot != null){
-            if(targetSpot.getGamePiece() == null){ //targetSpot ist unbesetzt
+            if(targetSpot.getGamePiece() == null){
                this.setSpot(targetSpot);
             }else{
                 if(targetSpot.getGamePiece().getPlayerColor() == this.getPlayerColor()){
-                    //Meldung: Du darfst deine eigenen Figuren nicht schlagen
+                    //ungültig
                 }else{
                     targetSpot.getGamePiece().returnToStart();
                     this.setSpot(targetSpot);
@@ -56,16 +60,6 @@ public class GamePiece {
             }
         }
     }
-
-  /*  public void firstMove(Player currentPlayer){
-        for(int i = 0;i<currentPlayer.pieces.length;i++{
-        if(currentPlayer.getPieces().[i]!= null){ //will irgendwie die StartingSpots durchlaufen
-            this.GamePiece.setSpot(this.Board[0]);// GamePieceauf den ersten RegularSpot der Farbe setzen
-            break;
-        }
-
-    }
-    */
 
     public void returnToStart(){
         //...
