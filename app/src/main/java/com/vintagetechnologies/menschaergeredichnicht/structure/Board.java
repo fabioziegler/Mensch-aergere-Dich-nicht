@@ -119,33 +119,33 @@ public final class Board {
         return boardItself.board[p];
     }
 
-    public static Spot checkSpot(DiceNumber dn, GamePiece piece) {
-        int steps = dn.getNumber();
+    public static Spot checkSpot(int steps, GamePiece piece) {
         Spot targetSpot = piece.getSpot();
         for (int i = 0; i < steps; i++) {
-            if (targetSpot instanceof RegularSpot) { //ist weißer Punkt
-
-                if (((RegularSpot) targetSpot).getEndSpot() != null && ((RegularSpot) targetSpot).getEndSpot().getColor() == piece.getPlayerColor()) { //Abzweigung und: Farbe der Abzweigung passt
-                        targetSpot = ((RegularSpot) targetSpot).getEndSpot();
+            if (targetSpot instanceof RegularSpot) {
+                if (((RegularSpot) targetSpot).getEndSpot() == null) {
+                    targetSpot = ((RegularSpot) targetSpot).getNextSpot(); //nächster Spot ist ein RegularSpot
+                } else if (((RegularSpot) targetSpot).getEndSpot().getColor() == piece.getPlayerColor()) {
+                    targetSpot = ((RegularSpot) targetSpot).getEndSpot(); //nächster Spot ist erster EndSpot
                 }
-                else{
-                //if (((RegularSpot) targetSpot).getEndSpot() == null) { //keine Abzweigung
-                    targetSpot = ((RegularSpot) targetSpot).getNextSpot();
-                } //else
-                //}
             } else if (targetSpot instanceof EndSpot) {
-                targetSpot = ((EndSpot) targetSpot).getNextEndSpot();
-                if (targetSpot == null) {
-                    return null;
+                if (((EndSpot) targetSpot).getNextEndSpot().getGamePiece() == null) {
+                    targetSpot = ((EndSpot) targetSpot).getNextEndSpot(); //nächster Spot ist nächster freier EndSpot
+                } else if (((EndSpot) targetSpot).getNextEndSpot().getGamePiece() != null) {
+                    return null; //Fehler: nächster EndSpot ist nicht frei
                 }
+            }
+            if (targetSpot == null) {// Fehler
+                return null;
             }
         }
 
+
+
+
         if (targetSpot != null) {
-            if(targetSpot.getGamePiece() != null) {
-             if (targetSpot.getGamePiece().getPlayerColor() == piece.getPlayerColor()) {
-                    return null;
-                }
+            if (targetSpot.getGamePiece().getPlayerColor() == piece.getPlayerColor()) {
+                return null;
             }
         }
 

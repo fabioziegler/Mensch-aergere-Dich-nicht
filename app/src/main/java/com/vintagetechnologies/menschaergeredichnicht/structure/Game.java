@@ -1,8 +1,5 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
-import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
-import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
-
 import java.util.ArrayList;
 
 /**
@@ -16,143 +13,46 @@ public class Game {
     private int currentPlayer;
     private Player players[];
     private Board board;
-    private Dice dice = new Dice();
-    private BoardView bv;
-
 
     private boolean initialized = false;
 
-    public static Game getInstance() {
-        if (gameInstance == null) {
-            gameInstance = new Game();
+    public Game getInstance(){
+        if(gameInstance == null){
+            this.gameInstance = new Game();
         }
-        return gameInstance;
+        return this.gameInstance;
     }
 
     private Game() {
     }
 
-    public void init(String... names) {
-
-        new Thread() {
-            public void run() {
-                DummyDice.get();
-            }
-        }.start();
-
+    public void init(String... names){
         players = new Player[names.length];
         board = Board.get();
 
-        for (int i = 0; i < names.length; i++) {
-            PlayerColor cColor = PlayerColor.values()[i];
+        for(int i = 0; i < names.length; i++){
+            PlayerColor cColor = PlayerColor.values()[i]; //fehlt hier nicht noch die Zuweisung der StartingSpots?
             players[i] = new Player(cColor, names[i]);
+
+
         }
         initialized = true;
-    }
-
-
-    public void play() throws IllegalAccessException {
-
-        if (!initialized) {
-            throw new IllegalAccessError("Game hasn't been initialized. Please run init() first.");
-        }
-
-        while (true) {
-
-            DummyDice.waitForRoll();
-
-            Player cp = players[currentPlayer];
-
-            GamePiece gp;
-            if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
-                
-
-                StartingSpot s = (StartingSpot) (gp.getSpot());
-
-                Spot entrance = s.getEntrance();
-
-
-                if(entrance.getGamePiece() == null || (entrance.getGamePiece() != null && entrance.getGamePiece().getPlayerColor() != gp.getPlayerColor())) {
-                    gp.moveTo(s.getEntrance());
-                }
-
-
-                bv.postInvalidate();
-
-                DummyDice.waitForRoll(); // Spieler darf nochmal würfeln
-
-                movePiece(gp);
-
-            }
-
-            else if (!cp.isAtStartingPosition()) { //muss noch "herauswürfeln"
-
-
-                //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
-
-                for (GamePiece piece : cp.getPieces()) {
-                    if (movePiece(piece)) {
-                        break;
-                    }
-                }
-            }
-
-
-            currentPlayer = (currentPlayer + 1) % players.length;
-
-            bv.postInvalidate();
-
-        }
 
 
     }
 
-    private boolean movePiece(GamePiece gp) {
 
-        Spot s = Board.checkSpot(DummyDice.get().getDiceNumber(), gp);
+    public void nextTurn() {
 
-        if (s != null) {
-            gp.moveTo(s);
-            return true;
-        }
+        Player cp = players[currentPlayer];
 
-        return false;
-    }
+        cp.getPieces();
 
 
-    private void waitfordice() throws IllegalAccessException {
-
-        if (!initialized) {
-            throw new IllegalAccessError("Game hasn't been initialized. Please run init() first.");
-        }
 
 
-        try {
-            this.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        currentPlayer = (currentPlayer+1)%players.length;
 
     }
 
-    private void figureSelected() {
-
-    }
-
-    public Player[] getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(Player[] players) {
-        this.players = players;
-    }
-
-    public BoardView getBoardView() {
-        return bv;
-    }
-
-    public void setBoardView(BoardView bv) {
-        this.bv = bv;
-    }
 }
