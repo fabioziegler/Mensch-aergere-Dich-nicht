@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intent = new Intent(this, Hauptmenue.class);
             startActivity(intent);
+            finish();
 
         }else{  // display error message
             txtName.setError(getString(R.string.msgEnterUsername));
@@ -54,5 +55,14 @@ public class MainActivity extends AppCompatActivity {
 
         // create game settings instance (loads settings from disk if available)
         gameSettings = new GameSettings(getApplicationContext());
+    }
+
+
+    /**
+     * Called when the user pressed the back button
+     */
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }
