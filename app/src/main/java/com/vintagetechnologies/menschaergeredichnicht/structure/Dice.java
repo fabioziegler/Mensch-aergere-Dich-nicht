@@ -6,14 +6,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 public class Dice {
 
-    //public static final int min = 1;
-    //public static final int max = 6;
-
     private DiceNumber diceNumber;
-
-    public Dice() {
-
-    }
 
     public void roll() {
         int length = DiceNumber.values().length;
@@ -27,7 +20,4 @@ public class Dice {
         return diceNumber;
     }
 
-    public void setDiceNumber(DiceNumber diceNumber) {
-        this.diceNumber = diceNumber;
-    }
 }

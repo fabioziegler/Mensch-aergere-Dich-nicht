@@ -11,7 +11,6 @@ public enum DiceNumber {
     private int number;
 
     DiceNumber(int n) {
-
         this.number = n;
     }
 

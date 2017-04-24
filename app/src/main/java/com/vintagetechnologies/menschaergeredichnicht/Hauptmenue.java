@@ -6,49 +6,99 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.RadioGroup;
+
 
 public class Hauptmenue extends AppCompatActivity {
 
 
-    private Button btnSpielregeln;
-    private Button btnEinstellung;
-    private Button btnNeuesSpiel;
+    private Button btnShowRules;
+    private Button btnOpenSettings;
+    private Button btnHostGame;
+    private Button btnJoinGame;
 
-    private GameSettings gameSettings;
+
+    private void btnShowRulesClicked(){
+        // TODO: implement layout
+        //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
+    }
+
+
+    /**
+     * Called when the button "Neues Spiel" is clicked
+     */
+    private void btnHostGameClicked(){
+        Intent intent = new Intent(this, GameHost.class);
+        startActivity(intent);
+        finish();
+    }
+
+
+    /**
+     * Called when the button "Spiel beitreten" is clicked
+     */
+    private void btnJoinGameClicked(){
+        Intent intent = new Intent(this, GameClient.class);
+        startActivity(intent);
+        finish();
+    }
+
+
+    /**
+     * Called when the button "Spielregeln" is clicked
+     */
+    private void btnOpenSettingsClicked(){
+        startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
+    }
+
+
+    /**
+     * Called when the user pressed the back button
+     */
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, MainActivity.class));
+
+        finish();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hauptmenue);
 
-        btnSpielregeln = (Button)(findViewById(R.id.BTN_spielregeln));
-        btnEinstellung = (Button)(findViewById(R.id.BTN_einstellungen));
-        btnNeuesSpiel = (Button)(findViewById(R.id.BTN_neues_spiel));
+        btnShowRules = (Button)(findViewById(R.id.btnShowRules));
+        btnOpenSettings = (Button)(findViewById(R.id.btnOpenSettings));
+        btnHostGame = (Button)(findViewById(R.id.btnHostGame));
+        btnJoinGame = (Button)(findViewById(R.id.btnJoinGame));
 
-        btnSpielregeln.setOnClickListener(new OnClickListener() {
+        btnShowRules.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
+                btnShowRulesClicked();
             }
         });
 
-        btnEinstellung.setOnClickListener(new OnClickListener() {
+        btnOpenSettings.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Hauptmenue.this, Einstellungen.class));
+                btnOpenSettingsClicked();
             }
         });
 
-        btnNeuesSpiel.setOnClickListener(new OnClickListener() {
+        btnHostGame.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Hauptmenue.this, Mitspielerauswahl.class));
+                btnHostGameClicked();
             }
         });
 
-        // retrieve game settings (from data holder)
-        gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
+        btnJoinGame.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnJoinGameClicked();
+            }
+        });
     }
 
 }

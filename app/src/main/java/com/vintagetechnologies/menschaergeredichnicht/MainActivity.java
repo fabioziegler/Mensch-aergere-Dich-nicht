@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,9 +30,10 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intent = new Intent(this, Hauptmenue.class);
             startActivity(intent);
+            finish();
 
         }else{  // display error message
-            Toast.makeText(getApplicationContext(), R.string.msgEnterUsername, Toast.LENGTH_LONG).show();
+            txtName.setError(getString(R.string.msgEnterUsername));
         }
     }
 
@@ -55,5 +55,15 @@ public class MainActivity extends AppCompatActivity {
 
         // create game settings instance (loads settings from disk if available)
         gameSettings = new GameSettings(getApplicationContext());
+
+    }
+
+
+    /**
+     * Called when the user pressed the back button
+     */
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

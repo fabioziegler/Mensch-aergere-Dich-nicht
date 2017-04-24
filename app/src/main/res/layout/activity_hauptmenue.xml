@@ -7,7 +7,7 @@
     tools:context="com.vintagetechnologies.menschaergeredichnicht.Hauptmenue">
 
     <Button
-        android:id="@+id/BTN_spielregeln"
+        android:id="@+id/btnShowRules"
         android:layout_width="153dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -17,10 +17,10 @@
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BTN_einstellungen" />
+        app:layout_constraintTop_toBottomOf="@+id/btnOpenSettings" />
 
     <Button
-        android:id="@+id/BTN_einstellungen"
+        android:id="@+id/btnOpenSettings"
         android:layout_width="152dp"
         android:layout_height="48dp"
         android:text="@string/TXTeinstellungenBTN"
@@ -32,7 +32,7 @@
         android:layout_marginTop="170dp" />
 
     <Button
-        android:id="@+id/BTN_neues_spiel"
+        android:id="@+id/btnHostGame"
         android:layout_width="152dp"
         android:layout_height="48dp"
         android:text="@string/TXTneues_SpielBTN"
@@ -41,10 +41,10 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/textView_neues_spiel" />
+        app:layout_constraintTop_toBottomOf="@+id/lblNewGame" />
 
     <TextView
-        android:id="@+id/textView_neues_spiel"
+        android:id="@+id/lblNewGame"
         android:layout_width="261dp"
         android:layout_height="20dp"
         android:text="@string/TXTspielaufruf"
@@ -52,7 +52,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         android:layout_marginTop="117dp"
-        app:layout_constraintTop_toBottomOf="@+id/BTN_spielregeln" />
+        app:layout_constraintTop_toBottomOf="@+id/btnShowRules" />
 
     <TextView
         android:id="@+id/textView_lable"
@@ -80,7 +80,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/BTN_neues_spiel"
+        app:layout_constraintTop_toBottomOf="@+id/btnHostGame"
         app:layout_constraintVertical_bias="0.0" />
 
 
