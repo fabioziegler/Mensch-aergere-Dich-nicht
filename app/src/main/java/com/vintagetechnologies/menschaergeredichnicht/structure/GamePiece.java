@@ -1,16 +1,18 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import static com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor.RED;
+
 /**
  * Created by johannesholzl on 30.03.17.
  */
 
 public class GamePiece {
     private PlayerColor playerColor;
-
     private Spot spot;
 
     public GamePiece(PlayerColor playerColor) {
         this.playerColor = playerColor;
+        this.returnToStart();
     }
 
     public PlayerColor getPlayerColor() {
@@ -26,17 +28,45 @@ public class GamePiece {
     }
 
     public void setSpot(Spot spot) {
-        if(this.getSpot() != null) {
+        if (this.getSpot() != null) {
             this.spot.nullGamePiece();
         }
         this.spot = spot;
 
-        if(this.getSpot() != null) {
-            this.spot.setGamePiece(this);
+        if (this.getSpot() != null) {
+            this.spot.forceSetGamePiece(this);
         }
     }
 
-    public void nullSpot(){
+    public void nullSpot() {
         this.spot = null;
+    }
+
+    public void forceSetSpot(Spot spot){
+        this.spot = spot;
+    }
+
+    public void moveTo(Spot targetSpot) {  //Voraussetzung: check returned not null
+        if(targetSpot != null){
+            if(targetSpot.getGamePiece() == null){
+               this.setSpot(targetSpot);
+            }else{
+                if(targetSpot.getGamePiece().getPlayerColor() == this.getPlayerColor()){
+                    //ungültig
+                }else{
+                    targetSpot.getGamePiece().returnToStart();
+                    this.setSpot(targetSpot);
+                }
+            }
+        }
+    }
+
+    public void returnToStart(){
+        //...
+
+        this.setSpot(Board.getStartingSpot(this.getPlayerColor()));
+
+
+
     }
 }

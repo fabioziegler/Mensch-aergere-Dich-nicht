@@ -1,5 +1,8 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
+import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
+
 import java.util.ArrayList;
 
 /**
@@ -8,48 +11,148 @@ import java.util.ArrayList;
 
 public class Game {
 
-    int currentPlayer;
-    Player players[];
-    Board board;
+    private static Game gameInstance;
 
-    public Game(String... names) {
+    private int currentPlayer;
+    private Player players[];
+    private Board board;
+    private Dice dice = new Dice();
+    private BoardView bv;
+
+
+    private boolean initialized = false;
+
+    public static Game getInstance() {
+        if (gameInstance == null) {
+            gameInstance = new Game();
+        }
+        return gameInstance;
+    }
+
+    private Game() {
+    }
+
+    public void init(String... names) {
+
+        new Thread() {
+            public void run() {
+                DummyDice.get();
+            }
+        }.start();
+
         players = new Player[names.length];
         board = Board.get();
 
-        for(int i = 0; i < names.length; i++){
+        for (int i = 0; i < names.length; i++) {
             PlayerColor cColor = PlayerColor.values()[i];
             players[i] = new Player(cColor, names[i]);
+        }
+        initialized = true;
+    }
 
-            int c = 0;
 
-            for(Spot spot : board.getBoard()){
-                if(spot instanceof StartingSpot){
-                    StartingSpot sSpot  = (StartingSpot)spot;
-                    if(sSpot.getColor() == cColor){
-                        players[i].getPieces()[c].setSpot(spot);
-                        c++;
+    public void play() throws IllegalAccessException {
+
+        if (!initialized) {
+            throw new IllegalAccessError("Game hasn't been initialized. Please run init() first.");
+        }
+
+        while (true) {
+
+            DummyDice.waitForRoll();
+
+            Player cp = players[currentPlayer];
+
+            GamePiece gp;
+            if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
+                
+
+                StartingSpot s = (StartingSpot) (gp.getSpot());
+
+                Spot entrance = s.getEntrance();
+
+
+                if(entrance.getGamePiece() == null || (entrance.getGamePiece() != null && entrance.getGamePiece().getPlayerColor() != gp.getPlayerColor())) {
+                    gp.moveTo(s.getEntrance());
+                }
+
+
+                bv.postInvalidate();
+
+                DummyDice.waitForRoll(); // Spieler darf nochmal würfeln
+
+                movePiece(gp);
+
+            }
+
+            else if (!cp.isAtStartingPosition()) { //muss noch "herauswürfeln"
+
+
+                //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
+
+                for (GamePiece piece : cp.getPieces()) {
+                    if (movePiece(piece)) {
+                        break;
                     }
                 }
             }
 
 
+            currentPlayer = (currentPlayer + 1) % players.length;
+
+            bv.postInvalidate();
+
         }
 
 
+    }
 
+    private boolean movePiece(GamePiece gp) {
+
+        Spot s = Board.checkSpot(DummyDice.get().getDiceNumber(), gp);
+
+        if (s != null) {
+            gp.moveTo(s);
+            return true;
+        }
+
+        return false;
     }
 
 
-    public void nextTurn() {
+    private void waitfordice() throws IllegalAccessException {
 
-        Player cp = players[currentPlayer];
+        if (!initialized) {
+            throw new IllegalAccessError("Game hasn't been initialized. Please run init() first.");
+        }
 
-        currentPlayer = (currentPlayer+1)%players.length;
 
-
-
+        try {
+            this.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
 
     }
 
+    private void figureSelected() {
+
+    }
+
+    public Player[] getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Player[] players) {
+        this.players = players;
+    }
+
+    public BoardView getBoardView() {
+        return bv;
+    }
+
+    public void setBoardView(BoardView bv) {
+        this.bv = bv;
+    }
 }

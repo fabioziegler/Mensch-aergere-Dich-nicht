@@ -37,4 +37,24 @@ public class Player {
     public void setPieces(GamePiece[] pieces) {
         this.pieces = pieces;
     }
+
+
+    public boolean isAtStartingPosition(){
+        for (GamePiece gp: this.getPieces()){
+            if(!(gp.getSpot() instanceof StartingSpot)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public GamePiece getStartingPiece(){
+        for (GamePiece gp: this.getPieces()){
+            if(gp.getSpot() instanceof StartingSpot){
+                return gp;
+            }
+        }
+        return  null;
+    }
 }
