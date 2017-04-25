@@ -14,16 +14,15 @@ public class GameSynchronisation {
     public static void synchronize(GameLogic gameLogic, Game game){
 
     }
-
     private static String encode(Game game){
+        Gson gson = new Gson();
 
+        String json = gson.toJson(game);
+
+        return json;
     }
 
     private static Game decode(String fromJson){
-
-    }
-
-    private static void sendToOtherDevices(){
 
     }
 
