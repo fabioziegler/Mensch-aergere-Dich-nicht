@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 
 import com.google.gson.Gson;
+import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
@@ -18,9 +19,9 @@ public class GameSynchronisation {
      * @param gameLogic
      * @param game
      */
-    public static void synchronize(GameLogic gameLogic, Game game){
+    public static void synchronize(Game game){
         String message = encode(game);
-        sendToOtherDevices(gameLogic, message);
+        sendToOtherDevices(message);
     }
 
     /**
@@ -44,7 +45,8 @@ public class GameSynchronisation {
         return game;
     }
 
-    private static void sendToOtherDevices(GameLogic gameLogic, String json){
+    private static void sendToOtherDevices(String json){
+        GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve("GAMELOGIC");
         gameLogic.sendMessage(TAG, json);
     }
 

@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class Game {
 
         while (true) {
 
-
+            GameSynchronisation.synchronize(this);
 
             DummyDice.waitForRoll();
 
