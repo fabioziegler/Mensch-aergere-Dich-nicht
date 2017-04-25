@@ -6,7 +6,7 @@
     <string name="TXTspielaufruf">Gib den Ton an und Starte ein neues Spiel!</string>
     <string name="TXTlable">Mensch ärgere Dich nicht!</string>
     <string name="TXTtitelMitspielerwahl">Wähle deine Mitspieler</string>
-    <string name="TXTonline">online</string>
+    <string name="strStatus">online</string>
     <string name="TXTspielerauswahl">gewählt: 0/3</string>
     <string name="TXTspielstartenBTN">STARTEN</string>
     <string name="TXTinfoBTN">info</string>
@@ -26,5 +26,13 @@
     <string name="TXTspeichern">Speichern</string>
     <string name="msgEnterUsername">Bitte gib einen Spielernamen an</string>
     <string name="strJoinGame">Spiel Beitreten</string>
+    <string name="service_id">com.vintagetechnologies.menschaergeredichnicht</string>
+    <string name="strJoinTitle">Wähle ein Spiel aus</string>
+    <string name="msgSearchingGameHost">Nach Spielen suchen...</string>
+    <string name="msgHostSearchFailed">"Suche fehlgeschlagen"</string>
+    <string name="msgConfirmExit">"Möchtest du das Spiel wirklich beenden?"</string>
+    <string name="strSelectGameFromList">Gefundene Spiele:</string>
+    <string name="msgPlayerJustJoinedTheGame">\u0020ist beigetreten!</string>
+    <string name="msgPlayerJustLeftTheGame">\u0020hat das Spiel verlassen</string>
 
 </resources>

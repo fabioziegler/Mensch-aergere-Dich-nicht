@@ -11,6 +11,12 @@
         android:uiOptions="none"
         android:isGame="true"
         android:theme="@style/AppTheme">
+
+        <!-- Required for Nearby Connections API -->
+        <meta-data android:name="com.google.android.gms.nearby.connection.SERVICE_ID"
+            android:value="@string/service_id" />
+
+        <!-- Launch activity -->
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,11 +24,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".Hauptmenue" android:launchMode="singleTask" />
-        <activity android:name=".Mitspielerauswahl" android:launchMode="singleTask" />
-        <activity android:name=".Spieloberflaeche" android:launchMode="singleTask" />
+
         <activity android:name=".Regeln" android:launchMode="singleTask" />
+        <activity android:name=".Spieloberflaeche" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
+        <activity android:name=".GameHost" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
+        <activity android:name=".GameClient" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
+
         <activity android:name=".Einstellungen" />
+
     </application>
+
+    <!-- Required to check for WiFi connection -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
