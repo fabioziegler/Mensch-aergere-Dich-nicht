@@ -157,6 +157,8 @@ public class GameHost extends AppCompatActivity implements
 
         // create new game logic for the host
         gameLogic = new GameLogic(this, mGoogleApiClient, true);
+
+        DataHolder.getInstance().save("GAMELOGIC", gameLogic);
     }
 
 

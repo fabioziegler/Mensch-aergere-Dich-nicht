@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public class Game {
 
         while (true) {
 
+            GameSynchronisation.synchronize(this);
+
             DummyDice.waitForRoll();
 
             Player cp = players[currentPlayer];
@@ -66,28 +69,22 @@ public class Game {
             GamePiece gp;
             if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
 
-
                 StartingSpot s = (StartingSpot) (gp.getSpot());
 
                 Spot entrance = s.getEntrance();
 
-
                 if(entrance.getGamePiece() == null || (entrance.getGamePiece() != null && entrance.getGamePiece().getPlayerColor() != gp.getPlayerColor())) {
                     gp.moveTo(s.getEntrance());
                 }
-
 
                 bv.postInvalidate();
 
                 DummyDice.waitForRoll(); // Spieler darf nochmal würfeln
 
                 movePiece(gp);
-
             }
 
             else if (!cp.isAtStartingPosition()) { //muss noch "herauswürfeln"
-
-
                 //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
 
                 for (GamePiece piece : cp.getPieces()) {
