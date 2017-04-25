@@ -2,6 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 
 import android.animation.Animator;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
@@ -27,18 +29,17 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
 
-    Sensor LightSensor;
-    SensorManager SM;
+    private Sensor LightSensor;
+    private SensorManager SM;
+    private Cheat Schummeln = null;
 
-    TextView state;
+    private TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
   
     private Button btnFigurSelect;
     private Button btnMoveFigur;
-  
-    Cheat Schummeln = null;
-    private ImageButton btnAufdecken;
 
+    private ImageButton btnAufdecken;
     private ImageButton btnWuerfel;
     private ImageView imgViewDice;
 

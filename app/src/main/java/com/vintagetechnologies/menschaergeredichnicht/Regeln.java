@@ -1,8 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.vintagetechnologies.menschaergeredichnicht.R;
@@ -26,6 +29,28 @@ public class Regeln extends AppCompatActivity {
         setContentView(R.layout.activity_spielregeln);
 
         webView = (WebView)(findViewById(R.id.Regeln_WV));
+
+		optimizeWebView(webView);
+
         webView.loadUrl("file:///android_asset/regeln.html");
     }
+
+
+	/**
+	 * Make webview faster
+	 * http://stackoverflow.com/questions/7422427/android-webview-slow
+	 * @param webView
+	 */
+	private void optimizeWebView(WebView webView){
+		webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			// chromium, enable hardware acceleration
+			webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		} else {
+			// older android version, disable hardware acceleration
+			webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		}
+	}
+
 }
