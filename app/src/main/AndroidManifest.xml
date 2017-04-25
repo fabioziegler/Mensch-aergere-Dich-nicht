@@ -26,9 +26,12 @@
         </activity>
 
         <activity android:name=".Hauptmenue" android:launchMode="singleTask" />
+
+        <activity android:name=".Regeln" android:launchMode="singleTask" />
         <activity android:name=".Spieloberflaeche" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
         <activity android:name=".GameHost" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
         <activity android:name=".GameClient" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
+
         <activity android:name=".Einstellungen" />
 
     </application>

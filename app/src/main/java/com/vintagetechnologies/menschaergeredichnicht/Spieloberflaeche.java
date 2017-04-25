@@ -32,6 +32,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
+  
+    private Button btnFigurSelect;
+    private Button btnMoveFigur;
+  
     Cheat Schummeln = null;
     private ImageButton btnAufdecken;
 
@@ -164,14 +168,16 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
-        state = (TextView)(findViewById(R.id.textView_status));
 
+        btnFigurSelect = (Button)(findViewById(R.id.Select_Figur));
+        btnMoveFigur = (Button)(findViewById(R.id.Move_Figur));
+
+        state = (TextView)(findViewById(R.id.textView_status));
 
         Schummeln = new Cheat(false);
         Schummeln.setPlayerCheating(false);
@@ -211,6 +217,22 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     }
                 };
                 new Thread(myRunnable).start();
+            }
+        });
+
+        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Zu setzende Figur auswählen
+                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+            }
+        });
+
+        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
+                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
             }
         });
 

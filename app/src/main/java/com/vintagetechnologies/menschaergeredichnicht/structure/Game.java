@@ -65,7 +65,7 @@ public class Game {
 
             GamePiece gp;
             if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
-                
+
 
                 StartingSpot s = (StartingSpot) (gp.getSpot());
 
@@ -109,7 +109,7 @@ public class Game {
 
     private boolean movePiece(GamePiece gp) {
 
-        Spot s = Board.checkSpot(DummyDice.get().getDiceNumber(), gp);
+        Spot s = Board.checkSpot(DummyDice.get().getDiceNumber().getNumber(), gp);
 
         if (s != null) {
             gp.moveTo(s);
