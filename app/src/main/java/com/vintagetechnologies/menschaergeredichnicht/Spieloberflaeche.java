@@ -12,6 +12,8 @@ import android.view.Display;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.Random;
@@ -23,6 +25,8 @@ import android.hardware.SensorEventListener;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
@@ -73,13 +77,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        dice.roll();
+        //dice.roll();
+        DummyDice.get().roll();
 
         int result;
         if (Schummeln.isPlayerCheating()) {
             result = 5;
         }else if (!Schummeln.isPlayerCheating()){
-            result = dice.getDiceNumber().getNumber() - 1;
+            result = DummyDice.get().getDiceNumber().getNumber() - 1;
         }else {
             throw new  IllegalStateException();
         }
@@ -162,6 +167,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         .start();
             }
         });
+
+
+        synchronized (DummyDice.get()){
+            System.out.println("notifying: "+DummyDice.get());
+            DummyDice.get().notify();
+        }
+
+
     }
 
 
@@ -169,6 +182,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
+
+        Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+
+        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
 
         state = (TextView)(findViewById(R.id.textView_status));
 
@@ -199,7 +216,17 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
+
+        btnWuerfel.setEnabled(true);
+
+        DummyDice.get();
+
+        DummyDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
+
+
+
+
 
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,7 +258,22 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         // get screen size
         getScreenDimensions();
-    }
+
+
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Game.getInstance().play();
+                } catch (IllegalAccessException e){
+                    e.printStackTrace();
+
+                }
+            }
+        }.start();
+        }
+
+
 
 
     /**

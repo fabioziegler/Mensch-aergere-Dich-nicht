@@ -6,20 +6,20 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
  * Created by johannesholzl on 15.04.17.
  */
 
-public class DummyDice extends Dice {
+public class DummyDiceOld extends Dice {
 
-    private static DummyDice dummyDice;
+    private static DummyDiceOld dummyDice;
 
-    public static DummyDice get() {
+    public static DummyDiceOld get() {
         if (dummyDice == null) {
-            dummyDice = new DummyDice();
+            dummyDice = new DummyDiceOld();
             dummyDice.r();
         }
 
         return dummyDice;
     }
 
-    private DummyDice() {
+    private DummyDiceOld() {
 
     }
 

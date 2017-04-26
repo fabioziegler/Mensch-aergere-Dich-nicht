@@ -35,7 +35,7 @@ public class BoardView extends View {
     private void init(){
         paint = new Paint();
         board = Board.get();
-        Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+
 
 
 
@@ -62,17 +62,9 @@ public class BoardView extends View {
     protected void onDraw(Canvas canvas) {
         if(!boardIsDrawn){
             boardIsDrawn = true;
-            Game.getInstance().setBoardView(this);
-            new Thread(){
 
-                public void run(){
-                    try {
-                        Game.getInstance().play();
-                    } catch (IllegalAccessException e)
 
-                    {
-                        e.printStackTrace();
-                    }}}.start();
+
         }
 
         System.out.println(canvas);
@@ -191,6 +183,7 @@ public class BoardView extends View {
             }
             paint.setStyle(Paint.Style.FILL);
             canvas.drawCircle((float)x, (float)y, (float)spotRadius, paint);
+
 
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(Color.BLACK);
