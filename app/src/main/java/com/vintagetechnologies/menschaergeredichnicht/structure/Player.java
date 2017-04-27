@@ -6,10 +6,10 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 public class Player {
 
-    GamePiece pieces[];
-    PlayerColor color;
-    String name;
-    Cheat Schummeln;
+    private GamePiece pieces[];
+    private PlayerColor color;
+    private String name;
+    private Cheat Schummeln;
 
     public Player(PlayerColor color, String name) {
         this.pieces = new GamePiece[4];
