@@ -114,11 +114,15 @@ public class Game {
 
                 }
             });
+
+            int attempts = 3;
+            boolean moved = false;
+
             do {
                 DummyDice.waitForRoll();
                 GamePiece gp;
 
-                boolean moved = false;
+                moved = false;
                 if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
 
 
@@ -142,13 +146,19 @@ public class Game {
 
 
                             if (movePiece(piece)) {
+                                moved = true;
                                 break;
                             }
                         }
                     }
                 }
+
+                if(!moved){
+                  attempts--;
+                }
+
                 bv.postInvalidate();
-            } while (DummyDice.get().getDiceNumber() == DiceNumber.SIX);
+            } while (DummyDice.get().getDiceNumber() == DiceNumber.SIX || ( attempts > 0 && !moved ));
 
 
             currentPlayer = (currentPlayer + 1) % players.length;
