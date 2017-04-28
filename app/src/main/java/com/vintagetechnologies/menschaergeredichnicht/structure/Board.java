@@ -21,10 +21,7 @@ public final class Board {
     private Board() {
 
         board[0] = new RegularSpot(4, 0, null);
-        board[1] = new StartingSpot(0, 0, PlayerColor.RED, board[0]);
-        board[2] = new StartingSpot(0, 1, PlayerColor.RED, board[0]);
-        board[3] = new StartingSpot(1, 0, PlayerColor.RED, board[0]);
-        board[4] = new StartingSpot(1, 1, PlayerColor.RED, board[0]);
+
 
         board[5] = new RegularSpot(4, 1, (RegularSpot) board[0]);
         board[6] = new RegularSpot(4, 2, (RegularSpot) board[5]);
@@ -68,20 +65,25 @@ public final class Board {
 
         ((RegularSpot) (board[0])).setNextSpot((RegularSpot) board[43]);
 
-        board[44] = new StartingSpot(9, 0, PlayerColor.BLUE, board[41]);
-        board[45] = new StartingSpot(10, 0, PlayerColor.BLUE, board[41]);
-        board[46] = new StartingSpot(9, 1, PlayerColor.BLUE, board[41]);
-        board[47] = new StartingSpot(10, 1, PlayerColor.BLUE, board[41]);
+        board[1] = new StartingSpot(0, 0, PlayerColor.RED, board[12]);
+        board[2] = new StartingSpot(0, 1, PlayerColor.RED, board[12]);
+        board[3] = new StartingSpot(1, 0, PlayerColor.RED, board[12]);
+        board[4] = new StartingSpot(1, 1, PlayerColor.RED, board[12]);
+
+        board[44] = new StartingSpot(9, 0, PlayerColor.BLUE, board[42]);
+        board[45] = new StartingSpot(10, 0, PlayerColor.BLUE, board[42]);
+        board[46] = new StartingSpot(9, 1, PlayerColor.BLUE, board[42]);
+        board[47] = new StartingSpot(10, 1, PlayerColor.BLUE, board[42]);
 
         board[48] = new StartingSpot(0, 9, PlayerColor.YELLOW, board[22]);
         board[49] = new StartingSpot(0, 10, PlayerColor.YELLOW, board[22]);
         board[50] = new StartingSpot(1, 9, PlayerColor.YELLOW, board[22]);
         board[51] = new StartingSpot(1, 10, PlayerColor.YELLOW, board[22]);
 
-        board[52] = new StartingSpot(9, 9, PlayerColor.GREEN, board[31]);
-        board[53] = new StartingSpot(10, 10, PlayerColor.GREEN, board[31]);
-        board[54] = new StartingSpot(10, 9, PlayerColor.GREEN, board[31]);
-        board[55] = new StartingSpot(9, 10, PlayerColor.GREEN, board[31]);
+        board[52] = new StartingSpot(9, 9, PlayerColor.GREEN, board[32]);
+        board[53] = new StartingSpot(10, 10, PlayerColor.GREEN, board[32]);
+        board[54] = new StartingSpot(10, 9, PlayerColor.GREEN, board[32]);
+        board[55] = new StartingSpot(9, 10, PlayerColor.GREEN, board[32]);
 
         board[56] = new EndSpot(4, 5, PlayerColor.RED, null);
         board[57] = new EndSpot(3, 5, PlayerColor.RED, (EndSpot) board[56]);
@@ -134,6 +136,8 @@ public final class Board {
                 } else if (((EndSpot) targetSpot).getNextEndSpot().getGamePiece() != null) {
                     return null; //Fehler: nächster EndSpot ist nicht frei
                 }
+            }else if (targetSpot instanceof StartingSpot){
+                targetSpot = ((StartingSpot) targetSpot).getEntrance();
             }
             if (targetSpot == null) {// Fehler
                 return null;
