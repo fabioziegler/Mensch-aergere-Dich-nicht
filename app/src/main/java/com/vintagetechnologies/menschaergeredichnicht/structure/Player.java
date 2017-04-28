@@ -55,11 +55,21 @@ public class Player {
     }
 
     public GamePiece getStartingPiece(){
+
+        int index = -1;
+        GamePiece gpr = null;
+
         for (GamePiece gp: this.getPieces()){
             if(gp.getSpot() instanceof StartingSpot){
-                return gp;
+                for(int i = 0; i<Board.getBoard().length; i++){
+                    if(Board.getBoard(i) == gp.getSpot() && index < i){
+                        index = i;
+                        gpr = gp;
+                        break;
+                    }
+                }
             }
         }
-        return  null;
+        return  gpr;
     }
 }

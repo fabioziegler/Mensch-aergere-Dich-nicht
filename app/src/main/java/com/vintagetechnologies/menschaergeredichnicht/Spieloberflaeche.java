@@ -259,21 +259,21 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // toDO: Zu setzende Figur auswählen
-                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-            }
-        });
-
-        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
-                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-            }
-        });
+//        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // toDO: Zu setzende Figur auswählen
+//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+//            }
+//        });
+//
+//        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
+//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+//            }
+//        });
 
         // init dice
         dice = new Dice();
