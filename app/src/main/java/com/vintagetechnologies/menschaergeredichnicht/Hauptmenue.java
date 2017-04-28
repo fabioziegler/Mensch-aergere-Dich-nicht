@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 
 public class Hauptmenue extends AppCompatActivity {
@@ -16,6 +17,7 @@ public class Hauptmenue extends AppCompatActivity {
     private Button btnHostGame;
     private Button btnJoinGame;
     private Button btnLocalMultiplayer;
+    private ImageButton btnAbout;
 
     private void btnShowRulesClicked(){
         startActivity(new Intent(Hauptmenue.this, Regeln.class));
@@ -71,6 +73,7 @@ public class Hauptmenue extends AppCompatActivity {
         btnHostGame = (Button)(findViewById(R.id.btnHostGame));
         btnJoinGame = (Button)(findViewById(R.id.btnJoinGame));
         btnLocalMultiplayer = (Button)(findViewById(R.id.btnLocalMultiplayer));
+        btnAbout = (ImageButton)(findViewById(R.id.imageButton_about));
 
         btnShowRules.setOnClickListener(new OnClickListener() {
             @Override
@@ -104,6 +107,13 @@ public class Hauptmenue extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 btnJoinGameClicked();
+            }
+        });
+
+        btnAbout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Hauptmenue.this, AboutActivity.class));
             }
         });
     }
