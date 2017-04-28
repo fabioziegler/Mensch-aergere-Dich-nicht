@@ -1,5 +1,9 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import android.app.Activity;
+import android.widget.TextView;
+
+import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
@@ -61,7 +65,15 @@ public class Game {
 
             DummyDice.waitForRoll();
 
-            Player cp = players[currentPlayer];
+            final Player cp = players[currentPlayer];
+            final Spieloberflaeche gameactivity = (Spieloberflaeche)bv.getContext();
+            gameactivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    gameactivity.setStatus(cp.getName()+" ist dran!");
+
+                }
+            });
 
             GamePiece gp;
             if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {

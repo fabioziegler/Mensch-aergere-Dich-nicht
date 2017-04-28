@@ -345,4 +345,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         //nicht in verwendung
     }
 
+    public void setStatus(String status){
+        state.setText(status);
+    }
+
 }
