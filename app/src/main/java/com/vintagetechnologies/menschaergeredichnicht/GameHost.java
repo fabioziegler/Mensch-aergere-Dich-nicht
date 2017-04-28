@@ -491,7 +491,7 @@ public class GameHost extends AppCompatActivity implements
         NetworkInfo info = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         //return (info != null && info.isConnectedOrConnecting());
-        return (info != null && info.isConnected());
+        return info != null && info.isConnected();
     }
 
 

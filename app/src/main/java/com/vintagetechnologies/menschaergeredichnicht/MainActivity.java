@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
         String playerName = txtName.getText().toString().trim();
 
-        if(!playerName.equals("")){   // show main menu
+        if(!playerName.isEmpty()){   // show main menu
 
             // save settings
             gameSettings.setPlayerName(playerName);

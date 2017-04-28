@@ -29,6 +29,7 @@ public class PlayerTest {
     public void before() {
         board = Board.get();
         new Thread(){
+			@Override
             public void run(){
                 DummyDice.get();
             }

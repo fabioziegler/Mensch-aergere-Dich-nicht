@@ -1,13 +1,19 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.nearby.Nearby;
+import com.google.gson.Gson;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
+
+import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_PLAYER_HAS_CHEATED;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_SYNCHRONIZE_GAME;
 
 /**
  * Created by Fabio on 08.04.17.
@@ -16,6 +22,11 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
  * TODO: implement own classes GameLogicClient, GameLogicHost which extend GameLogic...
  */
 public class GameLogic {
+
+	private static final String TAG = GameLogic.class.getSimpleName();
+
+	/* message segmentation separator */
+	private final String messageDelimiter = ";";
 
     /* Holds game settings like music enabled, cheat mode.. */
     private GameSettings gameSettings;
@@ -48,32 +59,147 @@ public class GameLogic {
 
     /**
      * Calle when the player receives a message from another player
-     * @param player
-     * @param messsage
+     * @param playerID
+     * @param message
      */
-    public void receivedMessage(String player, String messsage){
-		Log.i(TAG, "Received message from " + player + ": " + messsage);
-        Toast.makeText(activity.getApplicationContext(), "Received message: " + messsage, Toast.LENGTH_LONG).show();
+    public void receivedMessage(String playerID, String message){
+		Log.i(TAG, "Received message from " + playerID + ": " + message);
+        Toast.makeText(activity.getApplicationContext(), "Received message: " + message, Toast.LENGTH_LONG).show();
+
+		String[] data = decodeMessage(message);
+
+		String tag = data[0];
+		message = data[1];
+
+		// parse message
+		parseMessage(playerID, tag, message);
     }
+
+
+	/**
+	 * Parse and execute a received message.
+	 * @param playerID	The player who sent the message.
+	 * @param tag		A tag identifying the purpose of the message.
+	 * @param message	The received message.
+	 */
+	private void parseMessage(String playerID, String tag, String message){
+		// TODO: extend for other types of message (e.g. aufdecken, ...)
+
+		// execute message based on tag
+		switch (tag){
+			case TAG_SYNCHRONIZE_GAME:
+
+				// replace current game class with new one
+				Game game = GameSynchronisation.decode(message);
+				Game.refreshGameInstance(game);
+
+				break;
+
+			case TAG_PLAYER_HAS_CHEATED:
+
+				// get boolean from message
+				boolean playerHasCheated = Boolean.parseBoolean(message);
+				String playerName = getDevices().getDeviceByPlayerID(playerID).getName();
+
+				// set player cheating/or not
+				Game.getInstance().getPlayerByName(playerName).getSchummeln().setPlayerCheating(playerHasCheated);
+
+				// send changes to others
+				GameSynchronisation.synchronize(Game.getInstance());
+
+				break;
+
+			default:
+				Log.w(TAG, String.format("Received unknown tag '%s' from player '%s'", tag, playerID));
+		}
+	}
 
 
     /**
-     * Sends a message to a player
+     * Sends a message to a player.
      * @param playerID The ID of the receiver
-     * @param messsage A message with the max. length of 4096
+	 * @param tag  A tag identifying the purpose of the message.
+     * @param message A message with the max. length of 4096
      */
-    public void sendMessage(String playerID, String messsage){
-        Nearby.Connections.sendReliableMessage(googleApiClient, playerID, messsage.getBytes());
+    public void sendMessage(String playerID, String tag, String message) throws IllegalArgumentException {
+
+		// tag must not contain the message delimiter
+		if(tag.contains(messageDelimiter))
+			throw new IllegalArgumentException("Argument tag must not contain the character '" + messageDelimiter + "'.");
+
+		message = encodeMessage(tag, message);
+
+        Nearby.Connections.sendReliableMessage(googleApiClient, playerID, message.getBytes());	// transmits over TCP
     }
 
 
-    public void broadcast(String tag, String message){
-        // TODO: implement
-    }
+	/**
+	 * Encode a message for sending over the network.
+	 * @param tag
+	 * @param message
+	 * @return The encoded message
+	 */
+	public String encodeMessage(String tag, String message){
+
+		/**
+		 * Send Message in format: <tag length>;<tag>;<message>
+		 *
+		 *     For example: 4;SYNC;<game obj as json String>
+		 */
+		int tagLength = tag.length();
+		message = String.valueOf(tagLength) + messageDelimiter + tag + messageDelimiter + message;
+		return message;
+	}
+
+	/**
+	 * Decode a message received over the netwrok
+	 * @param message The message to be decoded
+	 * @return A String array containing the tag at index 0 and the decoded message at index 1.
+	 */
+	public String[] decodeMessage(String message){
+		// split message (format: <tag length>;<tag>;<message>
+		String[] split = message.split(messageDelimiter);
+		int tagLength = Integer.parseInt(split[0]);
+		String tag = split[1];
+
+		// get plain message
+		message = message.substring(String.valueOf(tagLength).length() + messageDelimiter.length() + tagLength + messageDelimiter.length());
+
+		return new String[]{ tag, message };
+	}
 
 
-    public void sendToHost(String TAG, String message){
-        // TODO:  implement
+	/**
+	 * Sends a message to a device.
+	 * @param device The device
+	 * @param tag A tag identifying the purpose of the message.
+	 * @param message The message to be sent.
+	 */
+    public void sendMessage(Device device, String tag, String message){
+		sendMessage(device.getId(), tag, message);
+	}
+
+
+	/**
+	 * Called by the host to broadcast a message to all clients.
+	 * @param tag A tag identifying the purpose of the message.
+	 * @param message The message to be sent.
+	 */
+    public void sendToClientDevices(String tag, String message){
+		for(Device device : connectedDevices.getList()){
+			if(!device.isHost())
+				sendMessage(device, tag, message);
+		}
+	}
+
+
+	/**
+	 * Send a message to the host
+	 * @param tag
+	 * @param message
+	 */
+	public void sendToHost(String tag, String message){
+		sendMessage(getDevices().getHost(), tag, message);
     }
 
 
@@ -91,7 +217,8 @@ public class GameLogic {
         //TODO: remove!!!!
         //activity.startActivity(new Intent(activity, Spieloberflaeche.class));
 
-        sendMessage(getDevices().getList().get(0).getId(), "Start Game");
+		// test:
+        sendMessage(getDevices().getList().get(0).getId(), "start game", "true");
     }
 
 
@@ -117,15 +244,17 @@ public class GameLogic {
      * Called when the wifi connection was lost during a game
      */
     public void onWifiConnectionLost(){
-
-    }
+		// TODO: add logic when wifi connection was lost
+		Log.i(TAG, "WiFi connection lost.");
+	}
 
 
     /**
      * Called when the wifi connection was lost during a game and reconnected again
      */
     public void onWifiConnectionReestablished(){
-
+		// TODO: add logic when wifi connection was reestablished
+		Log.i(TAG, "WiFi connection reestablished.");
     }
 
 
@@ -179,5 +308,4 @@ public class GameLogic {
         return connectedDevices;
     }
 
-    private static final String TAG = MainActivity.class.getSimpleName();
 }
