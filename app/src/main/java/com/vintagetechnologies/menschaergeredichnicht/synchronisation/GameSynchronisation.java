@@ -5,13 +5,13 @@ import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 
+import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_SYNCHRONIZE_GAME;
+
 /**
  * Created by Simon on 25.04.2017.
  */
 
 public class GameSynchronisation {
-
-    private static final String TAG = "sync";
 
     /**
      * Synchronisiert Gamedaten der clients
@@ -40,7 +40,7 @@ public class GameSynchronisation {
      * @param fromJson
      * @return
      */
-    private static Game decode(String fromJson){
+    public static Game decode(String fromJson){
         Gson gson = new Gson();
 
         Game game = gson.fromJson(fromJson, Game.class);
@@ -54,7 +54,7 @@ public class GameSynchronisation {
      */
     private static void sendToOtherDevices(String json){
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve("GAMELOGIC");
-        gameLogic.sendMessage(TAG, json);
+        gameLogic.sendToClientDevices(TAG_SYNCHRONIZE_GAME, json);
     }
 
 }

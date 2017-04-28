@@ -35,8 +35,17 @@ public class Game {
         return gameInstance;
     }
 
+	/**
+	 * Called when a client received a new up to date game object from the host.
+	 * @param game The new game object received by the host.
+	 */
+	public static void refreshGameInstance(Game game){
+		// TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
+		gameInstance = game;
+	}
+
     private Game() {
-    }
+	}
 
     public void init(String... names) {
 
@@ -234,4 +243,12 @@ public class Game {
     public void setBoardView(BoardView bv) {
         this.bv = bv;
     }
+
+    public Player getPlayerByName(String name){
+		for (int i = 0; i < players.length; i++) {
+			if(name.equals(players[i].getName()))
+				return players[i];
+		}
+		return null;
+	}
 }

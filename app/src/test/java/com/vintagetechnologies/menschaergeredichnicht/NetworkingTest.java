@@ -2,6 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
+import com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags;
 import com.vintagetechnologies.menschaergeredichnicht.networking.WifiListener;
 import com.vintagetechnologies.menschaergeredichnicht.networking.WifiReceiver;
 
@@ -11,6 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Fabio on 28.04.17.
@@ -22,12 +24,14 @@ public class NetworkingTest {
 	private Device device;
 	private DeviceList deviceList;
 	private WifiReceiver wifiReceiver;
+	private GameLogic gameLogic;
 
 	@Before
 	public void before() {
 		gameSettings = new GameSettings();
 		deviceList = new DeviceList();
 		wifiReceiver = new WifiReceiver();
+		gameLogic = new GameLogic(null, null, false);
 	}
 
 
@@ -150,6 +154,27 @@ public class NetworkingTest {
 
 		device.setHost(false);
 		assertEquals("Is not host", false, device.isHost());
+	}
+
+	@Test
+	public void testMessageEncodingAndDecoding(){
+
+		/* Test encoding */
+		String tag = NetworkTags.TAG_PLAYER_HAS_CHEATED;
+		String message = "true";
+
+		String encodedMessage = gameLogic.encodeMessage(tag, message);
+		assertEquals("7;cheated;true", encodedMessage);
+
+
+		/* Test decoding */
+		String[] decodedData = gameLogic.decodeMessage(encodedMessage);
+		String decodedTag = decodedData[0];
+		String decodedMessage = decodedData[1];
+
+		assertEquals("Tag must be correctly decoded", NetworkTags.TAG_PLAYER_HAS_CHEATED, decodedTag);
+		assertEquals("Message must be correctly decoded to 'true'", "true", decodedMessage);
+		assertTrue(Boolean.parseBoolean(decodedMessage));
 	}
 
 }
