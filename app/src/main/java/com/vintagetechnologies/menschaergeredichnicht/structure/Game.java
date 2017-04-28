@@ -1,8 +1,10 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.widget.TextView;
 
+import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
@@ -51,6 +53,41 @@ public class Game {
             PlayerColor cColor = PlayerColor.values()[i];
             players[i] = new Player(cColor, names[i]);
         }
+
+        final Spieloberflaeche gameactivity = (Spieloberflaeche)bv.getContext();
+        gameactivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for(Player p : players){
+                    switch (p.getColor()){
+                        case RED: {
+                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerRot));
+                            tv.setTextColor(Color.RED);
+                            tv.setText(p.getName());
+                            break;}
+                        case GREEN: {
+                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerGruen));
+                            tv.setTextColor(Color.GREEN);
+                            tv.setText(p.getName());
+                            break;}
+                        case BLUE: {
+                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerBlau));
+                            tv.setTextColor(Color.BLUE);
+                            tv.setText(p.getName());
+                            break;}
+                        case YELLOW: {
+                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerGelb));
+                            tv.setTextColor(Color.YELLOW);
+                            tv.setText(p.getName());
+                            break;}
+
+                    }
+                }
+
+
+            }
+        });
+
         initialized = true;
     }
 
@@ -63,7 +100,7 @@ public class Game {
 
         while (true) {
 
-            DummyDice.waitForRoll();
+
 
             final Player cp = players[currentPlayer];
             final Spieloberflaeche gameactivity = (Spieloberflaeche)bv.getContext();
@@ -75,6 +112,7 @@ public class Game {
                 }
             });
 
+            DummyDice.waitForRoll();
             GamePiece gp;
             if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
                 

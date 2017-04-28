@@ -5,5 +5,5 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  */
 
 public enum PlayerColor {
-    RED, GREEN, BLUE, YELLOW
+    RED, BLUE, GREEN, YELLOW
 }

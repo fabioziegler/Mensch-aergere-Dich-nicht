@@ -184,9 +184,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
+
         Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 
-        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
+
 
         state = (TextView)(findViewById(R.id.textView_status));
 

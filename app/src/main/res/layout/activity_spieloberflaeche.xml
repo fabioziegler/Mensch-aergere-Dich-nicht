@@ -42,48 +42,48 @@
         />
 
     <TextView
-        android:id="@+id/textView_spieler2"
+        android:id="@+id/textView_spielerRot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp"
         android:text="@string/TXTspieler2"
         app:layout_constraintBottom_toTopOf="@+id/spielFeld"
-        android:layout_marginLeft="22dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        tools:ignore="RtlHardcoded"
-        android:layout_marginStart="22dp" />
+        tools:ignore="RtlHardcoded" />
 
     <TextView
-        android:id="@+id/textView_spieler1"
+        android:id="@+id/textView_spielerGelb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp"
         android:text="@string/TXTspieler1"
-        app:layout_constraintTop_toBottomOf="@+id/spielFeld"
-        android:layout_marginLeft="22dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        tools:ignore="RtlHardcoded"
-        android:layout_marginStart="22dp" />
+        app:layout_constraintTop_toBottomOf="@+id/spielFeld"
+        tools:ignore="RtlHardcoded" />
 
     <TextView
-        android:id="@+id/textView_spieler3"
+        android:id="@+id/textView_spielerBlau"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="22dp"
+        android:layout_marginRight="22dp"
         android:text="@string/TXTspieler3"
         app:layout_constraintBottom_toTopOf="@+id/spielFeld"
-        android:layout_marginRight="22dp"
         app:layout_constraintRight_toRightOf="parent"
-        tools:ignore="RtlHardcoded"
-        android:layout_marginEnd="22dp" />
+        tools:ignore="RtlHardcoded" />
 
     <TextView
-        android:id="@+id/textView_spieler4"
+        android:id="@+id/textView_spielerGruen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/TXTspieler4"
-        app:layout_constraintTop_toBottomOf="@+id/spielFeld"
+        android:layout_marginEnd="22dp"
         android:layout_marginRight="22dp"
+        android:text="@string/TXTspieler4"
         app:layout_constraintRight_toRightOf="parent"
-        tools:ignore="RtlHardcoded"
-        android:layout_marginEnd="22dp" />
+        app:layout_constraintTop_toBottomOf="@+id/spielFeld"
+        tools:ignore="RtlHardcoded" />
 
     <TextView
         android:id="@+id/textView_status"
