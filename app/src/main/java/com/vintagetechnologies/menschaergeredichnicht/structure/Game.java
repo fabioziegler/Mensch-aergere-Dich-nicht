@@ -128,7 +128,7 @@ public class Game {
 
 
                     if (entrance.getGamePiece() == null || (entrance.getGamePiece() != null && entrance.getGamePiece().getPlayerColor() != gp.getPlayerColor())) {
-                       moved = movePieceToEntrance(gp);
+                        moved = movePieceToEntrance(gp);
                     }
 
                 }
@@ -138,13 +138,17 @@ public class Game {
                     //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
 
                     for (GamePiece piece : cp.getPieces()) {
-                        if (movePiece(piece)) {
-                            break;
+                        if (!(piece.getSpot() instanceof StartingSpot)) {
+
+
+                            if (movePiece(piece)) {
+                                break;
+                            }
                         }
                     }
                 }
                 bv.postInvalidate();
-            }while(DummyDice.get().getDiceNumber() == DiceNumber.SIX);
+            } while (DummyDice.get().getDiceNumber() == DiceNumber.SIX);
 
 
             currentPlayer = (currentPlayer + 1) % players.length;
