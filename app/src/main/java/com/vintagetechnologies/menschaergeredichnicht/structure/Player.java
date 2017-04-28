@@ -10,6 +10,7 @@ public class Player {
     PlayerColor color;
     String name;
     Cheat Schummeln;
+    boolean aktive;
 
     public Player(PlayerColor color, String name) {
         this.pieces = new GamePiece[4];
@@ -18,6 +19,7 @@ public class Player {
             this.pieces[i] = new GamePiece(color);
         }
 
+        this.aktive = false; //sollte dann wenn der Spieler am zug ist auf true gesetz werden.
         this.Schummeln = new Cheat();
         this.color = color;
         this.name = name;
@@ -25,6 +27,14 @@ public class Player {
 
     public Cheat getSchummeln() {
         return Schummeln;
+    }
+
+    public boolean isAktive() {
+        return aktive;
+    }
+
+    public void setAktive(boolean aktive) {
+        this.aktive = aktive;
     }
 
     public PlayerColor getColor() {

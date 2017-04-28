@@ -193,8 +193,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 
-
-
         state = (TextView)(findViewById(R.id.textView_status));
 
         Schummeln = Game.getInstance().getCurrentPlayer().getSchummeln();
@@ -206,35 +204,59 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
         SM.registerListener(this, LightSensor, SensorManager.SENSOR_DELAY_GAME);
 
-        //ToDo: Disable wenn Spieler gerade spielt
+
         //aktuell spielender Spieler wird des Schummelns verdächtigt
-        btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken)); // ToDO: Disable für gerade spielenden Spieler
-        btnAufdecken.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean schummelt = false;
-                Player[] Suspechts = Game.getInstance().getPlayers();
+        btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken));
 
-                /**
-                 * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
-                 * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
-                 */
-                for(int i=0; i <Suspechts.length; i++){
-                    if (Suspechts[i].getSchummeln().isPlayerCheating()) {
-                        // TODO Spieler i setzt aus
-                        schummelt=true;
+        //Disable wenn Spieler gerade spielt
+        if(Game.getInstance().getCurrentPlayer().isAktive()){ btnAufdecken.setEnabled(false);}
+
+        if (btnAufdecken.isEnabled()) {
+            btnAufdecken.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Player[] spieler = Game.getInstance().getPlayers();
+                    /**
+                     * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
+                     * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
+                     */
+
+                    /*
+                    int aktiveSpieler;
+
+
+                    for (int i = 0; i < spieler.length; i++) {
+                        if (spieler[i].isAktive()){
+                            aktiveSpieler = i;
+                        }
                     }
+                    if (spieler[aktiveSpieler].getSchummeln().isPlayerCheating()) {
+                            // TODO aktiverSpieler setzt aus
+                    }else{
+                            // TODo currentPlayer setzt aus
+                     }
+                    */
+
+                    //Alternativ
+                    boolean schummelt = false;
+
+                    for (int i = 0; i < spieler.length; i++) {
+                        if (spieler[i].getSchummeln().isPlayerCheating()) {
+                            // TODO Spieler i setzt aus
+                            schummelt = true;
+                        }
+                    }
+                    if (!schummelt) {
+                        // ToDO getSpieler der gerade spielt.
+                        // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
+                    }
+
+                    //ToDO: dem currentPlayer (der button gedrückt hat) Feedback geben. [oder allen?]
+
                 }
-                if (!schummelt){
-                    // ToDO getSpieler der gerade spielt.
-                    // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
-                }
+            });
 
-                //ToDO: dem currentPlayer (der button gedrückt hat) Feedback geben. [oder allen?]
-
-            }
-        });
-
+        }
 
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
 
@@ -245,20 +267,23 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         DummyDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
+        //Wenn Spieler nicht aktiv ist soll der Würfel btn nicht aktiv sein
+        if(!Game.getInstance().getCurrentPlayer().isAktive()){ btnWuerfel.setEnabled(true);}
 
-        btnWuerfel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Runnable myRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        btnWuerfelClicked();
-                    }
-                };
-                new Thread(myRunnable).start();
-            }
-        });
-
+        if(btnWuerfel.isEnabled()) {
+            btnWuerfel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Runnable myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            btnWuerfelClicked();
+                        }
+                    };
+                    new Thread(myRunnable).start();
+                }
+            });
+        }
 //        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
