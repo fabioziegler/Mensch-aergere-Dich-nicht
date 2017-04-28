@@ -72,6 +72,11 @@ public class GameLogic {
     }
 
 
+    public void sendToHost(String TAG, String message){
+        // TODO:  implement
+    }
+
+
     /**
      * Called if the host started the game. Devices are no longer able to connect.
      */

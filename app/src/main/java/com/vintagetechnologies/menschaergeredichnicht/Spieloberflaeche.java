@@ -2,7 +2,6 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 
 import android.animation.Animator;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
@@ -11,9 +10,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.Random;
@@ -25,17 +25,20 @@ import android.hardware.SensorEventListener;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
 
     private Sensor LightSensor;
     private SensorManager SM;
-    private Cheat Schummeln = null;
 
     private TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
-  
+    private Cheat Schummeln;
+
     private Button btnFigurSelect;
     private Button btnMoveFigur;
 
@@ -78,13 +81,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        dice.roll();
+        //dice.roll();
+        DummyDice.get().roll();
 
         int result;
         if (Schummeln.isPlayerCheating()) {
             result = 5;
         }else if (!Schummeln.isPlayerCheating()){
-            result = dice.getDiceNumber().getNumber() - 1;
+            result = DummyDice.get().getDiceNumber().getNumber() - 1;
         }else {
             throw new  IllegalStateException();
         }
@@ -167,21 +171,29 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         .start();
             }
         });
+
+
+        synchronized (DummyDice.get()){
+            System.out.println("notifying: "+DummyDice.get());
+            DummyDice.get().notify();
+        }
+
+
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+        Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 
-        btnFigurSelect = (Button)(findViewById(R.id.Select_Figur));
-        btnMoveFigur = (Button)(findViewById(R.id.Move_Figur));
+        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
 
         state = (TextView)(findViewById(R.id.textView_status));
 
-        Schummeln = new Cheat(false);
-        Schummeln.setPlayerCheating(false);
+        Schummeln = Game.getInstance().getCurrentPlayer().getSchummeln();
 
         //Sensor Manager erstellen
         SM = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -190,23 +202,45 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
         SM.registerListener(this, LightSensor, SensorManager.SENSOR_DELAY_GAME);
 
+        //ToDo: Disable wenn Spieler gerade spielt
         //aktuell spielender Spieler wird des Schummelns verdächtigt
         btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken)); // ToDO: Disable für gerade spielenden Spieler
         btnAufdecken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean schummelt = false;
+                Player[] Suspechts = Game.getInstance().getPlayers();
 
-                if(Schummeln.hasRemotePlayerCheated()){
-                    // Spieler, der geschummelt hat, setzt aus
-                } else if (!Schummeln.hasRemotePlayerCheated()){
-                    // Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
+                /**
+                 * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
+                 * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
+                 */
+                for(int i=0; i <Suspechts.length; i++){
+                    if (Suspechts[i].getSchummeln().isPlayerCheating()) {
+                        // TODO Spieler i setzt aus
+                        schummelt=true;
+                    }
                 }
+                if (!schummelt){
+                    // ToDO getSpieler der gerade spielt.
+                    // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
+                }
+
+                //ToDO: dem currentPlayer (der button gedrückt hat) Feedback geben. [oder allen?]
+
             }
         });
 
 
         btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
+
+        btnWuerfel.setEnabled(true);
+
+        DummyDice.get();
+
+        DummyDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
+
 
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,7 +288,22 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         // get screen size
         getScreenDimensions();
-    }
+
+
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Game.getInstance().play();
+                } catch (IllegalAccessException e){
+                    e.printStackTrace();
+
+                }
+            }
+        }.start();
+	}
+
+
 
 
     /**
@@ -283,7 +332,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
     /**
-     * Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
+     * ToDO: Sollte nur aktiviert sein wenn Spieler aktuell spielt.
+     * ToDO: Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
      * Da auf änderung reagiert, dürfte nicht wenn bevor man am zug ist verdunkelt wird nicht reagiert werden.
      */
     @Override
@@ -296,7 +346,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
          */
         if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
             float Lichtwert = event.values[0];
-            if(Lichtwert <= 50){
+            if(Lichtwert <= 10){
                 //state.setText("Schummeln: " + true);  //Test
                 Schummeln.setPlayerCheating(true);
             }

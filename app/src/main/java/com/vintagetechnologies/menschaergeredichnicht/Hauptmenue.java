@@ -15,7 +15,7 @@ public class Hauptmenue extends AppCompatActivity {
     private Button btnOpenSettings;
     private Button btnHostGame;
     private Button btnJoinGame;
-
+    private Button btnLocalMultiplayer;
 
     private void btnShowRulesClicked(){
         startActivity(new Intent(Hauptmenue.this, Regeln.class));
@@ -70,11 +70,19 @@ public class Hauptmenue extends AppCompatActivity {
         btnOpenSettings = (Button)(findViewById(R.id.btnOpenSettings));
         btnHostGame = (Button)(findViewById(R.id.btnHostGame));
         btnJoinGame = (Button)(findViewById(R.id.btnJoinGame));
+        btnLocalMultiplayer = (Button)(findViewById(R.id.btnLocalMultiplayer));
 
         btnShowRules.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnShowRulesClicked();
+            }
+        });
+
+        btnLocalMultiplayer.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Hauptmenue.this, Spieloberflaeche.class));
             }
         });
 

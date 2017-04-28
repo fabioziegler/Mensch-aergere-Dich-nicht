@@ -9,6 +9,7 @@ public class Player {
     GamePiece pieces[];
     PlayerColor color;
     String name;
+    Cheat Schummeln;
 
     public Player(PlayerColor color, String name) {
         this.pieces = new GamePiece[4];
@@ -17,9 +18,13 @@ public class Player {
             this.pieces[i] = new GamePiece(color);
         }
 
-
+        this.Schummeln = new Cheat();
         this.color = color;
         this.name = name;
+    }
+
+    public Cheat getSchummeln() {
+        return Schummeln;
     }
 
     public PlayerColor getColor() {

@@ -68,6 +68,7 @@ public class PlayerTest {
         assertEquals(null, s.getGamePiece());
     }
 
+    /*
     @Test
     public void dummyDiceTest(){
         for(int i = 0; i<10; i++) {
@@ -78,6 +79,6 @@ public class PlayerTest {
         assertNotEquals(null, DummyDice.get().getDiceNumber());
 
     }
-
+       */
 
 }

@@ -141,6 +141,11 @@ public class Game {
         return players;
     }
 
+    public Player getCurrentPlayer() {
+        return players[currentPlayer];
+    }
+
+
     public void setPlayers(Player[] players) {
         this.players = players;
     }

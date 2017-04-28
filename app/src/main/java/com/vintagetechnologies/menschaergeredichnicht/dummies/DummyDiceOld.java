@@ -1,38 +1,32 @@
 package com.vintagetechnologies.menschaergeredichnicht.dummies;
 
-import android.widget.ImageButton;
-
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 /**
  * Created by johannesholzl on 15.04.17.
  */
 
-public class DummyDice extends Dice {
+public class DummyDiceOld extends Dice {
 
-    private static DummyDice dummyDice;
-    private static ImageButton diceButton;
+    private static DummyDiceOld dummyDice;
 
-    public static DummyDice get() {
+    public static DummyDiceOld get() {
         if (dummyDice == null) {
-            dummyDice = new DummyDice();
-            //dummyDice.r();
+            dummyDice = new DummyDiceOld();
+            dummyDice.r();
         }
 
         return dummyDice;
     }
 
-    private DummyDice() {
+    private DummyDiceOld() {
 
     }
 
     public static void waitForRoll() {
         synchronized (dummyDice) {
+            dummyDice.notify();
 
-            //diceButton.setEnabled(true);
-            //dummyDice.notify();
-
-            System.out.println("waiting: "+dummyDice);
 
             try {
                 dummyDice.wait();
@@ -40,8 +34,6 @@ public class DummyDice extends Dice {
                 e.printStackTrace();
             }
 
-            System.out.println("done waiting");
-            //diceButton.setEnabled(false);
 
         }
     }
@@ -58,14 +50,14 @@ public class DummyDice extends Dice {
 
                 roll();
 
-
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 notify();
             }
         }
-    }
-
-    public static void setDiceButton(ImageButton db){
-        diceButton = db;
     }
 }
