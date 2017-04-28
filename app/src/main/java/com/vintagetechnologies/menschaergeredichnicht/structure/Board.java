@@ -121,7 +121,10 @@ public final class Board {
         return boardItself.board[p];
     }
 
-    public static Spot checkSpot(int steps, GamePiece piece) {
+
+
+    public static Spot checkSpot(DiceNumber dn, GamePiece piece) {
+        int steps = dn.getNumber();
         Spot targetSpot = piece.getSpot();
         for (int i = 0; i < steps; i++) {
             if (targetSpot instanceof RegularSpot) {
