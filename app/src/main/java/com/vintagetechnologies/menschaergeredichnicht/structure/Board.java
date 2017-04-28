@@ -18,6 +18,10 @@ public final class Board {
         return boardItself;
     }
 
+
+
+
+
     private Board() {
 
         board[0] = new RegularSpot(4, 0, null);
