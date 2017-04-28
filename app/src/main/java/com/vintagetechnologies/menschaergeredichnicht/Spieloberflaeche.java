@@ -2,6 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 
 import android.animation.Animator;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -32,14 +34,17 @@ import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
 
-    Sensor LightSensor;
-    SensorManager SM;
+    private Sensor LightSensor;
+    private SensorManager SM;
 
-    TextView state;
+    private TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
     private Cheat Schummeln;
-    private ImageButton btnAufdecken;
 
+    private Button btnFigurSelect;
+    private Button btnMoveFigur;
+
+    private ImageButton btnAufdecken;
     private ImageButton btnWuerfel;
     private ImageView imgViewDice;
 
@@ -184,9 +189,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
+
         Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 
-        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
+
 
         state = (TextView)(findViewById(R.id.textView_status));
 
@@ -239,9 +246,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
 
-
-
-
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,6 +256,22 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     }
                 };
                 new Thread(myRunnable).start();
+            }
+        });
+
+        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Zu setzende Figur auswählen
+                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+            }
+        });
+
+        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
+                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
             }
         });
 
@@ -285,7 +305,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 }
             }
         }.start();
-        }
+	}
 
 
 
@@ -343,6 +363,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         //nicht in verwendung
+    }
+
+    public void setStatus(String status){
+        state.setText(status);
     }
 
 }
