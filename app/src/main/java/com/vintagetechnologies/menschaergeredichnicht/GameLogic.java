@@ -67,6 +67,11 @@ public class GameLogic {
     }
 
 
+    public void broadcast(String tag, String message){
+        // TODO: implement
+    }
+
+
     public void sendToHost(String TAG, String message){
         // TODO:  implement
     }

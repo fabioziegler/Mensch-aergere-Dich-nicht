@@ -148,6 +148,8 @@ public class GameClient extends AppCompatActivity implements
 
         // create new game logic for the host
         gameLogic = new GameLogic(this, mGoogleApiClient, false);
+
+        DataHolder.getInstance().save("GAMELOGIC", gameLogic);
     }
 
 

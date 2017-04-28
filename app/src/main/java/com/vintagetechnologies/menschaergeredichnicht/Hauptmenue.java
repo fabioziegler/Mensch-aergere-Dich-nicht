@@ -18,8 +18,7 @@ public class Hauptmenue extends AppCompatActivity {
     private Button btnLocalMultiplayer;
 
     private void btnShowRulesClicked(){
-        // TODO: implement layout
-        //startActivity(new Intent(Hauptmenue.this, Spielregeln.class));
+        startActivity(new Intent(Hauptmenue.this, Regeln.class));
     }
 
 
