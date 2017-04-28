@@ -138,6 +138,8 @@ public final class Board {
                 if (targetSpot == null) {
                     return null;
                 }
+            }else if (targetSpot instanceof StartingSpot){
+                targetSpot = ((StartingSpot) targetSpot).getEntrance();
             }
         }
 

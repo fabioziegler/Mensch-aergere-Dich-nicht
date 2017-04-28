@@ -54,32 +54,36 @@ public class Game {
             players[i] = new Player(cColor, names[i]);
         }
 
-        final Spieloberflaeche gameactivity = (Spieloberflaeche)bv.getContext();
+        final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for(Player p : players){
-                    switch (p.getColor()){
+                for (Player p : players) {
+                    switch (p.getColor()) {
                         case RED: {
-                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerRot));
+                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerRot));
                             tv.setTextColor(Color.RED);
                             tv.setText(p.getName());
-                            break;}
+                            break;
+                        }
                         case GREEN: {
-                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerGruen));
+                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGruen));
                             tv.setTextColor(Color.GREEN);
                             tv.setText(p.getName());
-                            break;}
+                            break;
+                        }
                         case BLUE: {
-                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerBlau));
+                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerBlau));
                             tv.setTextColor(Color.BLUE);
                             tv.setText(p.getName());
-                            break;}
+                            break;
+                        }
                         case YELLOW: {
-                            TextView tv = ((TextView)gameactivity.findViewById(R.id.textView_spielerGelb));
+                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGelb));
                             tv.setTextColor(Color.YELLOW);
                             tv.setText(p.getName());
-                            break;}
+                            break;
+                        }
 
                     }
                 }
@@ -101,56 +105,50 @@ public class Game {
         while (true) {
 
 
-
             final Player cp = players[currentPlayer];
-            final Spieloberflaeche gameactivity = (Spieloberflaeche)bv.getContext();
+            final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
             gameactivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    gameactivity.setStatus(cp.getName()+" ist dran!");
+                    gameactivity.setStatus(cp.getName() + " ist dran!");
 
                 }
             });
+            do {
+                DummyDice.waitForRoll();
+                GamePiece gp;
 
-            DummyDice.waitForRoll();
-            GamePiece gp;
-            if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
-                
-
-                StartingSpot s = (StartingSpot) (gp.getSpot());
-
-                Spot entrance = s.getEntrance();
+                boolean moved = false;
+                if (DummyDice.get().getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
 
 
-                if(entrance.getGamePiece() == null || (entrance.getGamePiece() != null && entrance.getGamePiece().getPlayerColor() != gp.getPlayerColor())) {
-                    gp.moveTo(s.getEntrance());
+                    StartingSpot s = (StartingSpot) (gp.getSpot());
+
+                    Spot entrance = s.getEntrance();
+
+
+                    if (entrance.getGamePiece() == null || (entrance.getGamePiece() != null && entrance.getGamePiece().getPlayerColor() != gp.getPlayerColor())) {
+                       moved = movePieceToEntrance(gp);
+                    }
+
                 }
+                if (!cp.isAtStartingPosition() && !moved) { //muss noch "herauswürfeln"
 
 
-                bv.postInvalidate();
+                    //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
 
-                DummyDice.waitForRoll(); // Spieler darf nochmal würfeln
-
-                movePiece(gp);
-
-            }
-
-            else if (!cp.isAtStartingPosition()) { //muss noch "herauswürfeln"
-
-
-                //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
-
-                for (GamePiece piece : cp.getPieces()) {
-                    if (movePiece(piece)) {
-                        break;
+                    for (GamePiece piece : cp.getPieces()) {
+                        if (movePiece(piece)) {
+                            break;
+                        }
                     }
                 }
-            }
+                bv.postInvalidate();
+            }while(DummyDice.get().getDiceNumber() == DiceNumber.SIX);
 
 
             currentPlayer = (currentPlayer + 1) % players.length;
 
-            bv.postInvalidate();
 
         }
 
@@ -160,6 +158,18 @@ public class Game {
     private boolean movePiece(GamePiece gp) {
 
         Spot s = Board.checkSpot(DummyDice.get().getDiceNumber(), gp);
+
+        if (s != null) {
+            gp.moveTo(s);
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean movePieceToEntrance(GamePiece gp) {
+
+        Spot s = Board.checkSpot(DiceNumber.ONE, gp);
 
         if (s != null) {
             gp.moveTo(s);
