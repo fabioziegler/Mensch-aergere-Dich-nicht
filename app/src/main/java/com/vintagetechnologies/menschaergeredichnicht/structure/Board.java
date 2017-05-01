@@ -6,10 +6,21 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 public final class Board {
 
+    /**
+     * Spots of the board is stored here.
+     */
     private Spot[] board = new Spot[72];
 
+    /**
+     * Board object.
+     */
     private static Board boardItself;
 
+    /**
+     * returns boardItself
+     *
+     * @return
+     */
     public static Board get() {
         if (boardItself == null) {
             boardItself = new Board();
@@ -18,13 +29,17 @@ public final class Board {
         return boardItself;
     }
 
+
+    /**
+     * Constructor of Board
+     * private: Is a Singleton
+     *
+     * Sets all Spots to the correct position and links
+     */
     private Board() {
 
         board[0] = new RegularSpot(4, 0, null);
-        board[1] = new StartingSpot(0, 0, PlayerColor.RED, board[0]);
-        board[2] = new StartingSpot(0, 1, PlayerColor.RED, board[0]);
-        board[3] = new StartingSpot(1, 0, PlayerColor.RED, board[0]);
-        board[4] = new StartingSpot(1, 1, PlayerColor.RED, board[0]);
+
 
         board[5] = new RegularSpot(4, 1, (RegularSpot) board[0]);
         board[6] = new RegularSpot(4, 2, (RegularSpot) board[5]);
@@ -68,20 +83,25 @@ public final class Board {
 
         ((RegularSpot) (board[0])).setNextSpot((RegularSpot) board[43]);
 
-        board[44] = new StartingSpot(9, 0, PlayerColor.BLUE, board[41]);
-        board[45] = new StartingSpot(10, 0, PlayerColor.BLUE, board[41]);
-        board[46] = new StartingSpot(9, 1, PlayerColor.BLUE, board[41]);
-        board[47] = new StartingSpot(10, 1, PlayerColor.BLUE, board[41]);
+        board[1] = new StartingSpot(0, 0, PlayerColor.RED, board[12]);
+        board[2] = new StartingSpot(1, 0, PlayerColor.RED, board[12]);
+        board[3] = new StartingSpot(0, 1, PlayerColor.RED, board[12]);
+        board[4] = new StartingSpot(1, 1, PlayerColor.RED, board[12]);
 
-        board[48] = new StartingSpot(0, 9, PlayerColor.YELLOW, board[22]);
-        board[49] = new StartingSpot(0, 10, PlayerColor.YELLOW, board[22]);
-        board[50] = new StartingSpot(1, 9, PlayerColor.YELLOW, board[22]);
-        board[51] = new StartingSpot(1, 10, PlayerColor.YELLOW, board[22]);
+        board[44] = new StartingSpot(10, 0, PlayerColor.BLUE, board[42]);
+        board[45] = new StartingSpot(10, 1, PlayerColor.BLUE, board[42]);
+        board[46] = new StartingSpot(9, 0, PlayerColor.BLUE, board[42]);
+        board[47] = new StartingSpot(9, 1, PlayerColor.BLUE, board[42]);
 
-        board[52] = new StartingSpot(9, 9, PlayerColor.GREEN, board[31]);
-        board[53] = new StartingSpot(10, 10, PlayerColor.GREEN, board[31]);
-        board[54] = new StartingSpot(10, 9, PlayerColor.GREEN, board[31]);
-        board[55] = new StartingSpot(9, 10, PlayerColor.GREEN, board[31]);
+        board[48] = new StartingSpot(0, 10, PlayerColor.YELLOW, board[22]);
+        board[49] = new StartingSpot(0, 9, PlayerColor.YELLOW, board[22]);
+        board[50] = new StartingSpot(1, 10, PlayerColor.YELLOW, board[22]);
+        board[51] = new StartingSpot(1, 9, PlayerColor.YELLOW, board[22]);
+
+        board[52] = new StartingSpot(10, 10, PlayerColor.GREEN, board[32]);
+        board[53] = new StartingSpot(9, 10, PlayerColor.GREEN, board[32]);
+        board[54] = new StartingSpot(10, 9, PlayerColor.GREEN, board[32]);
+        board[55] = new StartingSpot(9, 9, PlayerColor.GREEN, board[32]);
 
         board[56] = new EndSpot(4, 5, PlayerColor.RED, null);
         board[57] = new EndSpot(3, 5, PlayerColor.RED, (EndSpot) board[56]);
@@ -111,15 +131,43 @@ public final class Board {
 
     }
 
+
+    /**
+     * Returns the Spot Array
+     * @return
+     */
     public static Spot[] getBoard() {
         return boardItself.board;
     }
 
+
+    /**
+     * Returns a single Spot with given index.
+     *
+     * @param p
+     * @return
+     */
     public static Spot getBoard(int p) {
         return boardItself.board[p];
     }
 
-    public static Spot checkSpot(int steps, GamePiece piece) {
+
+    /**
+     *
+     * Needs:   -DiceNumber
+     *          -GamePiece
+     *
+     * Checks if GamePiece can move a given number of Spots. The number is given as a DiceNumber.
+     *
+     * Returns the Spot, on which the GamePiece will be.
+     * Returns null if the GamePiece can't move the given number of Spots (occupied, end)
+     *
+     * @param dn
+     * @param piece
+     * @return
+     */
+    public static Spot checkSpot(DiceNumber dn, GamePiece piece) {
+        int steps = dn.getNumber();
         Spot targetSpot = piece.getSpot();
         for (int i = 0; i < steps; i++) {
             if (targetSpot instanceof RegularSpot) {
@@ -134,6 +182,8 @@ public final class Board {
                 } else if (((EndSpot) targetSpot).getNextEndSpot().getGamePiece() != null) {
                     return null; //Fehler: nächster EndSpot ist nicht frei
                 }
+            }else if (targetSpot instanceof StartingSpot){
+                targetSpot = ((StartingSpot) targetSpot).getEntrance();
             }
             if (targetSpot == null) {// Fehler
                 return null;
@@ -143,7 +193,7 @@ public final class Board {
 
 
 
-        if (targetSpot != null) {
+        if (targetSpot != null && targetSpot.getGamePiece() != null) {
             if (targetSpot.getGamePiece().getPlayerColor() == piece.getPlayerColor()) {
                 return null;
             }
@@ -152,6 +202,14 @@ public final class Board {
         return targetSpot;
     }
 
+
+    /**
+     * Returns a starting spot with a given color.
+     * Needed for returning a GamePiece to a StartingSpot.
+     *
+     * @param color
+     * @return
+     */
     public static Spot getStartingSpot(PlayerColor color){
         for(Spot s : getBoard()){
             if(s instanceof StartingSpot && ((StartingSpot) s).getColor() == color && s.getGamePiece() == null){

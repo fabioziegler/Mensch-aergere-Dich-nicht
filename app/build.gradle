@@ -30,3 +30,48 @@ dependencies {
     compile 'com.google.android.gms:play-services-nearby:10.2.1' // Fabio: Google's nearby API for networking
     testCompile 'junit:junit:4.12'
 }
+
+
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    destinationDir = file("../javadoc/")
+    failOnError false
+}
+
+
+apply plugin: 'jacoco'
+jacoco {
+    toolVersion = '0.7.6.201602180812'
+}
+
+// Edit covered scope if needed
+// For my part I like having the coverage of both application and tests
+def coverageSourceDirs = [
+        '../app/src'
+]
+
+task jacocoTestReport(type: JacocoReport, dependsOn: "test") {
+    group = "Reporting"
+
+    description = "Generate Jacoco coverage reports "
+
+    classDirectories = fileTree(
+            dir: '../app/build/intermediates/classes',
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/*$ViewInjector*.*',
+                       '**/BuildConfig.*',
+                       '**/Manifest*.*']
+    )
+
+    additionalSourceDirs = files(coverageSourceDirs)
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = files('../app/build/jacoco/jacoco.exec')
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}

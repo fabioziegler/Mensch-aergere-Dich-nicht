@@ -81,6 +81,8 @@ public class GameClient extends AppCompatActivity implements
 	/* For receiving wifi connection status changes */
 	private WifiReceiver wifiReceiver;
 
+	private boolean isDiscovering = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +150,8 @@ public class GameClient extends AppCompatActivity implements
 
         // create new game logic for the host
         gameLogic = new GameLogic(this, mGoogleApiClient, false);
+
+        DataHolder.getInstance().save("GAMELOGIC", gameLogic);
     }
 
 
@@ -213,8 +217,6 @@ public class GameClient extends AppCompatActivity implements
         // search for hosts
         startDiscovery();
     }
-
-    private boolean isDiscovering = false;
 
 
     /**
@@ -484,7 +486,7 @@ public class GameClient extends AppCompatActivity implements
         NetworkInfo info = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         //return (info != null && info.isConnectedOrConnecting());
-        return (info != null && info.isConnected());
+        return info != null && info.isConnected();
     }
 
 

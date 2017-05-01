@@ -12,8 +12,10 @@ public class Einstellungen extends AppCompatActivity {
     private GameSettings gameSettings;
 
     private Button btnSpeichern;
-    private CheckBox cbMusic, cbCheating;
-    private RadioButton radioBtnDesignClassic, radioBtnDesignVintage;
+    private CheckBox cbMusic;
+	private CheckBox cbCheating;
+    private RadioButton radioBtnDesignClassic;
+    private RadioButton radioBtnDesignVintage;
 
 
     /**

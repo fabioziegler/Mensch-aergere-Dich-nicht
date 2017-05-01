@@ -29,7 +29,7 @@ public class DataHolder {
      * @param object The object to be saved
      */
     public void save(String id, Object object) {
-        data.put(id, new WeakReference<Object>(object));
+        data.put(id, new WeakReference<>(object));
     }
 
     /**
@@ -39,7 +39,11 @@ public class DataHolder {
      */
     public Object retrieve(String id) {
         WeakReference<Object> objectWeakReference = data.get(id);
-        return objectWeakReference.get();
+
+		if(objectWeakReference != null)
+        	return objectWeakReference.get();
+		else
+			return null;
     }
 
     /**

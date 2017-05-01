@@ -32,52 +32,58 @@ public class BoardView extends View {
     double spotRadius;
     double abstand;
 
+    /**
+     * Initializes the BoardView
+     * board is no necessary, just easier to access.
+     */
     private void init(){
         paint = new Paint();
         board = Board.get();
-        Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
-
-
-
     }
 
+
+    /**
+     *
+     * @param context
+     */
     public BoardView(Context context) {
         super(context);
         init();
     }
 
+    /**
+     *
+     * @param context
+     * @param attrs
+     */
     public BoardView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
+    /**
+     *
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     */
     public BoardView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
 
-
+    /**
+     * Overrieds Views onDraw method.
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         if(!boardIsDrawn){
             boardIsDrawn = true;
-            Game.getInstance().setBoardView(this);
-            new Thread(){
-
-                public void run(){
-                    try {
-                        Game.getInstance().play();
-                    } catch (IllegalAccessException e)
-
-                    {
-                        e.printStackTrace();
-                    }}}.start();
         }
 
         System.out.println(canvas);
-
-
 
         spotRadius = getWidth()/40.0;
         abstand = (getWidth()-(22*spotRadius))/22;
@@ -87,6 +93,10 @@ public class BoardView extends View {
         drawGamePieces(canvas);
     }
 
+    /**
+     * Draws the GamePieces
+     * @param canvas
+     */
     private void drawGamePieces(Canvas canvas){
         for(Player p : Game.getInstance().getPlayers()){
             switch (p.getColor()){
@@ -130,6 +140,10 @@ public class BoardView extends View {
     }
 
 
+    /**
+     * Draws the Board.
+     * @param canvas
+     */
     private void drawBoard(Canvas canvas){
         setBackgroundColor(Color.GRAY);
 
@@ -191,6 +205,7 @@ public class BoardView extends View {
             }
             paint.setStyle(Paint.Style.FILL);
             canvas.drawCircle((float)x, (float)y, (float)spotRadius, paint);
+
 
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(Color.BLACK);

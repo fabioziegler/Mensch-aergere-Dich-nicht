@@ -157,6 +157,8 @@ public class GameHost extends AppCompatActivity implements
 
         // create new game logic for the host
         gameLogic = new GameLogic(this, mGoogleApiClient, true);
+
+        DataHolder.getInstance().save("GAMELOGIC", gameLogic);
     }
 
 
@@ -489,7 +491,7 @@ public class GameHost extends AppCompatActivity implements
         NetworkInfo info = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         //return (info != null && info.isConnectedOrConnecting());
-        return (info != null && info.isConnected());
+        return info != null && info.isConnected();
     }
 
 

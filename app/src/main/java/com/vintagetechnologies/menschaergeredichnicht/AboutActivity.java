@@ -2,21 +2,16 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.vintagetechnologies.menschaergeredichnicht.R;
-
-import java.io.File;
-
 /**
  * Created by Simon on 21.04.2017.
  */
 
-public class Regeln extends AppCompatActivity {
+public class AboutActivity extends AppCompatActivity {
 
     private WebView webView;
 
@@ -26,13 +21,13 @@ public class Regeln extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        setContentView(R.layout.activity_spielregeln);
+        setContentView(R.layout.activity_about);
 
-        webView = (WebView)(findViewById(R.id.Regeln_WV));
+        webView = (WebView)(findViewById(R.id.About_WV));
 
 		optimizeWebView(webView);
 
-        webView.loadUrl("file:///android_asset/regeln.html");
+        webView.loadUrl("file:///android_asset/about.html");
     }
 
 
