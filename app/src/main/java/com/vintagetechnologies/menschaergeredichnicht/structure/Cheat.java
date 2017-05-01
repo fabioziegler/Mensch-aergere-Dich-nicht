@@ -36,15 +36,4 @@ public class Cheat {
      * @return
      */
     public boolean isPlayerCheating() { return playerCheating; }
-
-
-    /**
-     * Für AUFDECKEN stellt fest ob aktuell spielender Spieler gecheatet hat
-     * @return
-     */
-    public boolean hasRemotePlayerCheated(){
-        // TODO: implement
-        return false;
-    }
-
 }

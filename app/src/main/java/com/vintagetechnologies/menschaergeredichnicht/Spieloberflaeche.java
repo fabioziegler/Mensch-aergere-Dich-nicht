@@ -2,10 +2,13 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 
 import android.animation.Animator;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +28,7 @@ import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
@@ -207,36 +211,55 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         //aktuell spielender Spieler wird des Schummelns verdächtigt
         btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken));
-
         //Disable wenn Spieler gerade spielt
         if(Game.getInstance().getCurrentPlayer().isAktive()){ btnAufdecken.setEnabled(false);}
-
         if (btnAufdecken.isEnabled()) {
             btnAufdecken.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Player[] spieler = Game.getInstance().getPlayers();
                     /**
                      * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
                      * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
                      */
+                    Player[] spieler = Game.getInstance().getPlayers();
+                    //ToDo: bessere lösung finden, evt. "globale" Variable
+                    int aktiveSpieler = 5;
 
-                    /*
-                    int aktiveSpieler;
-
-
+                    //aktiven Spieler finden
                     for (int i = 0; i < spieler.length; i++) {
                         if (spieler[i].isAktive()){
                             aktiveSpieler = i;
                         }
                     }
-                    if (spieler[aktiveSpieler].getSchummeln().isPlayerCheating()) {
-                            // TODO aktiverSpieler setzt aus
-                    }else{
-                            // TODo currentPlayer setzt aus
-                     }
-                    */
+                    //noch nicht optimal gelöst..
+                    if (aktiveSpieler >= 4){
+                        throw new IllegalStateException();
+                    }
 
+                    if (spieler[aktiveSpieler].getSchummeln().isPlayerCheating()) {
+                            //TODO aktiverSpieler setzt aus (Nachricht an Host, isHost überprüfen)
+
+                        //ToDO: sende an ALLE Meldung: (spieler[aktiveSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
+                        Context context = getApplicationContext();
+                        CharSequence text = spieler[aktiveSpieler].getName()+"hat geschummelt und muss nächste Runde aussetzen";
+                        int duration = Toast.LENGTH_SHORT;
+
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+
+                    }else{
+                            //TODo currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
+
+                        //ToDO: sende an alle Meldung: (spieler[currentSpieler].getName + "hat falsch verdächtigt und muss nächste Runde aussetzen")
+                        Context context = getApplicationContext();
+                        CharSequence text = Game.getInstance().getCurrentPlayer().getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
+                        int duration = Toast.LENGTH_SHORT;
+
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                    }
+
+                    /*
                     //Alternativ
                     boolean schummelt = false;
 
@@ -244,6 +267,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         if (spieler[i].getSchummeln().isPlayerCheating()) {
                             // TODO Spieler i setzt aus
                             schummelt = true;
+                            //ToDO: sende an alle Meldung: (spieler[aktiverSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
                         }
                     }
                     if (!schummelt) {
@@ -251,14 +275,16 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
                     }
 
-                    //ToDO: dem currentPlayer (der button gedrückt hat) Feedback geben. [oder allen?]
+                    */
+
 
                 }
             });
 
         }
 
-        btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
+
+        btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel));
 
         btnWuerfel.setEnabled(true);
 
@@ -318,7 +344,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         // get screen size
         getScreenDimensions();
 
-
         new Thread() {
             @Override
             public void run() {
@@ -330,6 +355,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 }
             }
         }.start();
+
+
 	}
 
 
@@ -359,7 +386,24 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         getScreenDimensions();
     }
 
+    // Warnung bevor man das Spiel verlässt (noch nicht getestet)
+    @Override
+    public  void onBackPressed(){
+          new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Closing Activity")
+                .setMessage("Are you sure you want to close this activity?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
 
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
     /**
      * ToDO: Sollte nur aktiviert sein wenn Spieler aktuell spielt.
      * ToDO: Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
@@ -371,15 +415,17 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         /** Für Licht
          * Reagiert bei änderung wird entsprechender Wert zwischen 0.0 und 40000 angegeben.
-         * wenn schummel funktion ab Dunkel sich einschaltet. Annahme Dunkel ab 1000.
+         * wenn schummel funktion ab Dunkel sich einschaltet. Dunkel ab 10.
          */
         if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
-            float Lichtwert = event.values[0];
-            if(Lichtwert <= 10){
-                //state.setText("Schummeln: " + true);  //Test
-                Schummeln.setPlayerCheating(true);
+            //überprüfen ob Spieler am zug ist
+            if(Game.getInstance().getCurrentPlayer().isAktive()) {
+                float Lichtwert = event.values[0];
+                if (Lichtwert <= 10) {
+                    //state.setText("Schummeln: " + true);  //Test
+                    Schummeln.setPlayerCheating(true);
+                }
             }
-            //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
         }
 
     }
