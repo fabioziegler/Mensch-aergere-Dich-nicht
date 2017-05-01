@@ -110,7 +110,6 @@ public class Game {
                             tv.setText(p.getName());
                             break;
                         }
-
                     }
                 }
 
