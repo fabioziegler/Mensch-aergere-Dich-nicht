@@ -5,7 +5,8 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  */
 
 public class Player {
-
+  
+  
     //The players GamePieces
     private GamePiece pieces[];
 
@@ -15,6 +16,7 @@ public class Player {
     //The shown name
     private String name;
     private Cheat Schummeln;
+    private boolean aktive;
 
 
     /**
@@ -31,6 +33,7 @@ public class Player {
             this.pieces[i] = new GamePiece(color);
         }
 
+        this.aktive = false; //sollte dann wenn der Spieler am zug ist auf true gesetz werden.
         this.Schummeln = new Cheat();
         this.color = color;
         this.name = name;
@@ -44,8 +47,16 @@ public class Player {
         return Schummeln;
     }
 
+    public boolean isAktive() {
+        return aktive;
+    }
+
+    public void setAktive(boolean aktive) {
+        this.aktive = aktive;
+    }
+  
     /**
-     * Getter
+     * Get player color
      * @return color
      */
     public PlayerColor getColor() {
