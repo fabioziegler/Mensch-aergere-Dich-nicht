@@ -350,8 +350,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 try {
                     Game.getInstance().play();
                 } catch (IllegalAccessException e){
-                    e.printStackTrace();
-
+                    Log.e("Spieloberflaeche", "Error in game init", e);
                 }
             }
         }.start();

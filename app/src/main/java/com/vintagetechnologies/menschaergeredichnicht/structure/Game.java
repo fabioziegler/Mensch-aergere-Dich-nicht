@@ -27,8 +27,14 @@ public class Game {
     private BoardView bv;
 
 
+    //init methode already called?
     private boolean initialized = false;
 
+
+    /**
+     * Returns gameInstance()
+     * @return
+     */
     public static Game getInstance() {
         if (gameInstance == null) {
             gameInstance = new Game();
@@ -36,9 +42,23 @@ public class Game {
         return gameInstance;
     }
 
-    private Game() {
-    }
+	/**
+	 * Called when a client received a new up to date game object from the host.
+	 * @param game The new game object received by the host.
+	 */
+	public static void refreshGameInstance(Game game){
+		// TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
+		gameInstance = game;
+	}
 
+    private Game() {
+	}
+
+
+    /**
+     * Inits the Game Object, as it is a Singleton.
+     * @param names
+     */
     public void init(String... names) {
 
         new Thread() {
@@ -97,8 +117,18 @@ public class Game {
     }
 
 
+    /**
+     * play method
+     * As the game could be played forever, it features an endless loop, which should be left
+     * when there is only one Player who hasn't won.
+     *
+     * It enables the Dice and waits for the player to roll it.
+     *
+     * @throws IllegalAccessException
+     */
     public void play() throws IllegalAccessException {
 
+        // throw exception when trying to play and init wasn't called yet.
         if (!initialized) {
             throw new IllegalAccessError("Game hasn't been initialized. Please run init() first.");
         }
@@ -170,6 +200,13 @@ public class Game {
 
     }
 
+    /**
+     * Moves a GamePiece by the number the Dices face shows.
+     * Returns true when the GamePiece was able to move.
+     *
+     * @param gp
+     * @return
+     */
     private boolean movePiece(GamePiece gp) {
 
         Spot s = Board.checkSpot(DummyDice.get().getDiceNumber(), gp);
@@ -182,6 +219,14 @@ public class Game {
         return false;
     }
 
+    /**
+     *
+     * Moves the GamePiece by one step.
+     * Returns true when the GamePiece was able to move.
+     *
+     * @param gp
+     * @return
+     */
     private boolean movePieceToEntrance(GamePiece gp) {
 
         Spot s = Board.checkSpot(DiceNumber.ONE, gp);
@@ -195,6 +240,11 @@ public class Game {
     }
 
 
+    /**
+     * not used at the moment...
+     * @TODO REFACTOR
+     * @throws IllegalAccessException
+     */
     private void waitfordice() throws IllegalAccessException {
 
         if (!initialized) {
@@ -211,28 +261,65 @@ public class Game {
 
     }
 
+    /**
+     *
+     */
     private void figureSelected() {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public Player[] getPlayers() {
         return players;
     }
 
+    /**
+     *
+     * @return
+     */
     public Player getCurrentPlayer() {
         return players[currentPlayer];
     }
 
 
+    /**
+     *
+     * @param players
+     */
     public void setPlayers(Player[] players) {
         this.players = players;
     }
 
+    /**
+     *
+     * @return
+     */
     public BoardView getBoardView() {
         return bv;
     }
 
+    /**
+     *
+     * @param bv
+     */
     public void setBoardView(BoardView bv) {
         this.bv = bv;
     }
+
+    /**
+     * Get the Player by providing the Players name
+     *
+     * @param name
+     * @return
+     */
+    public Player getPlayerByName(String name){
+		for (int i = 0; i < players.length; i++) {
+			if(name.equals(players[i].getName()))
+				return players[i];
+		}
+		return null;
+	}
 }
