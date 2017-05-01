@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import android.hardware.Sensor;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
@@ -189,7 +191,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
-        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
+
+        final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
+        Game.getInstance().setBoardView(bv);
 
         Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 
@@ -259,21 +263,45 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-//        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // toDO: Zu setzende Figur auswählen
-//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-//            }
-//        });
-//
-//        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
-//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-//            }
-//        });
+
+        //zwischen zu bewegenden Figuren wählen
+        btnFigurSelect = (Button)(findViewById(R.id.Select_Figur));
+        btnFigurSelect.setEnabled(false);
+        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Zu setzende Figur auswählen
+                ArrayList<GamePiece> possibleGamePieces = Game.getInstance().getPossibleToMove();
+                if(bv.getHighlightedGamePiece() == null){
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(0));
+                    bv.invalidate();
+                }else{
+                    GamePiece gp = bv.getHighlightedGamePiece();
+                    int i = possibleGamePieces.indexOf(gp);
+                    i = (i+1)%possibleGamePieces.size();
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(i));
+                    bv.invalidate();
+                }
+            }
+        });
+
+
+        //bestätigt Eingabe
+        btnMoveFigur = (Button)(findViewById(R.id.Move_Figur));
+        btnMoveFigur.setEnabled(false);
+        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
+
+                Game.getInstance().selectGamePiece(bv.getHighlightedGamePiece());
+                bv.setHighlightedGamePiece(null);
+
+                synchronized (Game.getInstance()){
+                    Game.getInstance().notify();
+                }
+            }
+        });
 
         // init dice
         dice = new Dice();

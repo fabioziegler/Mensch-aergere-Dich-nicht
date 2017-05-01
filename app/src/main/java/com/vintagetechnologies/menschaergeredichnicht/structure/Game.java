@@ -2,6 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.R;
@@ -25,6 +26,8 @@ public class Game {
     private Dice dice = new Dice();
     private BoardView bv;
 
+    private GamePiece selectedGamePiece;
+    private ArrayList<GamePiece> possibleToMove;
 
     //init methode already called?
     private boolean initialized = false;
@@ -32,6 +35,7 @@ public class Game {
 
     /**
      * Returns gameInstance()
+     *
      * @return
      */
     public static Game getInstance() {
@@ -41,21 +45,23 @@ public class Game {
         return gameInstance;
     }
 
-	/**
-	 * Called when a client received a new up to date game object from the host.
-	 * @param game The new game object received by the host.
-	 */
-	public static void refreshGameInstance(Game game){
-		// TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
-		gameInstance = game;
-	}
+    /**
+     * Called when a client received a new up to date game object from the host.
+     *
+     * @param game The new game object received by the host.
+     */
+    public static void refreshGameInstance(Game game) {
+        // TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
+        gameInstance = game;
+    }
 
     private Game() {
-	}
+    }
 
 
     /**
      * Inits the Game Object, as it is a Singleton.
+     *
      * @param names
      */
     public void init(String... names) {
@@ -120,7 +126,7 @@ public class Game {
      * play method
      * As the game could be played forever, it features an endless loop, which should be left
      * when there is only one Player who hasn't won.
-     *
+     * <p>
      * It enables the Dice and waits for the player to roll it.
      *
      * @throws IllegalAccessException
@@ -171,24 +177,69 @@ public class Game {
 
                     //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
 
+                    this.possibleToMove = new ArrayList<>();
                     for (GamePiece piece : cp.getPieces()) {
-                        if (!(piece.getSpot() instanceof StartingSpot)) {
-
-
-                            if (movePiece(piece)) {
-                                moved = true;
-                                break;
-                            }
+                        if (board.checkSpot(DummyDice.get().getDiceNumber(), piece) != null) {
+                            this.possibleToMove.add(piece);
                         }
                     }
+
+
+                    if (possibleToMove.size() > 0) {
+                        final Button btnFigurSelect = (Button) (gameactivity.findViewById(R.id.Select_Figur));
+                        final Button btnMoveFigur = (Button) (gameactivity.findViewById(R.id.Move_Figur));
+
+                        gameactivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnFigurSelect.setEnabled(true);
+                                btnMoveFigur.setEnabled(true);
+                            }
+                        });
+                        synchronized (this) {
+                            try {
+                                wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        gameactivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnFigurSelect.setEnabled(false);
+                                btnMoveFigur.setEnabled(false);
+                            }
+                        });
+
+                        if (possibleToMove.contains(this.selectedGamePiece)) {
+                            movePiece(this.selectedGamePiece);
+                            moved = true;
+                            selectedGamePiece = null;
+                            possibleToMove = null;
+                        }
+
+                    }
+
+                    //Für automatisches Spielen
+//                    for (GamePiece piece : cp.getPieces()) {
+//                        if (!(piece.getSpot() instanceof StartingSpot)) {
+//
+//
+//                            if (movePiece(piece)) {
+//                                moved = true;
+//                                break;
+//                            }
+//                        }
+//                    }
                 }
 
-                if(!moved){
-                  attempts--;
+                if (!moved) {
+                    attempts--;
                 }
 
                 bv.postInvalidate();
-            } while (DummyDice.get().getDiceNumber() == DiceNumber.SIX || ( attempts > 0 && !moved ));
+            } while (DummyDice.get().getDiceNumber() == DiceNumber.SIX || (attempts > 0 && !moved));
 
 
             currentPlayer = (currentPlayer + 1) % players.length;
@@ -197,6 +248,15 @@ public class Game {
         }
 
 
+    }
+
+
+    public void selectGamePiece(GamePiece gp) {
+        this.selectedGamePiece = gp;
+    }
+
+    public ArrayList<GamePiece> getPossibleToMove() {
+        return this.possibleToMove;
     }
 
     /**
@@ -219,7 +279,6 @@ public class Game {
     }
 
     /**
-     *
      * Moves the GamePiece by one step.
      * Returns true when the GamePiece was able to move.
      *
@@ -241,8 +300,9 @@ public class Game {
 
     /**
      * not used at the moment...
-     * @TODO REFACTOR
+     *
      * @throws IllegalAccessException
+     * @TODO REFACTOR
      */
     private void waitfordice() throws IllegalAccessException {
 
@@ -268,7 +328,6 @@ public class Game {
     }
 
     /**
-     *
      * @return
      */
     public Player[] getPlayers() {
@@ -276,7 +335,6 @@ public class Game {
     }
 
     /**
-     *
      * @return
      */
     public Player getCurrentPlayer() {
@@ -285,7 +343,6 @@ public class Game {
 
 
     /**
-     *
      * @param players
      */
     public void setPlayers(Player[] players) {
@@ -293,7 +350,6 @@ public class Game {
     }
 
     /**
-     *
      * @return
      */
     public BoardView getBoardView() {
@@ -301,7 +357,6 @@ public class Game {
     }
 
     /**
-     *
      * @param bv
      */
     public void setBoardView(BoardView bv) {
@@ -314,11 +369,11 @@ public class Game {
      * @param name
      * @return
      */
-    public Player getPlayerByName(String name){
-		for (int i = 0; i < players.length; i++) {
-			if(name.equals(players[i].getName()))
-				return players[i];
-		}
-		return null;
-	}
+    public Player getPlayerByName(String name) {
+        for (int i = 0; i < players.length; i++) {
+            if (name.equals(players[i].getName()))
+                return players[i];
+        }
+        return null;
+    }
 }

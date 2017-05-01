@@ -29,8 +29,9 @@ public class BoardView extends View {
     private Paint paint;
     private Board board;
     private boolean boardIsDrawn = false;
-    double spotRadius;
-    double abstand;
+    private double spotRadius;
+    private double abstand;
+    private GamePiece highlightedGamePiece;
 
     /**
      * Initializes the BoardView
@@ -72,6 +73,13 @@ public class BoardView extends View {
         init();
     }
 
+    public GamePiece getHighlightedGamePiece() {
+        return highlightedGamePiece;
+    }
+
+    public void setHighlightedGamePiece(GamePiece highlightedGamePiece) {
+        this.highlightedGamePiece = highlightedGamePiece;
+    }
 
     /**
      * Overrieds Views onDraw method.
@@ -136,6 +144,16 @@ public class BoardView extends View {
                 canvas.drawCircle((float)x, (float)y, (float)spotRadius/2, paint);
             }
 
+        }
+        paint.setColor(Color.BLACK);
+        paint.setStyle(Paint.Style.FILL);
+        if(highlightedGamePiece != null){
+            Spot s = highlightedGamePiece.getSpot();
+
+            double x = (2*s.getX()+1)*(spotRadius+abstand);
+            double y = (2*s.getY()+1)*(spotRadius+abstand);
+
+            canvas.drawCircle((float)x, (float)y, (float)spotRadius/2, paint);
         }
     }
 
