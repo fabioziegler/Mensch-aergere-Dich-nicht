@@ -11,6 +11,7 @@ import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by johannesholzl on 05.04.17.
@@ -32,7 +33,6 @@ public class Game {
 
     //init methode already called?
     private boolean initialized = false;
-
 
     /**
      * Returns gameInstance()
@@ -137,8 +137,44 @@ public class Game {
             throw new IllegalAccessError("Game hasn't been initialized. Please run init() first.");
         }
 
-        while (true) {
+        int bestPlayer = -1;
+        int bestNumber = 0;
 
+        for(int p = 0; p < players.length; p++){
+
+            printInfo("Bitte würfeln: " + players[p].getName());
+
+            DummyDice.waitForRoll();
+
+            int number = DummyDice.get().getDiceNumber().getNumber();
+
+            if(number > bestNumber){
+                bestNumber = number;
+                bestPlayer = p;
+            }
+        }
+
+        currentPlayer = bestPlayer;
+
+        regularGame();
+
+    }
+
+    private void printInfo(String info){
+
+        final String finalInfo = info;
+        final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
+        gameactivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameactivity.setStatus(finalInfo);
+
+            }
+        });
+    }
+
+    private void regularGame(){
+        while (true) {
 
             final Player cp = players[currentPlayer];
             final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
