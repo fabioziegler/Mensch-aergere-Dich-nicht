@@ -34,6 +34,7 @@ public class Game {
     //init methode already called?
     private boolean initialized = false;
 
+    private Spieloberflaeche gameactivity;
     /**
      * Returns gameInstance()
      *
@@ -75,6 +76,8 @@ public class Game {
 
         players = new Player[names.length];
         board = Board.get();
+
+        gameactivity = (Spieloberflaeche) bv.getContext();
 
         for (int i = 0; i < names.length; i++) {
             PlayerColor cColor = PlayerColor.values()[i];
@@ -163,7 +166,6 @@ public class Game {
     private void printInfo(String info){
 
         final String finalInfo = info;
-        final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -177,14 +179,7 @@ public class Game {
         while (true) {
 
             final Player cp = players[currentPlayer];
-            final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
-            gameactivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    gameactivity.setStatus(cp.getName() + " ist dran!");
-
-                }
-            });
+            printInfo(cp.getName()+" ist dran!");
 
             int attempts = 3;
             boolean moved = false;
