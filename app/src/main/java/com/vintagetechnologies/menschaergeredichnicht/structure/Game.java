@@ -149,6 +149,8 @@ public class Game {
 
             DummyDice.waitForRoll();
 
+            DummyDice.get().addToBlacklist(DummyDice.get().getDiceNumber());
+
             int number = DummyDice.get().getDiceNumber().getNumber();
 
             if(number > bestNumber){
@@ -158,7 +160,7 @@ public class Game {
         }
 
         currentPlayer = bestPlayer;
-
+        DummyDice.get().emptyBlacklist();
         regularGame();
 
     }
