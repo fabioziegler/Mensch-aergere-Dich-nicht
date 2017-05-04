@@ -2,7 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
-import com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.networking.WifiListener;
 import com.vintagetechnologies.menschaergeredichnicht.networking.WifiReceiver;
 
@@ -160,7 +160,7 @@ public class NetworkingTest {
 	public void testMessageEncodingAndDecoding(){
 
 		/* Test encoding */
-		String tag = NetworkTags.TAG_PLAYER_HAS_CHEATED;
+		String tag = Network.TAG_PLAYER_HAS_CHEATED;
 		String message = "true";
 
 		String encodedMessage = gameLogic.encodeMessage(tag, message);
@@ -172,7 +172,7 @@ public class NetworkingTest {
 		String decodedTag = decodedData[0];
 		String decodedMessage = decodedData[1];
 
-		assertEquals("Tag must be correctly decoded", NetworkTags.TAG_PLAYER_HAS_CHEATED, decodedTag);
+		assertEquals("Tag must be correctly decoded", Network.TAG_PLAYER_HAS_CHEATED, decodedTag);
 		assertEquals("Message must be correctly decoded to 'true'", "true", decodedMessage);
 		assertTrue(Boolean.parseBoolean(decodedMessage));
 	}

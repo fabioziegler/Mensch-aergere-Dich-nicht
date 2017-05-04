@@ -28,6 +28,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.code.gson:gson:2.8.0'             // Fabio: Google gson lib for Object<->String conversion
     compile 'com.google.android.gms:play-services-nearby:10.2.1' // Fabio: Google's nearby API for networking
+    compile group: 'com.esotericsoftware', name: 'kryonet', version: '2.22.0-RC1'   // for networking
     testCompile 'junit:junit:4.12'
 }
 

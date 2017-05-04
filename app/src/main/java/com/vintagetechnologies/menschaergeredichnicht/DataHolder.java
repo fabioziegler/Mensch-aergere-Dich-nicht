@@ -14,7 +14,7 @@ public class DataHolder {
 
     private static DataHolder instance = null;
 
-    private Map<String, WeakReference<Object>> data = new HashMap<String, WeakReference<Object>>();
+    private Map<String, WeakReference<Object>> data = new HashMap<>();
 
     /**
      * Only to prevent initialisation

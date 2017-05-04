@@ -3,7 +3,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 
-import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_PLAYER_HAS_CHEATED;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 
 /**
  * Created by Demi on 11.04.2017.

@@ -6,14 +6,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.nearby.Nearby;
-import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
-import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_PLAYER_HAS_CHEATED;
-import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_SYNCHRONIZE_GAME;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_SYNCHRONIZE_GAME;
 
 /**
  * Created by Fabio on 08.04.17.
@@ -26,7 +25,7 @@ public class GameLogic {
 	private static final String TAG = GameLogic.class.getSimpleName();
 
 	/* message segmentation separator */
-	private final String messageDelimiter = ";";
+	private static final String messageDelimiter = ";";
 
     /* Holds game settings like music enabled, cheat mode.. */
     private GameSettings gameSettings;
@@ -69,10 +68,10 @@ public class GameLogic {
 		String[] data = decodeMessage(message);
 
 		String tag = data[0];
-		message = data[1];
+		String decodedMessage = data[1];
 
 		// parse message
-		parseMessage(playerID, tag, message);
+		parseMessage(playerID, tag, decodedMessage);
     }
 
 
@@ -127,9 +126,9 @@ public class GameLogic {
 		if(tag.contains(messageDelimiter))
 			throw new IllegalArgumentException("Argument tag must not contain the character '" + messageDelimiter + "'.");
 
-		message = encodeMessage(tag, message);
+		String encodedMessage = encodeMessage(tag, message);
 
-        Nearby.Connections.sendReliableMessage(googleApiClient, playerID, message.getBytes());	// transmits over TCP
+        Nearby.Connections.sendReliableMessage(googleApiClient, playerID, encodedMessage.getBytes());	// transmits over TCP
     }
 
 
@@ -147,8 +146,8 @@ public class GameLogic {
 		 *     For example: 4;SYNC;<game obj as json String>
 		 */
 		int tagLength = tag.length();
-		message = String.valueOf(tagLength) + messageDelimiter + tag + messageDelimiter + message;
-		return message;
+		String encodedMessage = String.valueOf(tagLength) + messageDelimiter + tag + messageDelimiter + message;
+		return encodedMessage;
 	}
 
 	/**
@@ -163,9 +162,9 @@ public class GameLogic {
 		String tag = split[1];
 
 		// get plain message
-		message = message.substring(String.valueOf(tagLength).length() + messageDelimiter.length() + tagLength + messageDelimiter.length());
+		String plainMessage = message.substring(String.valueOf(tagLength).length() + messageDelimiter.length() + tagLength + messageDelimiter.length());
 
-		return new String[]{ tag, message };
+		return new String[]{ tag, plainMessage };
 	}
 
 

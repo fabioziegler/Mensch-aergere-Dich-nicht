@@ -5,7 +5,7 @@ import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 
-import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_SYNCHRONIZE_GAME;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_SYNCHRONIZE_GAME;
 
 /**
  * Created by Simon on 25.04.2017.

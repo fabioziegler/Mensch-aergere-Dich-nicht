@@ -141,7 +141,7 @@ public class GameClient extends AppCompatActivity implements
                 };
 
 
-        // init google api client
+        // initialize google api client
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

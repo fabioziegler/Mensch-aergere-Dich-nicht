@@ -275,7 +275,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 //            }
 //        });
 
-        // init dice
+        // initialize dice
         dice = new Dice();
 
         // load image list
@@ -300,7 +300,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 try {
                     Game.getInstance().play();
                 } catch (IllegalAccessException e){
-                    Log.e("Spieloberflaeche", "Error in game init", e);
+                    Log.e("Spieloberflaeche", "Error in game initialize", e);
                 }
             }
         }.start();
