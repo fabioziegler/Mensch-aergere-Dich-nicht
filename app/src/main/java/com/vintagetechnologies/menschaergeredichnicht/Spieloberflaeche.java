@@ -99,10 +99,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             throw new  IllegalStateException();
         }
 
-        // dice rolls for 3 seconds, and changes 5x a second it's number
+        // dice rolls for 2 seconds, and changes 5x a second it's number
 
         // "roll" animation
-        for (int i = 0; i < 3; i++) {       // 3 seconds
+        for (int i = 0; i < 2; i++) {       // 2 seconds
             for (int j = 0; j < 5; j++) {   // 1 second (5 changes)
                 final int randomIndex = rand.nextInt(6);
 
