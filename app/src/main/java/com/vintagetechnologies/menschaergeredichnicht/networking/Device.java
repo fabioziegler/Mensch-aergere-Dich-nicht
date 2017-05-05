@@ -8,21 +8,27 @@ package com.vintagetechnologies.menschaergeredichnicht.networking;
 
 public class Device {
 
-    private String id;
+    private int id;
     private String name;
     private boolean isHost;
 
-    public Device(String id, String name, boolean isHost){
+    public Device(int id, String name, boolean isHost){
         this.id = id;
         this.name = name;
         this.isHost = isHost;
     }
 
-    public String getId() {
+	public Device(int id, boolean isHost){
+		this.id = id;
+		this.name = "name not set";
+		this.isHost = isHost;
+	}
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

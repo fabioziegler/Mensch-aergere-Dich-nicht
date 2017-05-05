@@ -30,9 +30,15 @@
     <string name="strJoinTitle">Wähle ein Spiel aus</string>
     <string name="msgSearchingGameHost">Nach Spielen suchen...</string>
     <string name="msgHostSearchFailed">"Suche fehlgeschlagen"</string>
+    <string name="waitingForGameStart">Warte auf Spielanfang...</string>
     <string name="msgConfirmExit">"Möchtest du das Spiel wirklich beenden?"</string>
+    <string name="hostEndedGame">Der Host hat das Spiel beendet.</string>
     <string name="strSelectGameFromList">Gefundene Spiele:</string>
+    <string name="joinedGame">Spiel von %s beigetreten!</string>
     <string name="msgPlayerJustJoinedTheGame">\u0020ist beigetreten!</string>
     <string name="msgPlayerJustLeftTheGame">\u0020hat das Spiel verlassen</string>
+    <string name="noWiFiConnection">Bitte stellen Sie vorher eine WiFi Verbindung her!</string>
+    <string name="schummelnEin">Schummeln ist eingeschalten</string>
+    <string name="schummelnAus">Schummeln ist ausgeschalten</string>
 
 </resources>

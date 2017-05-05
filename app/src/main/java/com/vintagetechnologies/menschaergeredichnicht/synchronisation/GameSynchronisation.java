@@ -2,9 +2,10 @@ package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 
 import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
-import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_SYNCHRONIZE_GAME;
 
 /**
@@ -15,9 +16,9 @@ public class GameSynchronisation {
 
     /**
      * Synchronisiert Gamedaten der clients
-     * @param game
      */
-    public static void synchronize(Game game){
+    public static void synchronize(){
+		Game game = Game.getInstance();
         String message = encode(game);
         sendToOtherDevices(message);
     }
@@ -53,8 +54,8 @@ public class GameSynchronisation {
      * @param json
      */
     private static void sendToOtherDevices(String json){
-        GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve("GAMELOGIC");
-        gameLogic.sendToClientDevices(TAG_SYNCHRONIZE_GAME, json);
+        GameLogicHost gameLogic = (GameLogicHost) DataHolder.getInstance().retrieve("GAMELOGIC");
+		gameLogic.sendToAllClientDevices(TAG_SYNCHRONIZE_GAME + MESSAGE_DELIMITER + json);
     }
 
 }

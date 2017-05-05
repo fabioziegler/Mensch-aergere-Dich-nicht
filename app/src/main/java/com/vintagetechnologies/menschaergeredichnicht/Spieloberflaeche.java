@@ -25,14 +25,22 @@ import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
+
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
+
+
+	private GameLogic gameLogic;
+	private GameSettings gameSettings;
 
     private Sensor LightSensor;
     private SensorManager SM;
@@ -189,10 +197,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+		gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
+		gameLogic.setActivity(this);
+
+		gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
+
         Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
 
         Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
-
 
 
         state = (TextView)(findViewById(R.id.textView_status));
@@ -307,8 +319,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 	}
 
 
-
-
     /**
      * Determines the screen height and width
      */
@@ -355,8 +365,15 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
             //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
         }
-
     }
+
+
+    @Override
+	public void onStart(){
+		super.onStart();
+
+		Toast.makeText(getApplicationContext(), (gameSettings.isCheatingEnabled() ? R.string.schummelnEin : R.string.schummelnAus), Toast.LENGTH_LONG).show();
+	}
 
 
     @Override

@@ -1,14 +1,13 @@
 package com.vintagetechnologies.menschaergeredichnicht.networking.kryonet;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.registerKryoClasses;
 
@@ -22,6 +21,13 @@ public class MyServer {
 
 	private Server server;
 
+	private ArrayList<NetworkListener> listeners;
+
+
+	public MyServer(){
+		listeners = new ArrayList<>(1);
+	}
+
 
 	/**
 	 * Called when an object has been received from the remote end of the connection.
@@ -30,6 +36,9 @@ public class MyServer {
 	 */
 	public void onReceived(Connection connection, Object object){
 		Log.i(TAG, "Received message! Msg: " + object);
+
+		for(NetworkListener listener : listeners)
+			listener.onReceived(connection, object);
 	}
 
 
@@ -39,6 +48,9 @@ public class MyServer {
 	 */
 	public void onConnected(Connection connection){
 		Log.i(TAG, "Connected to clinet: " + connection.getRemoteAddressTCP().getHostName());
+
+		for(NetworkListener listener : listeners)
+			listener.onConnected(connection);
 	}
 
 
@@ -47,7 +59,8 @@ public class MyServer {
 	 * @param connection
 	 */
 	public void onDisconnected(Connection connection){
-
+		for(NetworkListener listener : listeners)
+			listener.onDisconnected(connection);
 	}
 
 
@@ -94,5 +107,18 @@ public class MyServer {
 		registerKryoClasses(server.getKryo());
 	}
 
+
+	public void addListener(NetworkListener listener){
+		listeners.add(listener);
+	}
+
+
+	public void removeListener(NetworkListener listener){
+		listeners.remove(listener);
+	}
+
+	public Server getServer(){
+		return server;
+	}
 
 }

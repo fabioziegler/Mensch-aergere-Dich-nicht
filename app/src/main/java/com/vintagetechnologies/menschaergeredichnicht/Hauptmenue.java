@@ -7,10 +7,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClientActivity;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServerActivity;
-import com.vintagetechnologies.menschaergeredichnicht.networking.wifip2p.MyWiFiActivity;
 
 
 public class Hauptmenue extends AppCompatActivity {
@@ -32,6 +33,13 @@ public class Hauptmenue extends AppCompatActivity {
      * Called when the button "Neues Spiel" is clicked
      */
     private void btnHostGameClicked(){
+
+		// check wifi connection
+		if(!Network.isConnectedToWiFiNetwork(this)){
+			Toast.makeText(getApplicationContext(), R.string.noWiFiConnection, Toast.LENGTH_LONG).show();
+			return;
+		}
+
         Intent intent = new Intent(this, /*GameHost*/ MyServerActivity.class);
         startActivity(intent);
         finish();
@@ -42,6 +50,13 @@ public class Hauptmenue extends AppCompatActivity {
      * Called when the button "Spiel beitreten" is clicked
      */
     private void btnJoinGameClicked(){
+
+		// check wifi connection
+		if(!Network.isConnectedToWiFiNetwork(this)){
+			Toast.makeText(getApplicationContext(), R.string.noWiFiConnection, Toast.LENGTH_LONG).show();
+			return;
+		}
+
         Intent intent = new Intent(this, /*GameClient*/ MyClientActivity.class);
         startActivity(intent);
         finish();

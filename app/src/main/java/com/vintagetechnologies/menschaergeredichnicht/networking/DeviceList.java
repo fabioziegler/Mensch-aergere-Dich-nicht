@@ -1,5 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.networking;
 
+import com.esotericsoftware.kryonet.Connection;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,9 @@ import java.util.List;
 
 public class DeviceList {
 
+
     private ArrayList<Device> devices;
+
 
     public DeviceList(){
         devices = new ArrayList<>(4);
@@ -29,42 +33,46 @@ public class DeviceList {
         return null;
     }
 
+
     /**
      * Add an device
      * @param device
      */
-    public void addDevice(Device device){
+    public void add(Device device){
         devices.add(device);
     }
+
 
     /**
      * Get the number of connected devices
      * @return The number of connected devices (excluding the host)
      */
-    public int getCountConnectedDevices(){
+    public int getCount(){
         return devices.size();
     }
+
 
     /**
      * Check if a ID belongs to the host of the game
      * @param playerID The id of the player
      * @return True if the ID belongs to the host
      */
-    public boolean isHost(String playerID){
+    public boolean isHost(int playerID){
         Device dev = getHost();
 
-        if(dev != null && dev.getId().equals(playerID))
+        if(dev != null && dev.getId() == playerID)
             return true;
 
         return false;
     }
+
 
     /**
      * Get device by player name.
      * @param playerName A player name.
      * @return The device associated with the player name or null if there is no such device.
      */
-    public Device getDeviceByPlayerName(String playerName){
+    public Device getPlayer(String playerName){
         for (int i = 0; i < devices.size(); i++) {
             if(playerName.equals(devices.get(i).getName())){
                 return devices.get(i);
@@ -74,20 +82,33 @@ public class DeviceList {
         return null;
     }
 
+
     /**
      * Get device by ID.
      * @param playerID A player name.
      * @return The device associated with the player ID or null if there is no such device.
      */
-    public Device getDeviceByPlayerID(String playerID){
+    public Device getPlayer(int playerID){
         for (int i = 0; i < devices.size(); i++) {
-            if(playerID.equals(devices.get(i).getId())){
+            if(playerID == devices.get(i).getId()){
                 return devices.get(i);
             }
         }
 
         return null;
     }
+
+
+	/**
+	 * Get device by connection
+	 * @param connection
+	 * @return
+	 */
+	public Device getDevice(Connection connection){
+		if(connection == null)
+			return null;
+		return getPlayer(connection.getID());
+	}
 
     /**
      * Get devices as an array list
@@ -97,19 +118,31 @@ public class DeviceList {
         return devices;
     }
 
-    /**
-     * Remove a device by ID.
-     * @param playerID ID of the player to be removed.
-     */
-    public void removeDeviceByID(String playerID){
-        if (playerID == null || "".equals(playerID))
-        	return;
 
-        for (int i = 0; i < devices.size(); i++) {
-            if(devices.get(i).getId().equals(playerID)){
-                devices.remove(i);
-                break;
-            }
-        }
+	/**
+	 * Remove device by player id.
+	 * @param playerID
+	 */
+	public void remove(int playerID){
+		for (int i = 0; i < devices.size(); i++) {
+			if(devices.get(i).getId() == playerID){
+				devices.remove(i);
+				break;
+			}
+		}
+	}
+
+
+    /**
+     * Remove a device.
+     * @param connection Connection of the player to be removed.
+     */
+    public void remove(Connection connection) throws IllegalArgumentException {
+        if (connection == null)
+        	throw new IllegalArgumentException("Connection must not be null");
+
+		int playerID = connection.getID();
+
+		remove(playerID);
     }
 }

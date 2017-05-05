@@ -67,13 +67,14 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="30dp"
         android:layout_height="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="69dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="60dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="1.0"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="60dp" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"/>
 
     <TextView
         android:id="@+id/lblSelectHostFromList"

@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Listener;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.registerKryoClasses;
 
@@ -21,6 +22,8 @@ public class MyClient {
 
 	private Client client;
 
+	private ArrayList<NetworkListener> listeners;
+
 
 	/**
 	 * Called when an object has been received from the remote end of the connection.
@@ -29,6 +32,9 @@ public class MyClient {
 	 */
 	public void onReceived(Connection connection, Object object){
 		Log.i(TAG, "Received message!" + object);
+
+		for(NetworkListener listener : listeners)
+			listener.onReceived(connection, object);
 	}
 
 
@@ -39,6 +45,9 @@ public class MyClient {
 	public void onConnected(Connection connection){
 		Log.i(TAG, "Connected. Sending hello to server...");
 		client.sendTCP("hello");
+
+		for(NetworkListener listener : listeners)
+			listener.onConnected(connection);
 	}
 
 
@@ -47,7 +56,8 @@ public class MyClient {
 	 * @param connection
 	 */
 	public void onDisconnected(Connection connection){
-
+		for(NetworkListener listener : listeners)
+			listener.onDisconnected(connection);
 	}
 
 
@@ -110,13 +120,13 @@ public class MyClient {
 				}while (hostAddress == null);
 
 				// connect to host
-				//try {
+				try {
 					Log.i(TAG, "Connecting to server at " + hostAddress);
 					final int connectionTimeout = 1000 * 10;	// def: 5s
-					//client.connect(connectionTimeout, hostAddress, 54555, 54777);
-				//} catch (IOException e) {
-				//	Log.e(TAG, "Failed to connect to server or timeout.", e);
-				//}
+					client.connect(connectionTimeout, hostAddress, 54555, 54777);
+				} catch (IOException e) {
+					Log.e(TAG, "Failed to connect to server or timeout.", e);
+				}
 
 			}
 		});
@@ -145,5 +155,17 @@ public class MyClient {
 		}
 	}
 
+
+	public void addListener(NetworkListener listener){
+		listeners.add(listener);
+	}
+
+	public void removeListener(NetworkListener listener){
+		listeners.remove(listener);
+	}
+
+	public Client getClient(){
+		return client;
+	}
 
 }
