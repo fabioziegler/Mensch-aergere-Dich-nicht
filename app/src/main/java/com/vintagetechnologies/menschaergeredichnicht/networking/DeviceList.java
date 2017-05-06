@@ -120,6 +120,25 @@ public class DeviceList {
 
 
 	/**
+	 * Get a list of player names
+	 * @return
+	 */
+	public String[] getNameList(){
+
+		if(devices.isEmpty())
+			return null;
+
+		String[] names = new String[devices.size()];
+
+		for (int i = 0; i < names.length; i++) {
+			names[i] = devices.get(i).getName();
+		}
+
+		return names;
+	}
+
+
+	/**
 	 * Remove device by player id.
 	 * @param playerID
 	 */

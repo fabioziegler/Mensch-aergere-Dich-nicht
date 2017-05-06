@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
+import com.vintagetechnologies.menschaergeredichnicht.Hauptmenue;
 import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
@@ -195,21 +196,30 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 	 */
 	@Override
 	public void onBackPressed() {
-		showConfirmExitDialog();
+		if(hostNames.size() < 1)
+			exit();
+		else
+			showConfirmExitDialog();
 	}
 
 
+	/**
+	 * Exits the host search activity.
+	 */
 	private void exit(){
 		myClient.getClient().stop();
 
 		// show main menu
-		Intent intent = new Intent(this, Spieloberflaeche.class);
+		Intent intent = new Intent(this, Hauptmenue.class);
 		startActivity(intent);
 
 		finish();
 	}
 
 
+	/**
+	 * Show confirmation dialog asking if the user really wants to exit.
+	 */
 	private void showConfirmExitDialog(){
 		String message = getString(R.string.msgConfirmExitClient);
 

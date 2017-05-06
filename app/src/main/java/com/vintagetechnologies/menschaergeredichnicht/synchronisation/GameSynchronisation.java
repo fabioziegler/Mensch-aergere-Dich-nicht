@@ -54,6 +54,9 @@ public class GameSynchronisation {
      * @param message
      */
     private static void sendToOtherDevices(Object message){
+
+		// TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
+
         GameLogicHost gameLogic = (GameLogicHost) DataHolder.getInstance().retrieve("GAMELOGIC");
 		//gameLogic.sendToAllClientDevices(TAG_SYNCHRONIZE_GAME + MESSAGE_DELIMITER + json);
 		gameLogic.sendToAllClientDevices(message);

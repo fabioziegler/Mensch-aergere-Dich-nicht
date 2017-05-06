@@ -33,6 +33,7 @@
     <string name="waitingForGameStart">Warte auf Spielanfang...</string>
     <string name="msgConfirmExit">"Möchtest du das Spiel wirklich beenden?"</string>
     <string name="msgConfirmExitClient">"Möchtest du die Host-Suche wirklich beenden?"</string>
+    <string name="msgConfirmExitHost">"Möchtest du die Mitspielersuche wirklich beenden?"</string>
     <string name="hostEndedGame">Der Host hat das Spiel beendet.</string>
     <string name="strSelectGameFromList">Gefundene Spiele:</string>
     <string name="joinedGame">Spiel von %s beigetreten!</string>

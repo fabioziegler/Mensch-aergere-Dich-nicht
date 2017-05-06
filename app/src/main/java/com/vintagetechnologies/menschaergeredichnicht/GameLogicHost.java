@@ -30,6 +30,8 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 	private final String TAG = GameLogic.class.getSimpleName();
 
+	private MyServer myServer;
+
 	private Server server;
 
 	private GameSettings gameSettings;
@@ -37,6 +39,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 	public GameLogicHost(Activity activity, MyServer myServer){
 		super(activity, true);
+		this.myServer = myServer;
 		this.server = myServer.getServer();
 
 		myServer.addListener(this);
@@ -180,7 +183,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 			Log.i(TAG, "Received game object.");
 
 			Game game = (Game) object;
-			Game.refreshGameInstance((Game) object);	// replace current game class with new one
+			Game.refreshGameInstance(game);	// replace current game class with new one
 			GameSynchronisation.synchronize();
 
 
@@ -210,6 +213,12 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		}else {
 			Log.w(TAG, String.format("Received unknown message '%s' from player '%s'", object, clientDevice.getName()));
 		}
+	}
+
+	@Override
+	public void setActivity(Activity activity) {
+		super.setActivity(activity);
+		myServer.setCallingActivity(activity);
 	}
 
 }

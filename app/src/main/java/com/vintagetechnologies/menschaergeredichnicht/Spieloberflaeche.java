@@ -202,12 +202,13 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 		gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
 
-        Game.getInstance().setBoardView((BoardView) (findViewById(R.id.spielFeld)));
+        Game.getInstance().setBoardView((BoardView) findViewById(R.id.spielFeld));
 
-        Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+        //Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+        Game.getInstance().init(gameLogic.getDevices().getNameList());
 
 
-        state = (TextView)(findViewById(R.id.textView_status));
+        state = (TextView) findViewById(R.id.textView_status);
 
         Schummeln = Game.getInstance().getCurrentPlayer().getSchummeln();
 
@@ -231,7 +232,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                  * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
                  * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
                  */
-                for(int i=0; i <Suspechts.length; i++){
+                for(int i=0; i < Suspechts.length; i++){
                     if (Suspechts[i].getSchummeln().isPlayerCheating()) {
                         // TODO Spieler i setzt aus
                         schummelt=true;

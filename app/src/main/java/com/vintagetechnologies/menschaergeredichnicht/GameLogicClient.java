@@ -28,6 +28,8 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 	private final String TAG = GameLogic.class.getSimpleName();
 
+	private MyClient myClient;
+
 	private Client client;
 
 	private Device hostDevice;
@@ -35,6 +37,7 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 	public GameLogicClient(Activity activity, MyClient myClient){
 		super(activity, false);
+		this.myClient = myClient;
 		this.client = myClient.getClient();
 
 		myClient.addListener(this);
@@ -144,4 +147,10 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 		sendingThread.start();
 	}
 
+
+	@Override
+	public void setActivity(Activity activity) {
+		super.setActivity(activity);
+		myClient.setCallingActivity(activity);
+	}
 }

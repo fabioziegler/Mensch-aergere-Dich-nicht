@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class Game {
     public void init(String... names) {
 
         new Thread() {
+			@Override
             public void run() {
                 DummyDice.get();
             }
@@ -113,6 +115,7 @@ public class Game {
 
         while (true) {
 
+			GameSynchronisation.synchronize();
 
             final Player cp = players[currentPlayer];
             final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
@@ -120,7 +123,6 @@ public class Game {
                 @Override
                 public void run() {
                     gameactivity.setStatus(cp.getName() + " ist dran!");
-
                 }
             });
 

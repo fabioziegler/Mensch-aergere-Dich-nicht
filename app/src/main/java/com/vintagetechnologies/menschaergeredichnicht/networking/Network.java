@@ -80,11 +80,10 @@ public class Network {
 		kryo.register(Cheat.class);
 
 		kryo.register(Spot.class);
+		kryo.register(Spot[].class);
 		kryo.register(StartingSpot.class);
 		kryo.register(RegularSpot.class);
 		kryo.register(EndSpot.class);
-
-
 	}
 
 
@@ -104,5 +103,8 @@ public class Network {
 	/* other constants*/
 	public static final String DATAHOLDER_GAMELOGIC = "GAMELOGIC";
 	public static final String DATAHOLDER_GAMESETTINGS = "GAMESETTINGS";
+
+	public static final int WRITE_BUFFER_SIZE = 1000 * 1000 * 10;
+	public static final int OBJECT_BUFFER_SIZE = 1000 * 1000 * 10;
 
 }

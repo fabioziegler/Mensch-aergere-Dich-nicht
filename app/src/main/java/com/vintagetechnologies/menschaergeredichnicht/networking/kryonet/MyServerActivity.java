@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
+import com.vintagetechnologies.menschaergeredichnicht.Hauptmenue;
 import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
@@ -29,9 +30,9 @@ import java.util.ArrayList;
 
 public class MyServerActivity extends AppCompatActivity implements NetworkListener {
 
+
 	/* server */
 	private MyServer myServer;
-
 
 	/* controls */
 	private Button btnStartGame;
@@ -188,27 +189,36 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 
 
 	/**
-	 * Called when the user pressed the back button
+	 * Called when the user pressed the back button.
 	 */
 	@Override
 	public void onBackPressed() {
-		showConfirmExitDialog();
+		if(!enoughPlayersConnected())
+			exit();
+		else
+			showConfirmExitDialog();
 	}
 
 
+	/**
+	 * Exits the hosting activity.
+	 */
 	private void exit(){
 		myServer.getServer().stop();
 
 		// show main menu
-		Intent intent = new Intent(this, Spieloberflaeche.class);
+		Intent intent = new Intent(this, Hauptmenue.class);
 		startActivity(intent);
 
 		finish();
 	}
 
 
+	/**
+	 * Show dialog if the user really wants to exit.
+	 */
 	private void showConfirmExitDialog(){
-		String message = getString(R.string.msgConfirmExit);
+		String message = getString(R.string.msgConfirmExitHost);
 
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 			@Override

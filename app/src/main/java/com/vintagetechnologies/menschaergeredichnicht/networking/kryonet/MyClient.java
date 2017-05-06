@@ -11,8 +11,11 @@ import com.esotericsoftware.kryonet.Listener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.List;
 
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.OBJECT_BUFFER_SIZE;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.WRITE_BUFFER_SIZE;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.registerKryoClasses;
 
 /**
@@ -25,14 +28,14 @@ public class MyClient {
 
 	private Client client;
 
-	private ArrayList<NetworkListener> listeners;
+	private List<NetworkListener> listeners;
 
 	private Activity callingActivity;
 
 
 	public MyClient(Activity callingActivity){
 		this.callingActivity = callingActivity;
-		listeners = new ArrayList<>(2);
+		listeners = Collections.synchronizedList(new ArrayList<NetworkListener>(2));
 	}
 
 
@@ -51,10 +54,8 @@ public class MyClient {
 		callingActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Iterator<NetworkListener> iterator = listeners.iterator();
-				while (iterator.hasNext()){
-					iterator.next().onReceived(connection, object);
-				}
+				for (int i = 0; i < listeners.size(); i++)
+					listeners.get(i).onReceived(connection, object);
 			}
 		});
 	}
@@ -70,10 +71,8 @@ public class MyClient {
 		callingActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Iterator<NetworkListener> iterator = listeners.iterator();
-				while (iterator.hasNext()){
-					iterator.next().onConnected(connection);
-				}
+				for (int i = 0; i < listeners.size(); i++)
+					listeners.get(i).onConnected(connection);
 			}
 		});
 	}
@@ -87,10 +86,8 @@ public class MyClient {
 		callingActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Iterator<NetworkListener> iterator = listeners.iterator();
-				while (iterator.hasNext()){
-					iterator.next().onDisconnected(connection);
-				}
+				for (int i = 0; i < listeners.size(); i++)
+					listeners.get(i).onDisconnected(connection);
 			}
 		});
 	}
@@ -101,7 +98,7 @@ public class MyClient {
 	 */
 	public void initializeClient(){
 
-		client = new Client();
+		client = new Client(WRITE_BUFFER_SIZE, OBJECT_BUFFER_SIZE);
 		client.start();
 
 		client.addListener(new Listener(){
@@ -191,13 +188,18 @@ public class MyClient {
 	}
 
 
-	public void addListener(NetworkListener listener){
+	public synchronized void addListener(NetworkListener listener){
 		listeners.add(listener);
 	}
 
 
-	public void removeListener(NetworkListener listener){
+	public synchronized void removeListener(NetworkListener listener){
 		listeners.remove(listener);
+	}
+
+
+	public void setCallingActivity(Activity callingActivity) {
+		this.callingActivity = callingActivity;
 	}
 
 
