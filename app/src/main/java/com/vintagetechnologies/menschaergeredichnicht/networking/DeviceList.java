@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.networking;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Fabio on 08.04.17.
@@ -92,7 +93,7 @@ public class DeviceList {
      * Get devices as an array list
      * @return
      */
-    public ArrayList<Device> getList(){
+    public List<Device> getList(){
         return devices;
     }
 
@@ -101,7 +102,8 @@ public class DeviceList {
      * @param playerID ID of the player to be removed.
      */
     public void removeDeviceByID(String playerID){
-        if (playerID == null || playerID.equals("")) return;
+        if (playerID == null || "".equals(playerID))
+        	return;
 
         for (int i = 0; i < devices.size(); i++) {
             if(devices.get(i).getId().equals(playerID)){

@@ -107,7 +107,7 @@ public class BoardTest {
     public void testCheckSpot(){
         GamePiece gp = new GamePiece(PlayerColor.BLUE);
         gp.setSpot(board.getBoard(0));
-        board.checkSpot(5/*DiceNumber.FIVE*/, gp);
+        board.checkSpot(DiceNumber.FIVE, gp);
     }
 
 }

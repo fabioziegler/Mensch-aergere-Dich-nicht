@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -16,8 +17,8 @@ import java.io.InputStreamReader;
  */
 public class GameSettings {
 
-    //TODO: make methods to save some settings (music, ...) permanently to disc (using google gson lib)
-
+	private final String TAG = "GameSettings";
+	private final String settingsFilename = "settings.txt";
     private String playerName;
     private boolean musicEnabled;
     private boolean cheatingEnabled;
@@ -86,8 +87,6 @@ public class GameSettings {
     }
 
 
-    private final String settingsFilename = "settings.txt";
-
     /**
      * Save settings to disk
      */
@@ -100,9 +99,8 @@ public class GameSettings {
             outputStream = context.openFileOutput(settingsFilename, Context.MODE_PRIVATE);
             outputStream.write(json.getBytes());
         } catch (Exception e) {
-            System.err.print("Failed to save settings file.");
-            e.printStackTrace();
-        }
+            Log.e(TAG, "Failed to save settings file.", e);	// instead of e.printStackTrace();
+		}
     }
 
 
@@ -141,8 +139,7 @@ public class GameSettings {
         } catch (FileNotFoundException e){
             return false;
         } catch (Exception e){
-            System.err.print("Failed to load settings file.");
-            e.printStackTrace();
+            Log.e(TAG, "Failed to load settings file.", e);
         }
 
         return false;

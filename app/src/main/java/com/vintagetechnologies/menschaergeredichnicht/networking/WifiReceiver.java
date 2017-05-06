@@ -14,8 +14,6 @@ import java.util.List;
  */
 public class WifiReceiver extends BroadcastReceiver {
 
-	private static final String TAG = WifiReceiver.class.getSimpleName();
-
 	private List<WifiListener> listeners = new ArrayList<>();
 
 	public void addReceiver(WifiListener listener){

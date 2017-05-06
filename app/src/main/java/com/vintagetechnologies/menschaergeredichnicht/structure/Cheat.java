@@ -3,6 +3,8 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 
+import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_PLAYER_HAS_CHEATED;
+
 /**
  * Created by Demi on 11.04.2017.
  */
@@ -10,8 +12,6 @@ import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 public class Cheat {
 
     //Merkt sich ob geschummelt wurde. Muss nach jedem Personen wechsel auf false gesetzt werden
-
-    private static final String TAG = "cheated";
 
     boolean playerCheating;
 
@@ -21,12 +21,13 @@ public class Cheat {
 
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
-        //host nachricht schicken
+
+        // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve("GAMELOGIC");
         boolean isHost = gameLogic.isHost();
 
         if (!isHost){
-            gameLogic.sendToHost(TAG, "true");
+            gameLogic.sendToHost(TAG_PLAYER_HAS_CHEATED, "true");
         }
     }
 
