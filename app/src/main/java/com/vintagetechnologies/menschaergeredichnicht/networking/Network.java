@@ -1,12 +1,26 @@
 package com.vintagetechnologies.menschaergeredichnicht.networking;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
+import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
+import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
+import com.vintagetechnologies.menschaergeredichnicht.structure.StartingSpot;
+import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
@@ -49,8 +63,28 @@ public class Network {
 	 */
 	public static void registerKryoClasses(Kryo kryo){
 		kryo.register(String.class);
-		kryo.register(Game.class);
 		kryo.register(GameSettings.class);
+
+		// for Game
+		kryo.register(Game.class);
+		kryo.register(Board.class);
+		kryo.register(Player.class);
+		kryo.register(Dice.class);
+		kryo.register(BoardView.class);
+		kryo.register(Paint.class);
+		kryo.register(BoardView.class);
+		kryo.register(DiceNumber.class);
+		kryo.register(GamePiece.class);
+		kryo.register(PlayerColor.class);
+		kryo.register(Colorful.class);
+		kryo.register(Cheat.class);
+
+		kryo.register(Spot.class);
+		kryo.register(StartingSpot.class);
+		kryo.register(RegularSpot.class);
+		kryo.register(EndSpot.class);
+
+
 	}
 
 

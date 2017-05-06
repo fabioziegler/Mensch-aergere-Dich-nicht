@@ -40,7 +40,7 @@ public class Hauptmenue extends AppCompatActivity {
 			return;
 		}
 
-        Intent intent = new Intent(this, /*GameHost*/ MyServerActivity.class);
+        Intent intent = new Intent(this, MyServerActivity.class);
         startActivity(intent);
         finish();
     }
@@ -57,7 +57,7 @@ public class Hauptmenue extends AppCompatActivity {
 			return;
 		}
 
-        Intent intent = new Intent(this, /*GameClient*/ MyClientActivity.class);
+        Intent intent = new Intent(this, MyClientActivity.class);
         startActivity(intent);
         finish();
     }

@@ -1,8 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht.networking.kryonet;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -15,6 +18,8 @@ import android.widget.Toast;
 import com.esotericsoftware.kryonet.Connection;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.R;
+import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 
 import java.util.ArrayList;
 
@@ -48,7 +53,7 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 
 		initGui();
 
-		myServer = new MyServer();
+		myServer = new MyServer(this);
 
 		myServer.addListener(this);
 
@@ -73,22 +78,28 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 
 
 	@Override
-	public void onReceived(Connection connection, Object object) {
+	public void onReceived(final Connection connection, final Object object) {
+
 		if(!(object instanceof String))
 			return;
 
-		// add player to game
-		String playerName = (String) object;
+		String[] data = ((String) object).split(Network.MESSAGE_DELIMITER);
+		String tag = data[0];
 
-		playerNames.add(playerName);
+		if(Network.TAG_PLAYER_NAME.equals(tag)) {	// add player to game
 
-		listAdapter.notifyDataSetChanged();
+			String playerName = data[1];
 
-		if(enoughPlayersConnected())
-			btnStartGame.setEnabled(true);
+			playerNames.add(playerName);
 
-		Toast.makeText(getApplicationContext(), playerName + getString(R.string.msgPlayerJustJoinedTheGame),
-				Toast.LENGTH_LONG).show();
+			listAdapter.notifyDataSetChanged();
+
+			if (enoughPlayersConnected())
+				btnStartGame.setEnabled(true);
+
+			Toast.makeText(getApplicationContext(), playerName + getString(R.string.msgPlayerJustJoinedTheGame),
+					Toast.LENGTH_LONG).show();
+		}
 	}
 
 
@@ -98,7 +109,7 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 
 
 	@Override
-	public void onDisconnected(Connection connection) {
+	public void onDisconnected(final Connection connection) {
 
 		// remove player from list
 		String playerName = gameLogic.getDevices().getDevice(connection).getName();
@@ -173,5 +184,49 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 
 	private boolean enoughPlayersConnected(){
 		return playerNames.size() > 0;
+	}
+
+
+	/**
+	 * Called when the user pressed the back button
+	 */
+	@Override
+	public void onBackPressed() {
+		showConfirmExitDialog();
+	}
+
+
+	private void exit(){
+		myServer.getServer().stop();
+
+		// show main menu
+		Intent intent = new Intent(this, Spieloberflaeche.class);
+		startActivity(intent);
+
+		finish();
+	}
+
+
+	private void showConfirmExitDialog(){
+		String message = getString(R.string.msgConfirmExit);
+
+		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				switch (which){
+					case DialogInterface.BUTTON_POSITIVE:
+						exit();
+						break;
+
+					case DialogInterface.BUTTON_NEGATIVE:
+						//No button clicked
+						break;
+				}
+			}
+		};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(MyServerActivity.this);
+		builder.setMessage(message).setPositiveButton("Ja", dialogClickListener)
+				.setNegativeButton("Nein", dialogClickListener).show();
 	}
 }

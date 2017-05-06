@@ -14,20 +14,20 @@ public interface NetworkListener {
 	 * @param connection
 	 * @param object
 	 */
-	void onReceived(Connection connection, Object object);
+	void onReceived(final Connection connection, final Object object);
 
 
 	/**
 	 * Called when the connection with an endpoint (host) was established.
 	 * @param connection
 	 */
-	void onConnected(Connection connection);
+	void onConnected(final Connection connection);
 
 
 	/**
 	 * Called when the remote end is no longer connected.
 	 * @param connection
 	 */
-	void onDisconnected(Connection connection);
+	void onDisconnected(final Connection connection);
 
 }

@@ -47,20 +47,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="68dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="TextView"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="@string/msgSearchingGameHost"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="0.993"
-        app:layout_constraintRight_toLeftOf="@+id/pbLoading"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp"
+        app:layout_constraintHorizontal_bias="0.978"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:gravity="center"
-        app:layout_constraintHorizontal_bias="0.978" />
+        app:layout_constraintRight_toLeftOf="@+id/pbLoading"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.993"
+        tools:text="@string/msgSearchingGameHost"/>
 
     <ProgressBar
         android:id="@+id/pbLoading"
@@ -85,8 +86,9 @@
         android:textAllCaps="true"
         android:textSize="18sp"
         android:textStyle="bold|italic"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/listViewHosts"
         app:layout_constraintLeft_toLeftOf="@+id/listViewHosts"
-        tools:text="@string/strSelectGameFromList" />
+        tools:text="@string/strSelectGameFromList"/>
 
 </android.support.constraint.ConstraintLayout>

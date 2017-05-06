@@ -19,8 +19,8 @@ public class GameSynchronisation {
      */
     public static void synchronize(){
 		Game game = Game.getInstance();
-        String message = encode(game);
-        sendToOtherDevices(message);
+        //String message = encode(game);
+        sendToOtherDevices(game);
     }
 
     /**
@@ -51,11 +51,12 @@ public class GameSynchronisation {
 
     /**
      * Sendet Gamedaten an clients in String-Format
-     * @param json
+     * @param message
      */
-    private static void sendToOtherDevices(String json){
+    private static void sendToOtherDevices(Object message){
         GameLogicHost gameLogic = (GameLogicHost) DataHolder.getInstance().retrieve("GAMELOGIC");
-		gameLogic.sendToAllClientDevices(TAG_SYNCHRONIZE_GAME + MESSAGE_DELIMITER + json);
+		//gameLogic.sendToAllClientDevices(TAG_SYNCHRONIZE_GAME + MESSAGE_DELIMITER + json);
+		gameLogic.sendToAllClientDevices(message);
     }
 
 }

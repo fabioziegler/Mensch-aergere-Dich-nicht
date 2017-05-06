@@ -1,8 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht.networking.kryonet;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import com.esotericsoftware.kryonet.Connection;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
 import com.vintagetechnologies.menschaergeredichnicht.R;
+import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 
 import java.util.ArrayList;
@@ -32,6 +36,7 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 
 	/* controls */
 	private TextView lblStatus;
+	private TextView lblHeader;
 	private ProgressBar pbLoading;
 	private ListView listViewHosts;
 	private ColorStateList colorsLabelStatus;
@@ -50,7 +55,7 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 
 		initGui();
 
-		myClient = new MyClient();
+		myClient = new MyClient(this);
 
 		myClient.addListener(this);
 
@@ -84,7 +89,8 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 		}
 
 		// else, add player to game
-		String nameOfHost = (String) object;
+		String[] data = ((String) object).split(Network.MESSAGE_DELIMITER);
+		String nameOfHost = data[1];
 
 		hostNames.add(nameOfHost);
 
@@ -132,8 +138,13 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 
 		// get controls
 		lblStatus = (TextView) findViewById(R.id.lblJoinStatus);
+		lblHeader = (TextView) findViewById(R.id.lblSelectHostFromList);
 		listViewHosts = (ListView) findViewById(R.id.listViewHosts);
 		pbLoading = (ProgressBar) findViewById(R.id.pbLoading);
+
+		// set text
+		lblStatus.setText(R.string.msgSearchingGameHost);
+		lblHeader.setText(R.string.strSelectGameFromList);
 
 		// save text view color for restoring when changed
 		colorsLabelStatus = lblStatus.getTextColors();
@@ -176,5 +187,49 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 	@Override
 	protected void onResume() {
 		super.onResume();
+	}
+
+
+	/**
+	 * Called when the user pressed the back button
+	 */
+	@Override
+	public void onBackPressed() {
+		showConfirmExitDialog();
+	}
+
+
+	private void exit(){
+		myClient.getClient().stop();
+
+		// show main menu
+		Intent intent = new Intent(this, Spieloberflaeche.class);
+		startActivity(intent);
+
+		finish();
+	}
+
+
+	private void showConfirmExitDialog(){
+		String message = getString(R.string.msgConfirmExitClient);
+
+		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				switch (which){
+					case DialogInterface.BUTTON_POSITIVE:
+						exit();
+						break;
+
+					case DialogInterface.BUTTON_NEGATIVE:
+						//No button clicked
+						break;
+				}
+			}
+		};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(MyClientActivity.this);
+		builder.setMessage(message).setPositiveButton("Ja", dialogClickListener)
+				.setNegativeButton("Nein", dialogClickListener).show();
 	}
 }

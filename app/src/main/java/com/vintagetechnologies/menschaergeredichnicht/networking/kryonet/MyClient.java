@@ -1,14 +1,17 @@
 package com.vintagetechnologies.menschaergeredichnicht.networking.kryonet;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.registerKryoClasses;
 
@@ -24,17 +27,36 @@ public class MyClient {
 
 	private ArrayList<NetworkListener> listeners;
 
+	private Activity callingActivity;
+
+
+	public MyClient(Activity callingActivity){
+		this.callingActivity = callingActivity;
+		listeners = new ArrayList<>(2);
+	}
+
 
 	/**
 	 * Called when an object has been received from the remote end of the connection.
 	 * @param connection
 	 * @param object
 	 */
-	public void onReceived(Connection connection, Object object){
-		Log.i(TAG, "Received message!" + object);
+	public void onReceived(final Connection connection, final Object object){
 
-		for(NetworkListener listener : listeners)
-			listener.onReceived(connection, object);
+		if(object instanceof FrameworkMessage.KeepAlive)	// skip keep alive messages
+			return;
+
+		Log.i(TAG, "Received message! Msg: " + object + ". From player ID: " + connection.getID());
+
+		callingActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Iterator<NetworkListener> iterator = listeners.iterator();
+				while (iterator.hasNext()){
+					iterator.next().onReceived(connection, object);
+				}
+			}
+		});
 	}
 
 
@@ -42,12 +64,18 @@ public class MyClient {
 	 * Called when the connection with an endpoint (host) was established.
 	 * @param connection
 	 */
-	public void onConnected(Connection connection){
-		Log.i(TAG, "Connected. Sending hello to server...");
-		client.sendTCP("hello");
+	public void onConnected(final Connection connection){
+		Log.i(TAG, "Connected to server.");
 
-		for(NetworkListener listener : listeners)
-			listener.onConnected(connection);
+		callingActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Iterator<NetworkListener> iterator = listeners.iterator();
+				while (iterator.hasNext()){
+					iterator.next().onConnected(connection);
+				}
+			}
+		});
 	}
 
 
@@ -55,9 +83,16 @@ public class MyClient {
 	 * Called when the remote end is no longer connected.
 	 * @param connection
 	 */
-	public void onDisconnected(Connection connection){
-		for(NetworkListener listener : listeners)
-			listener.onDisconnected(connection);
+	public void onDisconnected(final Connection connection){
+		callingActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Iterator<NetworkListener> iterator = listeners.iterator();
+				while (iterator.hasNext()){
+					iterator.next().onDisconnected(connection);
+				}
+			}
+		});
 	}
 
 
@@ -160,12 +195,13 @@ public class MyClient {
 		listeners.add(listener);
 	}
 
+
 	public void removeListener(NetworkListener listener){
 		listeners.remove(listener);
 	}
 
+
 	public Client getClient(){
 		return client;
 	}
-
 }

@@ -37,12 +37,12 @@
         android:id="@+id/lblStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/strStatus"
+        android:text="@string/joinedPlayers"
         android:textAllCaps="true"
         android:textSize="18sp"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/listViewPlayers"
-        app:layout_constraintLeft_toLeftOf="@+id/listViewPlayers" />
+        app:layout_constraintLeft_toLeftOf="@+id/listViewPlayers"/>
 
     <TextView
         android:id="@+id/lblSelectedPlayers"
