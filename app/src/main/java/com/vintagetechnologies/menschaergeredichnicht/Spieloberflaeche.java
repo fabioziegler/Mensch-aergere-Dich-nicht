@@ -212,7 +212,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         //aktuell spielender Spieler wird des Schummelns verdächtigt
         btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken));
         //Disable wenn Spieler gerade spielt
-        if(Game.getInstance().getCurrentPlayer().isAktive()){ btnAufdecken.setEnabled(false);}
+        //ToDo if(Game.getInstance().getCurrentPlayer().isAktive()){ btnAufdecken.setEnabled(false);}
         if (btnAufdecken.isEnabled()) {
             btnAufdecken.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -298,9 +298,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
         //Wenn Spieler nicht aktiv ist soll der Würfel btn nicht aktiv sein
-        if(!Game.getInstance().getCurrentPlayer().isAktive()){ btnWuerfel.setEnabled(true);}
+       //toDo if(!Game.getInstance().getCurrentPlayer().isAktive()){ btnWuerfel.setEnabled(true);}
 
-        if(btnWuerfel.isEnabled()) {
+       // if(btnWuerfel.isEnabled()) {
             btnWuerfel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -313,7 +313,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     new Thread(myRunnable).start();
                 }
             });
-        }
+        //}
 //        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -422,13 +422,13 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
          */
         if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
             //überprüfen ob Spieler am zug ist
-            if(Game.getInstance().getCurrentPlayer().isAktive()) {
+            //ToDo if(Game.getInstance().getCurrentPlayer().isAktive()) {
                 float Lichtwert = event.values[0];
                 if (Lichtwert <= 10) {
                     //state.setText("Schummeln: " + true);  //Test
                     Schummeln.setPlayerCheating(true);
                 }
-            }
+            //}
         }
 
     }

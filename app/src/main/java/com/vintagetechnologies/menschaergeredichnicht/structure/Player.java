@@ -33,7 +33,7 @@ public class Player {
             this.pieces[i] = new GamePiece(color);
         }
 
-        this.aktive = false; //sollte dann wenn der Spieler am zug ist auf true gesetz werden.
+       // this.aktive = false; //sollte dann wenn der Spieler am zug ist auf true gesetz werden ->current Spieler
         this.Schummeln = new Cheat();
         this.color = color;
         this.name = name;
