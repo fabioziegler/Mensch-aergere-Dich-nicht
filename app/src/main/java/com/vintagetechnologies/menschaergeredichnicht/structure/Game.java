@@ -21,7 +21,6 @@ public class Game {
 
     private static Game gameInstance;
 
-    //! CurrentPlayer gibt nur den Spieler dem spieler sein eigenen Player aus. Nicht den Spieler aktuell am Zug.
     private int currentPlayer;
     private Player players[];
     private Board board;
@@ -114,8 +113,10 @@ public class Game {
                             tv.setText(p.getName());
                             break;
                         }
+
                     }
                 }
+
 
             }
         });
