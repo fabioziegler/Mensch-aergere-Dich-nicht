@@ -10,6 +10,8 @@ public class Player {
     PlayerColor color;
     String name;
     Cheat Schummeln;
+
+    //ToDo: löschen
     boolean aktive;
 
     public Player(PlayerColor color, String name) {
@@ -29,10 +31,10 @@ public class Player {
         return Schummeln;
     }
 
+    //TODO: löschen
     public boolean isAktive() {
         return aktive;
     }
-
     public void setAktive(boolean aktive) {
         this.aktive = aktive;
     }

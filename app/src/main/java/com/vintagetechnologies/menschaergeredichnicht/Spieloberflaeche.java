@@ -221,8 +221,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                      * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
                      * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
                      */
+
+            // ToDo: Überarbeiten: aktiver Spieler wird zu currentPlayer. bntDrückSpieler über namen herrausfinden
+
                     Player[] spieler = Game.getInstance().getPlayers();
                     //ToDo: bessere lösung finden, evt. "globale" Variable
+                    /*
                     int aktiveSpieler = 5;
 
                     //aktiven Spieler finden
@@ -235,28 +239,28 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     if (aktiveSpieler >= 4){
                         throw new IllegalStateException();
                     }
-
-                    if (spieler[aktiveSpieler].getSchummeln().isPlayerCheating()) {
-                            //TODO aktiverSpieler setzt aus (Nachricht an Host, isHost überprüfen)
+                    */
+                    if (Game.getInstance().getCurrentPlayer().getSchummeln().isPlayerCheating()) {
+                            //TODO currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
 
                         //ToDO: sende an ALLE Meldung: (spieler[aktiveSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
                         Context context = getApplicationContext();
-                        CharSequence text = spieler[aktiveSpieler].getName()+"hat geschummelt und muss nächste Runde aussetzen";
+                        CharSequence text = Game.getInstance().getCurrentPlayer().getName()+"hat geschummelt und muss nächste Runde aussetzen";
                         int duration = Toast.LENGTH_SHORT;
 
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.show();
 
                     }else{
-                            //TODo currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
+                            //TODo aktiver/drückender Spieler setzt aus (Nachricht an Host, isHost überprüfen)
 
                         //ToDO: sende an alle Meldung: (spieler[currentSpieler].getName + "hat falsch verdächtigt und muss nächste Runde aussetzen")
-                        Context context = getApplicationContext();
-                        CharSequence text = Game.getInstance().getCurrentPlayer().getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
-                        int duration = Toast.LENGTH_SHORT;
+                       // Context context = getApplicationContext();
+                        //CharSequence text = Player.getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
+                        //int duration = Toast.LENGTH_SHORT;
 
-                        Toast toast = Toast.makeText(context, text, duration);
-                        toast.show();
+                        //Toast toast = Toast.makeText(context, text, duration);
+                        //toast.show();
                     }
 
                     /*
