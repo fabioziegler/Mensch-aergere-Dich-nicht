@@ -362,9 +362,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     public  void onBackPressed(){
           new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Closing Activity")
-                .setMessage("Are you sure you want to close this activity?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                .setTitle("Geh nicht!! :-( ")
+                .setMessage("Willst du das Spiel wirklich verlassen?")
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -372,7 +372,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     }
 
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("Nein", null)
                 .show();
     }
     /**

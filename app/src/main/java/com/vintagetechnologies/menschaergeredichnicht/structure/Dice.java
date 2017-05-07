@@ -13,14 +13,17 @@ public class Dice {
     private DiceNumber diceNumber;
 
     public void roll() {
+        if(Game.getInstance().getCurrentPlayer().getSchummeln().isPlayerCheating()){
+            this.diceNumber = DiceNumber.SIX;
+        }else {
+            do {
+                int length = DiceNumber.values().length;
 
-        do {
-            int length = DiceNumber.values().length;
+                int n = (int) (Math.random() * length);
 
-            int n = (int) (Math.random() * length);
-
-            this.diceNumber = DiceNumber.values()[n];
-        }while(blackList.contains(this.diceNumber));
+                this.diceNumber = DiceNumber.values()[n];
+            } while (blackList.contains(this.diceNumber));
+        }
     }
 
     public DiceNumber getDiceNumber() {
