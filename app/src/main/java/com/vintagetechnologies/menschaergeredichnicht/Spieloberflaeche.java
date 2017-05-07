@@ -212,7 +212,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         //aktuell spielender Spieler wird des Schummelns verdächtigt
         btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken));
         //Disable wenn Spieler gerade spielt
-        if(Game.getInstance().getCurrentPlayer().isAktive()){ btnAufdecken.setEnabled(false);}
+        //ToDo if(Game.getInstance().getCurrentPlayer().isAktive()){ btnAufdecken.setEnabled(false);}
         if (btnAufdecken.isEnabled()) {
             btnAufdecken.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -221,62 +221,34 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                      * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
                      * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
                      */
-                    Player[] spieler = Game.getInstance().getPlayers();
-                    //ToDo: bessere lösung finden, evt. "globale" Variable
-                    int aktiveSpieler = 5;
 
-                    //aktiven Spieler finden
-                    for (int i = 0; i < spieler.length; i++) {
-                        if (spieler[i].isAktive()){
-                            aktiveSpieler = i;
-                        }
-                    }
-                    //noch nicht optimal gelöst..
-                    if (aktiveSpieler >= 4){
-                        throw new IllegalStateException();
-                    }
+            // ToDo: bntDrückSpieler herrausfinden
 
-                    if (spieler[aktiveSpieler].getSchummeln().isPlayerCheating()) {
-                            //TODO aktiverSpieler setzt aus (Nachricht an Host, isHost überprüfen)
+
+                    if (Game.getInstance().getCurrentPlayer().getSchummeln().isPlayerCheating()) {
+                        //TODO currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
 
                         //ToDO: sende an ALLE Meldung: (spieler[aktiveSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
                         Context context = getApplicationContext();
-                        CharSequence text = spieler[aktiveSpieler].getName()+"hat geschummelt und muss nächste Runde aussetzen";
+                        CharSequence text = Game.getInstance().getCurrentPlayer().getName()+"hat geschummelt und muss nächste Runde aussetzen";
                         int duration = Toast.LENGTH_SHORT;
 
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.show();
 
                     }else{
-                            //TODo currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
+                        //TODo aktiver/drückender Spieler setzt aus (Nachricht an Host, isHost überprüfen)
 
                         //ToDO: sende an alle Meldung: (spieler[currentSpieler].getName + "hat falsch verdächtigt und muss nächste Runde aussetzen")
+                       /*
                         Context context = getApplicationContext();
-                        CharSequence text = Game.getInstance().getCurrentPlayer().getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
+                        CharSequence text = Player.getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
                         int duration = Toast.LENGTH_SHORT;
 
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.show();
+                        */
                     }
-
-                    /*
-                    //Alternativ
-                    boolean schummelt = false;
-
-                    for (int i = 0; i < spieler.length; i++) {
-                        if (spieler[i].getSchummeln().isPlayerCheating()) {
-                            // TODO Spieler i setzt aus
-                            schummelt = true;
-                            //ToDO: sende an alle Meldung: (spieler[aktiverSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
-                        }
-                    }
-                    if (!schummelt) {
-                        // ToDO getSpieler der gerade spielt.
-                        // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
-                    }
-
-                    */
-
 
                 }
             });
@@ -294,9 +266,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
         //Wenn Spieler nicht aktiv ist soll der Würfel btn nicht aktiv sein
-        if(!Game.getInstance().getCurrentPlayer().isAktive()){ btnWuerfel.setEnabled(true);}
+       //toDo if(!Game.getInstance().getCurrentPlayer().isAktive()){ btnWuerfel.setEnabled(true);}
 
-        if(btnWuerfel.isEnabled()) {
+       // if(btnWuerfel.isEnabled()) {
             btnWuerfel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -309,7 +281,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     new Thread(myRunnable).start();
                 }
             });
-        }
+        //}
 //        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -418,13 +390,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
          */
         if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
             //überprüfen ob Spieler am zug ist
-            if(Game.getInstance().getCurrentPlayer().isAktive()) {
+            //ToDo if(Game.getInstance().getCurrentPlayer().isAktive()) {
                 float Lichtwert = event.values[0];
                 if (Lichtwert <= 10) {
                     //state.setText("Schummeln: " + true);  //Test
                     Schummeln.setPlayerCheating(true);
+                    Schummeln.sendMessageToHost();
                 }
-            }
+            //}
         }
 
     }

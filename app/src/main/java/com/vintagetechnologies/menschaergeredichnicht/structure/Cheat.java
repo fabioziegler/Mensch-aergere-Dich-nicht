@@ -21,7 +21,11 @@ public class Cheat {
 
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
+        //für Testen ausgelagert und direkt in Spieleroberfläche aufgerufen (ToDo Sinnvoll?)
+        //sendMessageToHost();
+    }
 
+    public void sendMessageToHost(){
         // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve("GAMELOGIC");
         boolean isHost = gameLogic.isHost();
@@ -30,7 +34,6 @@ public class Cheat {
             gameLogic.sendToHost(TAG_PLAYER_HAS_CHEATED, "true");
         }
     }
-
 
     /**
      * Für WÜRFEL; stellt fest ob lokaler Player gecheatet hat
