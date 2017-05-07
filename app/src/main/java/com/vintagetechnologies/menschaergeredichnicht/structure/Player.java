@@ -15,7 +15,11 @@ public class Player {
 
     //The shown name
     private String name;
+
+    //Saves if Player Cheated
     private Cheat Schummeln;
+
+    //nicht mehr benötigt toDo Löschen
     private boolean aktive;
 
 
@@ -47,10 +51,10 @@ public class Player {
         return Schummeln;
     }
 
+    //Wird nicht mehr benötigt ToDo Löschen
     public boolean isAktive() {
         return aktive;
     }
-
     public void setAktive(boolean aktive) {
         this.aktive = aktive;
     }

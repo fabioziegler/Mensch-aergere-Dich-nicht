@@ -222,26 +222,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                      * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
                      */
 
-            // ToDo: Überarbeiten: aktiver Spieler wird zu currentPlayer. bntDrückSpieler über namen herrausfinden
+            // ToDo: bntDrückSpieler herrausfinden
 
-                    Player[] spieler = Game.getInstance().getPlayers();
-                    //ToDo: bessere lösung finden, evt. "globale" Variable
-                    /*
-                    int aktiveSpieler = 5;
 
-                    //aktiven Spieler finden
-                    for (int i = 0; i < spieler.length; i++) {
-                        if (spieler[i].isAktive()){
-                            aktiveSpieler = i;
-                        }
-                    }
-                    //noch nicht optimal gelöst..
-                    if (aktiveSpieler >= 4){
-                        throw new IllegalStateException();
-                    }
-                    */
                     if (Game.getInstance().getCurrentPlayer().getSchummeln().isPlayerCheating()) {
-                            //TODO currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
+                        //TODO currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
 
                         //ToDO: sende an ALLE Meldung: (spieler[aktiveSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
                         Context context = getApplicationContext();
@@ -252,35 +237,18 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         toast.show();
 
                     }else{
-                            //TODo aktiver/drückender Spieler setzt aus (Nachricht an Host, isHost überprüfen)
+                        //TODo aktiver/drückender Spieler setzt aus (Nachricht an Host, isHost überprüfen)
 
                         //ToDO: sende an alle Meldung: (spieler[currentSpieler].getName + "hat falsch verdächtigt und muss nächste Runde aussetzen")
-                       // Context context = getApplicationContext();
-                        //CharSequence text = Player.getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
-                        //int duration = Toast.LENGTH_SHORT;
+                       /*
+                        Context context = getApplicationContext();
+                        CharSequence text = Player.getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
+                        int duration = Toast.LENGTH_SHORT;
 
-                        //Toast toast = Toast.makeText(context, text, duration);
-                        //toast.show();
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                        */
                     }
-
-                    /*
-                    //Alternativ
-                    boolean schummelt = false;
-
-                    for (int i = 0; i < spieler.length; i++) {
-                        if (spieler[i].getSchummeln().isPlayerCheating()) {
-                            // TODO Spieler i setzt aus
-                            schummelt = true;
-                            //ToDO: sende an alle Meldung: (spieler[aktiverSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
-                        }
-                    }
-                    if (!schummelt) {
-                        // ToDO getSpieler der gerade spielt.
-                        // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
-                    }
-
-                    */
-
 
                 }
             });
@@ -427,6 +395,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 if (Lichtwert <= 10) {
                     //state.setText("Schummeln: " + true);  //Test
                     Schummeln.setPlayerCheating(true);
+                    Schummeln.sendMessageToHost();
                 }
             //}
         }

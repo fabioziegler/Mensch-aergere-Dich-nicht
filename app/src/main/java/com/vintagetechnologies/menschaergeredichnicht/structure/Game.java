@@ -19,7 +19,7 @@ public class Game {
 
     private static Game gameInstance;
 
-    //! CurrentPlayer ist der Spieler der gerade am Zug ist (nicht immer der, der das Handy bedient)
+    //!CurrentPlayer ist der Spieler der gerade am Zug ist (nicht immer der, der einen Button drückt)
     private int currentPlayer;
     private Player players[];
     private Board board;
