@@ -1,6 +1,8 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
 
@@ -17,14 +19,16 @@ import static org.junit.Assert.assertEquals;
 
 public class CheatTest {
 
-   private Spieloberflaeche spieloberflaeche;
+    //private Spieloberflaeche spieloberflaeche;
+    Dice dice;
     private Cheat schummeln;
    // private Player player;
 
     @Before
     public void before() {
-        spieloberflaeche = new Spieloberflaeche();
+        //spieloberflaeche = new Spieloberflaeche();
         schummeln = new Cheat();
+        dice = new Dice();
        // player = new Player(PlayerColor.BLUE, "Test");
     }
 
@@ -34,10 +38,11 @@ public class CheatTest {
         assertEquals(true,schummeln.isPlayerCheating());
     }
 
-    /*
+    @Test
     public void testCheatFunction(){
         schummeln.setPlayerCheating(true);
-        //spieloberflaeche.getAssets();
+        dice.roll();
+        assertEquals(DiceNumber.SIX, dice.getDiceNumber());
     }
-    */
+
 }
