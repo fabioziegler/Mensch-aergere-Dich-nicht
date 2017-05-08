@@ -48,6 +48,11 @@ public class GamePieceTest {
 
         Spot targetSpot = new RegularSpot(4,4, null);
 
+
+        //noch frei
+        assertEquals(true, gp.moveTo(targetSpot));
+
+        //schon belegt
         assertEquals(false, gp.moveTo(targetSpot));
 
     }
