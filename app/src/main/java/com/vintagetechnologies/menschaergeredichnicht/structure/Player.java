@@ -15,7 +15,11 @@ public class Player {
 
     //The shown name
     private String name;
+
+    //Saves if Player Cheated
     private Cheat Schummeln;
+
+    //nicht mehr benötigt toDo Löschen
     private boolean aktive;
 
 
@@ -33,7 +37,7 @@ public class Player {
             this.pieces[i] = new GamePiece(color);
         }
 
-        this.aktive = false; //sollte dann wenn der Spieler am zug ist auf true gesetz werden.
+       // this.aktive = false; //sollte dann wenn der Spieler am zug ist auf true gesetz werden ->current Spieler
         this.Schummeln = new Cheat();
         this.color = color;
         this.name = name;
@@ -47,10 +51,10 @@ public class Player {
         return Schummeln;
     }
 
+    //Wird nicht mehr benötigt ToDo Löschen
     public boolean isAktive() {
         return aktive;
     }
-
     public void setAktive(boolean aktive) {
         this.aktive = aktive;
     }

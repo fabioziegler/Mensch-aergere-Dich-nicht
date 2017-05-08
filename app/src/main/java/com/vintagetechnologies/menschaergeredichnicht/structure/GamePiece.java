@@ -87,18 +87,22 @@ public class GamePiece {
      * Moves the GamePiece to a specific Spot.
      * @param targetSpot
      */
-    public void moveTo(Spot targetSpot) {  //Voraussetzung: check returned not null
+    public boolean moveTo(Spot targetSpot) {  //Voraussetzung: check returned not null
         if(targetSpot != null){
             if(targetSpot.getGamePiece() == null){
                this.setSpot(targetSpot);
+                return true;
             }else{
                 if(targetSpot.getGamePiece().getPlayerColor() == this.getPlayerColor()){
-                    //ungültig
+                    return false;
                 }else{
                     targetSpot.getGamePiece().returnToStart();
                     this.setSpot(targetSpot);
+                    return true;
                 }
             }
+        }else{
+            return false;
         }
     }
 
