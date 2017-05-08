@@ -2,6 +2,8 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.os.Bundle;
 
+import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.*;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
@@ -18,6 +20,8 @@ import static junit.framework.Assert.assertEquals;
 public class GameLogicTest {
 
 
+    private TestDice td = new TestDice();
+
     private class TestGame extends Game{
 
         private GameLogic gameLogic;
@@ -28,7 +32,7 @@ public class GameLogicTest {
 
         @Override
         public void init(String... names) {
-            this.gameLogic.init(this, names);
+            this.gameLogic.init(td, this, names);
         }
 
         @Override
@@ -61,6 +65,20 @@ public class GameLogicTest {
             return this.gameLogic;
         }
     }
+
+
+    private class TestDice extends DiceImpl {
+
+        public TestDice(){
+
+        }
+
+        @Override
+        public void waitForRoll() {
+            roll();
+        }
+    }
+
 
     @Before
     public void beforeTest(){
