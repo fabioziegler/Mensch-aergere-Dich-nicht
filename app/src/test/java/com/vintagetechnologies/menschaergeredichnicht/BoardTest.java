@@ -130,6 +130,12 @@ public class BoardTest {
 
         for(PlayerColor pc : sSpots.keySet()) {
             int ind = sSpots.get(pc);
+
+            for (int i = ind; i < ind+4; i++) {
+                board.getBoard(i).nullGamePiece();
+            }
+
+            //expected, actual
             assertEquals(board.getBoard(ind), board.getStartingSpot(pc));
 
             for (int i = ind; i < ind+4; i++) {
@@ -138,6 +144,7 @@ public class BoardTest {
             }
 
             assertEquals(null, board.getStartingSpot(pc));
+
         }
     }
 
