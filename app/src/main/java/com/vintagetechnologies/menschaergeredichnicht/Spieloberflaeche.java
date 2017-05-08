@@ -212,44 +212,75 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         //ToDo: Disable wenn Spieler gerade spielt
         //aktuell spielender Spieler wird des Schummelns verdächtigt
-        btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken));
-        //Disable wenn Spieler gerade spielt
-        //ToDo if(Game.getInstance().getCurrentPlayer().isAktive()){ btnAufdecken.setEnabled(false);}
-        if (btnAufdecken.isEnabled()) {
-            btnAufdecken.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    /**
-                     * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
-                     * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
-                     */
+        btnAufdecken = (ImageButton)(findViewById(R.id.imageButton_aufdecken)); // ToDO: Disable für gerade spielenden Spieler
+        btnAufdecken.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean schummelt = false;
+                Player[] Suspechts = ActualGame.getInstance().getGameLogic().getPlayers();
 
-            // ToDo: bntDrückSpieler herrausfinden
-
-
-                    if (Game.getInstance().getCurrentPlayer().getSchummeln().isPlayerCheating()) {
-                        //TODO currentPlayer setzt aus (Nachricht an Host, isHost überprüfen)
-
-                        //ToDO: sende an ALLE Meldung: (spieler[aktiveSpieler].getName + "hat geschummelt und muss nächste Runde aussetzen")
-                        Context context = getApplicationContext();
-                        CharSequence text = Game.getInstance().getCurrentPlayer().getName()+"hat geschummelt und muss nächste Runde aussetzen";
-                        int duration = Toast.LENGTH_SHORT;
-
-
-                    }else{
-                        //TODo aktiver/drückender Spieler setzt aus (Nachricht an Host, isHost überprüfen)
-
-                        //ToDO: sende an alle Meldung: (spieler[currentSpieler].getName + "hat falsch verdächtigt und muss nächste Runde aussetzen")
-                       /*
-                        Context context = getApplicationContext();
-                        CharSequence text = Player.getName()+"hat falsch verdächtigt und muss nächste Runde aussetzen";
-                        int duration = Toast.LENGTH_SHORT;
-
-                        Toast toast = Toast.makeText(context, text, duration);
-                        toast.show();
-                        */
+                /**
+                 * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
+                 * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
+                 */
+                for(int i=0; i <Suspechts.length; i++){
+                    if (Suspechts[i].getSchummeln().isPlayerCheating()) {
+                        // TODO Spieler i setzt aus
+                        schummelt=true;
                     }
+                }
+                if (!schummelt){
+                    // ToDO getSpieler der gerade spielt.
+                    // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
+                }
 
+                //ToDO: dem currentPlayer (der button gedrückt hat) Feedback geben. [oder allen?]
+
+            }
+        });
+
+
+        btnWuerfel = (ImageButton)(findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
+
+        btnWuerfel.setEnabled(true);
+
+        RealDice.get();
+
+        RealDice.setDiceButton(btnWuerfel);
+        imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
+
+
+        btnWuerfel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        btnWuerfelClicked();
+                    }
+                };
+                new Thread(myRunnable).start();
+            }
+        });
+
+
+        //zwischen zu bewegenden Figuren wählen
+        btnFigurSelect = (Button)(findViewById(R.id.Select_Figur));
+        btnFigurSelect.setEnabled(false);
+        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Zu setzende Figur auswählen
+                ArrayList<GamePiece> possibleGamePieces = ActualGame.getInstance().getGameLogic().getPossibleToMove();
+                if(bv.getHighlightedGamePiece() == null){
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(0));
+                    bv.invalidate();
+                }else{
+                    GamePiece gp = bv.getHighlightedGamePiece();
+                    int i = possibleGamePieces.indexOf(gp);
+                    i = (i+1)%possibleGamePieces.size();
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(i));
+                    bv.invalidate();
                 }
             }
         });
@@ -272,38 +303,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         RealDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
-        //Wenn Spieler nicht aktiv ist soll der Würfel btn nicht aktiv sein
-       //toDo if(!Game.getInstance().getCurrentPlayer().isAktive()){ btnWuerfel.setEnabled(true);}
-
-       // if(btnWuerfel.isEnabled()) {
-            btnWuerfel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Runnable myRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            btnWuerfelClicked();
-                        }
-                    };
-                    new Thread(myRunnable).start();
+                synchronized (ActualGame.getInstance()){
+                    ActualGame.getInstance().notify();
                 }
-            });
-        //}
-//        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // toDO: Zu setzende Figur auswählen
-//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-//            }
-//        });
-//
-//        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
-//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-//            }
-//        });
+            }
+        });
 
         // init dice
         dice = new Dice();
@@ -363,24 +367,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         getScreenDimensions();
     }
 
-    // Warnung bevor man das Spiel verlässt (noch nicht getestet)
-    @Override
-    public  void onBackPressed(){
-          new AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Geh nicht!! :-( ")
-                .setMessage("Willst du das Spiel wirklich verlassen?")
-                .setPositiveButton("Ja", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
 
-                })
-                .setNegativeButton("Nein", null)
-                .show();
-    }
     /**
      * ToDO: Sollte nur aktiviert sein wenn Spieler aktuell spielt.
      * ToDO: Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
@@ -395,15 +382,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
          * wenn schummel funktion ab Dunkel sich einschaltet. Annahme Dunkel ab 1000.
          */
         if(event.sensor.getType() == Sensor.TYPE_LIGHT) {
-            //überprüfen ob Spieler am zug ist
-            //ToDo if(Game.getInstance().getCurrentPlayer().isAktive()) {
-                float Lichtwert = event.values[0];
-                if (Lichtwert <= 10) {
-                    //state.setText("Schummeln: " + true);  //Test
-                    Schummeln.setPlayerCheating(true);
-                    Schummeln.sendMessageToHost();
-                }
-            //}
+            float Lichtwert = event.values[0];
+            if(Lichtwert <= 10){
+                //state.setText("Schummeln: " + true);  //Test
+                Schummeln.setPlayerCheating(true);
+            }
+            //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
         }
 
     }
