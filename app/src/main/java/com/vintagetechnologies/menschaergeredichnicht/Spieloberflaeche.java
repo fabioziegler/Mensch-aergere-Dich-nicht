@@ -29,6 +29,7 @@ import android.hardware.SensorEventListener;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
@@ -88,14 +89,15 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         //dice.roll();
         RealDice.get().roll();
 
-        int result;
+        //int result;
         if (Schummeln.isPlayerCheating()) {
-            result = 5;
-        }else if (!Schummeln.isPlayerCheating()){
-            result = RealDice.get().getDiceNumber().getNumber() - 1;
-        }else {
-            throw new  IllegalStateException();
-        }
+            RealDice.get().setDiceNumber(DiceNumber.SIX);
+            //result = 5;
+        }//else if (!Schummeln.isPlayerCheating()){
+
+        int result = RealDice.get().getDiceNumber().getNumber() - 1;
+
+
 
         // dice rolls for 2 seconds, and changes 5x a second it's number
 
