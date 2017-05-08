@@ -13,9 +13,9 @@ public class Dice {
     protected DiceNumber diceNumber;
 
     public void roll() {
-        if(Game.getInstance().getCurrentPlayer().getSchummeln().isPlayerCheating()){
-            this.diceNumber = DiceNumber.SIX;
-        }else {
+        //if(ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln().isPlayerCheating()){
+          //  this.diceNumber = DiceNumber.SIX;
+        //}else {
             do {
                 int length = DiceNumber.values().length;
 
@@ -23,7 +23,7 @@ public class Dice {
 
                 this.diceNumber = DiceNumber.values()[n];
             } while (blackList.contains(this.diceNumber));
-        }
+        //}
     }
 
     public DiceNumber getDiceNumber() {
