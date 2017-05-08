@@ -24,12 +24,15 @@ import static junit.framework.Assert.assertTrue;
 
 public class GameLogicTest {
 
+    private static final int MAXCOUNT = 1000000;
+
 
     private TestDice td = new TestDice();
 
     private  String names[] = {"Alfred", "Bill", "Marilyn", "Tim"};
 
     private int c = 0;
+
     private boolean r = false;
 
     private class TestGame extends Game{
@@ -59,14 +62,14 @@ public class GameLogicTest {
 
         @Override
         public void whomsTurn(Player p) {
-
-            if(c == 1000000){
+            c++;
+            if(c == MAXCOUNT){
                 this.getGameLogic().setPlaying(false);
             }
 
             assertFalse(r);
             r = true;
-            c++;
+
         }
 
         @Override
@@ -121,6 +124,14 @@ public class GameLogicTest {
             Player p = tg.getGameLogic().getPlayers()[i];
             assertEquals(names[i], p.getName());
         }
+
+
+    }
+
+    @Test(expected = IllegalAccessException.class)
+    public void testFailInit() throws IllegalAccessException {
+        TestGame tg = new TestGame();
+        tg.play();
     }
 
     @Test
@@ -135,9 +146,11 @@ public class GameLogicTest {
             tg.play();
         } catch (IllegalAccessException e) {
             Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while playing!", e);
-            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
+
+
+        assertEquals(MAXCOUNT, c);
 
     }
 

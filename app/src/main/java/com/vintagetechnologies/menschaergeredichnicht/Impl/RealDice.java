@@ -39,7 +39,6 @@ public class RealDice extends DiceImpl {
             try {
                 realDice.wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
                 Thread.currentThread().interrupt();
             }

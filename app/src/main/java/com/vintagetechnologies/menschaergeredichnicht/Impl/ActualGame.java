@@ -167,7 +167,6 @@ public class ActualGame extends Game {
             try {
                 wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
 
                 Thread.currentThread().interrupt();
