@@ -86,16 +86,16 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        //dice.roll();
-        RealDice.get().roll();
 
-        //int result;
+        //Test if Cheated - Six or random
         if (Schummeln.isPlayerCheating()) {
             RealDice.get().setDiceNumber(DiceNumber.SIX);
-            //result = 5;
-        }//else if (!Schummeln.isPlayerCheating()){
+        }else{
+            RealDice.get().roll();
+        }
 
-        int result = RealDice.get().getDiceNumber().getNumber() - 1;
+        //Sets the Result
+        final int result = RealDice.get().getDiceNumber().getNumber() - 1;
 
 
 
@@ -117,12 +117,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         // setze Egebnis des Würfelns
-        final int finalResult = result;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // Update UI elements
-                imgViewDice.setImageResource(diceImages[finalResult]);
+                imgViewDice.setImageResource(diceImages[result]);
             }
         });
 
@@ -163,7 +162,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                                 imgViewDice.setAlpha(1f);
                                 imgViewDice.setVisibility(View.INVISIBLE);
 
-                                btnWuerfel.setImageResource(diceImages[finalResult]);
+                                btnWuerfel.setImageResource(diceImages[result]);
 
                                 btnWuerfel.setEnabled(true);
                             }
