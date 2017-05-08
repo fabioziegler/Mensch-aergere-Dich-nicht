@@ -109,9 +109,7 @@ public class GameLogicTest {
 
     @Test
     public void testInit(){
-
-
-
+        Board.resetBoard();
 
 
 
@@ -136,6 +134,8 @@ public class GameLogicTest {
 
     @Test
     public void testPlay(){
+        Board.resetBoard();
+
 
         TestGame tg = new TestGame();
         tg.init(names[0],names[1],names[2],names[3]);
@@ -156,6 +156,8 @@ public class GameLogicTest {
 
     @Test
     public void testGetPlayerByName(){
+        Board.resetBoard();
+
         TestGame tg = new TestGame();
         tg.init(names[0],names[1],names[2],names[3]);
 
@@ -163,6 +165,9 @@ public class GameLogicTest {
             assertEquals(tg.getGameLogic().getPlayers()[i], tg.getGameLogic().getPlayerByName(names[i]));
         }
     }
+
+
+
 
 
 
