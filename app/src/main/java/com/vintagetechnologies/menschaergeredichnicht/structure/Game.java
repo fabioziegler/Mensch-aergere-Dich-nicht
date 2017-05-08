@@ -11,6 +11,7 @@ import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by johannesholzl on 05.04.17.
@@ -20,7 +21,7 @@ public class Game {
 
     private static Game gameInstance;
 
-    //! CurrentPlayer gibt nur den Spieler dem spieler sein eigenen Player aus. Nicht den Spieler aktuell am Zug.
+    //!CurrentPlayer ist der Spieler der gerade am Zug ist (nicht immer der, der einen Button drückt)
     private int currentPlayer;
     private Player players[];
     private Board board;
@@ -33,7 +34,7 @@ public class Game {
     //init methode already called?
     private boolean initialized = false;
 
-
+    private Spieloberflaeche gameactivity;
     /**
      * Returns gameInstance()
      *
@@ -75,6 +76,8 @@ public class Game {
 
         players = new Player[names.length];
         board = Board.get();
+
+        gameactivity = (Spieloberflaeche) bv.getContext();
 
         for (int i = 0; i < names.length; i++) {
             PlayerColor cColor = PlayerColor.values()[i];
@@ -137,18 +140,48 @@ public class Game {
             throw new IllegalAccessError("Game hasn't been initialized. Please run init() first.");
         }
 
+        int bestPlayer = -1;
+        int bestNumber = 0;
+
+        for(int p = 0; p < players.length; p++){
+
+            printInfo("Bitte würfeln: " + players[p].getName());
+
+            DummyDice.waitForRoll();
+
+            DummyDice.get().addToBlacklist(DummyDice.get().getDiceNumber());
+
+            int number = DummyDice.get().getDiceNumber().getNumber();
+
+            if(number > bestNumber){
+                bestNumber = number;
+                bestPlayer = p;
+            }
+        }
+
+        currentPlayer = bestPlayer;
+        DummyDice.get().emptyBlacklist();
+        regularGame();
+
+    }
+
+    private void printInfo(String info){
+
+        final String finalInfo = info;
+        gameactivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameactivity.setStatus(finalInfo);
+
+            }
+        });
+    }
+
+    private void regularGame(){
         while (true) {
 
-
             final Player cp = players[currentPlayer];
-            final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
-            gameactivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    gameactivity.setStatus(cp.getName() + " ist dran!");
-
-                }
-            });
+            printInfo(cp.getName()+" ist dran!");
 
             int attempts = 3;
             boolean moved = false;
