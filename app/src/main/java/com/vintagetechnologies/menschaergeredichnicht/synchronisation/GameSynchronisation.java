@@ -3,7 +3,7 @@ package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
-import com.vintagetechnologies.menschaergeredichnicht.structure.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_SYNCHRONIZE_GAME;
 

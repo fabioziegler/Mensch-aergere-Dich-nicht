@@ -57,7 +57,7 @@ public class GameLogicTest {
         @Override
         public void whomsTurn(Player p) {
 
-            if(c == 100000){
+            if(c == 1000000){
                 this.getGameLogic().setPlaying(false);
             }
 
@@ -73,7 +73,6 @@ public class GameLogicTest {
 
         @Override
         public void refreshView() {
-
             r = false;
         }
 
@@ -134,7 +133,17 @@ public class GameLogicTest {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        
+
+    }
+
+    @Test
+    public void testGetPlayerByName(){
+        TestGame tg = new TestGame();
+        tg.init(names[0],names[1],names[2],names[3]);
+
+        for(int i = 0; i<4; i++){
+            assertEquals(tg.getGameLogic().getPlayers()[i], tg.getGameLogic().getPlayerByName(names[i]));
+        }
     }
 
 

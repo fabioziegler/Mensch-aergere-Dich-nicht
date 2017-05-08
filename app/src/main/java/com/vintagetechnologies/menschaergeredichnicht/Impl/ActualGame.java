@@ -1,4 +1,4 @@
-package com.vintagetechnologies.menschaergeredichnicht.structure;
+package com.vintagetechnologies.menschaergeredichnicht.Impl;
 
 import android.graphics.Color;
 import android.widget.Button;
@@ -6,8 +6,13 @@ import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
-import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 /**
