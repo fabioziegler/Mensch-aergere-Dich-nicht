@@ -23,6 +23,8 @@ public class GameLogic {
 
     private DiceImpl dice;
 
+    private boolean playing = true;
+
     public void init(DiceImpl dice, Game game, String names []) {
         players = new Player[names.length];
 
@@ -81,7 +83,7 @@ public class GameLogic {
     }
 
     private void regularGame(){
-        while (true) {
+        while (playing) {
 
             final Player cp = players[currentPlayer];
 
@@ -248,5 +250,13 @@ public class GameLogic {
                 return players[i];
         }
         return null;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
     }
 }

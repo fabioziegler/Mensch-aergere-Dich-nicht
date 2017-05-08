@@ -14,12 +14,6 @@ public class DummyDice extends Dice {
         if (dummyDice == null) {
             dummyDice = new DummyDice();
 
-            new Thread(){
-                public void run(){
-                    dummyDice.r();
-                }
-            }.start();
-
         }
 
         return dummyDice;
@@ -30,40 +24,8 @@ public class DummyDice extends Dice {
     }
 
     public static void waitForRoll() {
-        synchronized (dummyDice) {
-            dummyDice.notify();
 
-
-            try {
-                dummyDice.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-
-        }
     }
 
-    public void r() {
-        synchronized (this) {
 
-            while (true) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                roll();
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                notify();
-            }
-        }
-    }
 }
