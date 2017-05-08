@@ -3,7 +3,7 @@ package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.ActualGame;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_SYNCHRONIZE_GAME;
 
@@ -17,17 +17,17 @@ public class GameSynchronisation {
      * Synchronisiert Gamedaten der clients
      * @param game
      */
-    public static void synchronize(Game game){
+    public static void synchronize(ActualGame game){
         String message = encode(game);
         sendToOtherDevices(message);
     }
 
     /**
-     * Umwandeln von Game Objekt in String
+     * Umwandeln von ActualGame Objekt in String
      * @param game
      * @return
      */
-    private static String encode(Game game){
+    private static String encode(ActualGame game){
         Gson gson = new Gson();
 
         String json = gson.toJson(game);
@@ -36,14 +36,14 @@ public class GameSynchronisation {
     }
 
     /**
-     * Rückumwandlung von String in Game-Objekt
+     * Rückumwandlung von String in ActualGame-Objekt
      * @param fromJson
      * @return
      */
-    public static Game decode(String fromJson){
+    public static ActualGame decode(String fromJson){
         Gson gson = new Gson();
 
-        Game game = gson.fromJson(fromJson, Game.class);
+        ActualGame game = gson.fromJson(fromJson, ActualGame.class);
 
         return game;
     }

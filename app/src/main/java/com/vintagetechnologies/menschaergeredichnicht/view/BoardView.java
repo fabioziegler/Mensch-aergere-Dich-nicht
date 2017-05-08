@@ -1,19 +1,17 @@
 package com.vintagetechnologies.menschaergeredichnicht.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
-import android.support.v4.os.CancellationSignal;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.vintagetechnologies.menschaergeredichnicht.structure.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
@@ -106,7 +104,7 @@ public class BoardView extends View {
      * @param canvas
      */
     private void drawGamePieces(Canvas canvas){
-        for(Player p : Game.getInstance().getPlayers()){
+        for(Player p : ActualGame.getInstance().getGameLogic().getPlayers()){
             switch (p.getColor()){
                 case RED:{
                     paint.setColor(Color.RED);

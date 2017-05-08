@@ -1,7 +1,5 @@
 package com.vintagetechnologies.menschaergeredichnicht.dummies;
 
-import android.widget.ImageButton;
-
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 /**
@@ -11,12 +9,17 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 public class DummyDice extends Dice {
 
     private static DummyDice dummyDice;
-    private static ImageButton diceButton;
 
     public static DummyDice get() {
         if (dummyDice == null) {
             dummyDice = new DummyDice();
-            //dummyDice.r();
+
+            new Thread(){
+                public void run(){
+                    dummyDice.r();
+                }
+            }.start();
+
         }
 
         return dummyDice;
@@ -28,11 +31,8 @@ public class DummyDice extends Dice {
 
     public static void waitForRoll() {
         synchronized (dummyDice) {
+            dummyDice.notify();
 
-            //diceButton.setEnabled(true);
-            //dummyDice.notify();
-
-            System.out.println("waiting: "+dummyDice);
 
             try {
                 dummyDice.wait();
@@ -40,8 +40,6 @@ public class DummyDice extends Dice {
                 e.printStackTrace();
             }
 
-            System.out.println("done waiting");
-            //diceButton.setEnabled(false);
 
         }
     }
@@ -58,14 +56,14 @@ public class DummyDice extends Dice {
 
                 roll();
 
-
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 notify();
             }
         }
-    }
-
-    public static void setDiceButton(ImageButton db){
-        diceButton = db;
     }
 }

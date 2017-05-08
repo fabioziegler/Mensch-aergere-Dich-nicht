@@ -10,7 +10,7 @@ import java.util.HashSet;
 public class Dice {
 
     private HashSet<DiceNumber> blackList = new HashSet<>();
-    private DiceNumber diceNumber;
+    protected DiceNumber diceNumber;
 
     public void roll() {
 
@@ -34,4 +34,5 @@ public class Dice {
     public void emptyBlacklist(){
         this.blackList =  new HashSet<>();
     }
+
 }

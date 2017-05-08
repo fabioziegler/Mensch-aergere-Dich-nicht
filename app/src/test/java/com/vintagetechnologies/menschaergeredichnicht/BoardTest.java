@@ -12,6 +12,8 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.StartingSpot;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -106,8 +108,37 @@ public class BoardTest {
     @Test
     public void testCheckSpot(){
         GamePiece gp = new GamePiece(PlayerColor.BLUE);
-        gp.setSpot(board.getBoard(0));
-        board.checkSpot(DiceNumber.FIVE, gp);
+        gp.setSpot(board.getBoard(30));
+        Spot s = board.checkSpot(DiceNumber.FIVE, gp);
+
+
+        assertEquals(board.getBoard(25), s);
+    }
+
+    /**
+     * Test Startingspots of all colors
+     * Incrementally adds new Gamepieces
+     */
+    @Test
+    public void testGetStartingSpot(){
+
+        HashMap<PlayerColor, Integer> sSpots = new HashMap<>();
+        sSpots.put(PlayerColor.RED, 1);
+        sSpots.put(PlayerColor.BLUE, 44);
+        sSpots.put(PlayerColor.YELLOW, 48);
+        sSpots.put(PlayerColor.GREEN, 52);
+
+        for(PlayerColor pc : sSpots.keySet()) {
+            int ind = sSpots.get(pc);
+            assertEquals(board.getBoard(ind), board.getStartingSpot(pc));
+
+            for (int i = ind; i < ind+4; i++) {
+                assertEquals(board.getBoard(i), board.getStartingSpot(pc));
+                board.getBoard(i).setGamePiece(new GamePiece(pc));
+            }
+
+            assertEquals(null, board.getStartingSpot(pc));
+        }
     }
 
 }

@@ -6,10 +6,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.nearby.Nearby;
-import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_PLAYER_HAS_CHEATED;
@@ -90,8 +89,8 @@ public class GameLogic {
 			case TAG_SYNCHRONIZE_GAME:
 
 				// replace current game class with new one
-				Game game = GameSynchronisation.decode(message);
-				Game.refreshGameInstance(game);
+				ActualGame game = GameSynchronisation.decode(message);
+				ActualGame.refreshGameInstance(game);
 
 				break;
 
@@ -102,10 +101,10 @@ public class GameLogic {
 				String playerName = getDevices().getDeviceByPlayerID(playerID).getName();
 
 				// set player cheating/or not
-				Game.getInstance().getPlayerByName(playerName).getSchummeln().setPlayerCheating(playerHasCheated);
+				ActualGame.getInstance().getGameLogic().getPlayerByName(playerName).getSchummeln().setPlayerCheating(playerHasCheated);
 
 				// send changes to others
-				GameSynchronisation.synchronize(Game.getInstance());
+				GameSynchronisation.synchronize(ActualGame.getInstance());
 
 				break;
 
