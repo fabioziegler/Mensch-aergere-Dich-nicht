@@ -15,6 +15,9 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Created by johannesholzl on 05.04.17.
  */
@@ -165,6 +168,9 @@ public class ActualGame extends Game {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
+
+                Thread.currentThread().interrupt();
             }
         }
 

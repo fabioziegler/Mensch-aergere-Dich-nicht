@@ -11,6 +11,9 @@ import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -131,7 +134,9 @@ public class GameLogicTest {
         try {
             tg.play();
         } catch (IllegalAccessException e) {
+            Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while playing!", e);
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
     }
