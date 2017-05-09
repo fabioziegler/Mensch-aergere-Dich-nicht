@@ -53,7 +53,7 @@ public class GameLogic {
 
         // throw exception when trying to play and init wasn't called yet.
         if (!initialized) {
-            throw new IllegalAccessError("ActualGame hasn't been initialized. Please run init() first.");
+            throw new IllegalAccessException("ActualGame hasn't been initialized. Please run init() first.");
         }
 
         int bestPlayer = -1;

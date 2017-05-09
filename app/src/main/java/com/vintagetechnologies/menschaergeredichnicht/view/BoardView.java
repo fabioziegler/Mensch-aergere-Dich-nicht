@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.vintagetechnologies.menschaergeredichnicht.structure.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;

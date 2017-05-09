@@ -29,6 +29,10 @@ public final class Board {
         return boardItself;
     }
 
+    public static void resetBoard(){
+        boardItself = new Board();
+    }
+
 
     /**
      * Constructor of Board

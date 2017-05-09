@@ -8,7 +8,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.nearby.Nearby;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
-import com.vintagetechnologies.menschaergeredichnicht.structure.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_PLAYER_HAS_CHEATED;

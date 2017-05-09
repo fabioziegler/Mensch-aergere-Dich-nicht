@@ -16,7 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
-import com.vintagetechnologies.menschaergeredichnicht.structure.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.ArrayList;

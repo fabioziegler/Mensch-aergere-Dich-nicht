@@ -15,6 +15,7 @@ import org.junit.Test;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by johannesholzl on 31.03.17.
@@ -91,6 +92,9 @@ public class BoardTest {
 
     @Test
     public void testCycle() {
+        Board.resetBoard();
+        board = Board.get();
+
         RegularSpot s = (RegularSpot) board.getBoard()[0];
         RegularSpot n = s.getNextSpot();
 
@@ -107,6 +111,9 @@ public class BoardTest {
 
     @Test
     public void testCheckSpot(){
+        Board.resetBoard();
+        board = Board.get();
+
         GamePiece gp = new GamePiece(PlayerColor.BLUE);
         gp.setSpot(board.getBoard(30));
         Spot s = board.checkSpot(DiceNumber.FIVE, gp);
@@ -121,6 +128,9 @@ public class BoardTest {
      */
     @Test
     public void testGetStartingSpot(){
+
+        Board.resetBoard();
+        board = Board.get();
 
         HashMap<PlayerColor, Integer> sSpots = new HashMap<>();
         sSpots.put(PlayerColor.RED, 1);
@@ -145,6 +155,17 @@ public class BoardTest {
 
             assertEquals(null, board.getStartingSpot(pc));
 
+        }
+    }
+
+    @Test
+    public void testResetBoard(){
+        Board oldBoard = board;
+        Board.resetBoard();
+        assertNotEquals(Board.get(), board);
+
+        for(Spot s: Board.getBoard()){
+            assertEquals(null, s.getGamePiece());
         }
     }
 
