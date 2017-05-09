@@ -90,6 +90,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         //Test if Cheated - Six or random
         if (Schummeln.isPlayerCheating()) {
             RealDice.get().setDiceNumber(DiceNumber.SIX);
+            Schummeln.setPlayerCheating(false);
         }else{
             RealDice.get().roll();
         }
