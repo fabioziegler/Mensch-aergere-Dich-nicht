@@ -175,8 +175,10 @@ public final class Board {
         Spot targetSpot = piece.getSpot();
         for (int i = 0; i < steps; i++) {
             if (targetSpot instanceof RegularSpot) {
-                if (((RegularSpot) targetSpot).getEndSpot() == null) {
-                    targetSpot = ((RegularSpot) targetSpot).getNextSpot(); //nächster Spot ist ein RegularSpot
+
+                RegularSpot tr = (RegularSpot) targetSpot;
+                if (tr.getEndSpot() == null || (tr.getEndSpot() != null && tr.getEndSpot().getColor() != piece.getPlayerColor())) {
+                    targetSpot = tr.getNextSpot(); //nächster Spot ist ein RegularSpot
                 } else if (((RegularSpot) targetSpot).getEndSpot().getColor() == piece.getPlayerColor()) {
                     targetSpot = ((RegularSpot) targetSpot).getEndSpot(); //nächster Spot ist erster EndSpot
                 }
