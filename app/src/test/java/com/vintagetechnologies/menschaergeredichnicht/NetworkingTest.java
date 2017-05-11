@@ -2,9 +2,10 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
-import com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.networking.WifiListener;
 import com.vintagetechnologies.menschaergeredichnicht.networking.WifiReceiver;
+import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class NetworkingTest {
 		gameSettings = new GameSettings();
 		deviceList = new DeviceList();
 		wifiReceiver = new WifiReceiver();
-		gameLogic = new GameLogic(null, null, false);
+		gameLogic = new GameLogicHost(null, new MyServer(null));
 	}
 
 
@@ -62,36 +63,37 @@ public class NetworkingTest {
 	public void testDeviceList(){
 
 		assertEquals("There can't be a host when no devices added", null, deviceList.getHost());
-		assertEquals("At first the connection count must be zero", 0, deviceList.getCountConnectedDevices());
+		assertEquals("At first the connection count must be zero", 0, deviceList.getCount());
 
 		// add two devices
-		Device device1 = new Device("1", "Fabio", true);
-		Device device2 = new Device("2", "Daniel", false);
-		deviceList.addDevice(device1);
-		deviceList.addDevice(device2);
+		Device device1 = new Device(1, "Fabio", true);
+		Device device2 = new Device(2, "Daniel", false);
+
+		deviceList.add(device1);
+		deviceList.add(device2);
 
 		// check connected device count
-		assertEquals("Two connected devices", 2, deviceList.getCountConnectedDevices());
+		assertEquals("Two connected devices", 2, deviceList.getCount());
 
 		// check host
 		assertEquals("Host is device1", device1, deviceList.getHost());
 
 		// get device by id
-		assertEquals(device2, deviceList.getDeviceByPlayerID("2"));
+		assertEquals(device2, deviceList.getPlayer(2));
 
 		// get device by name
-		assertEquals(device1, deviceList.getDeviceByPlayerName("Fabio"));
-		assertEquals("Device with name 'Max' does not exist", null, deviceList.getDeviceByPlayerName("Max"));
+		assertEquals(device1, deviceList.getPlayer("Fabio"));
+		assertEquals("Device with name 'Max' does not exist", null, deviceList.getPlayer("Max"));
 
 		// check if device is host
-		assertEquals(false, deviceList.isHost("2"));
-		assertEquals(true, deviceList.isHost("1"));
+		assertEquals(false, deviceList.isHost(2));
+		assertEquals(true, deviceList.isHost(1));
 
 		// remove device
-		deviceList.removeDeviceByID("2");
+		deviceList.remove(2);
 
 		// check if device was removed
-		assertEquals(null, deviceList.getDeviceByPlayerID("2"));
+		assertEquals(null, deviceList.getPlayer("2"));
 
 		// get list
 		assertNotNull("Device list must not be null", deviceList.getList());
@@ -105,7 +107,7 @@ public class NetworkingTest {
 		assertNull(DataHolder.getInstance().retrieve("MYITEM"));
 
 		// save object
-		Device device = new Device("1", "Fabio", false);
+		Device device = new Device(1, "Fabio", false);
 		DataHolder.getInstance().save("ITEM", device);
 
 		// get saved item
@@ -139,15 +141,15 @@ public class NetworkingTest {
 
 	@Test
 	public void testDevice(){
-		device = new Device("4", "Max", true);
+		device = new Device(4, "Max", true);
 
 		// test custom settings
-		assertEquals("Id must be 4", "4", device.getId());
+		assertEquals("Id must be 4", 4, device.getId());
 		assertEquals("Name is Max", "Max", device.getName());
 		assertEquals("Is host", true, device.isHost());
 
-		device.setId("abc");
-		assertEquals("Id must be abc", "abc", device.getId());
+		device.setId(567);
+		assertEquals("Id must be abc", 567, device.getId());
 
 		device.setName("Dev");
 		assertEquals("Name is Dev", "Dev", device.getName());
@@ -160,7 +162,7 @@ public class NetworkingTest {
 	public void testMessageEncodingAndDecoding(){
 
 		/* Test encoding */
-		String tag = NetworkTags.TAG_PLAYER_HAS_CHEATED;
+		String tag = Network.TAG_PLAYER_HAS_CHEATED;
 		String message = "true";
 
 		String encodedMessage = gameLogic.encodeMessage(tag, message);
@@ -172,7 +174,7 @@ public class NetworkingTest {
 		String decodedTag = decodedData[0];
 		String decodedMessage = decodedData[1];
 
-		assertEquals("Tag must be correctly decoded", NetworkTags.TAG_PLAYER_HAS_CHEATED, decodedTag);
+		assertEquals("Tag must be correctly decoded", Network.TAG_PLAYER_HAS_CHEATED, decodedTag);
 		assertEquals("Message must be correctly decoded to 'true'", "true", decodedMessage);
 		assertTrue(Boolean.parseBoolean(decodedMessage));
 	}

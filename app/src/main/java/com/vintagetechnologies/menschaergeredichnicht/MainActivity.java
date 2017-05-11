@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
             // save settings
             gameSettings.setPlayerName(playerName);
-            DataHolder.getInstance().save("GAMESETTINGS", gameSettings);
+            DataHolder.getInstance().save(Network.DATAHOLDER_GAMESETTINGS, gameSettings);
 
             Intent intent = new Intent(this, Hauptmenue.class);
             startActivity(intent);

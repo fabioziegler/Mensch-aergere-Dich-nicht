@@ -26,19 +26,39 @@
         </activity>
 
         <activity android:name=".Hauptmenue" android:launchMode="singleTask" />
-
         <activity android:name=".Regeln" android:launchMode="singleTask" />
         <activity android:name=".AboutActivity" android:launchMode="singleTask" />
-
         <activity android:name=".Spieloberflaeche" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
-        <activity android:name=".GameHost" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
-        <activity android:name=".GameClient" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
+
+        <activity android:name=".networking.kryonet.MyClientActivity" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
+        <activity android:name=".networking.kryonet.MyServerActivity" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
 
         <activity android:name=".Einstellungen" />
 
     </application>
 
-    <!-- Required to check for WiFi connection -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Required to check for WiFi connection (Nearby API) -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
+
+
+    <!-- Required to wifi p2p (wifi direct) -->
+    <uses-permission
+        android:required="true"
+        android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission
+        android:required="true"
+        android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission
+        android:required="true"
+        android:name="android.permission.INTERNET"/>
+    <uses-permission
+        android:required="true"
+        android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission
+        android:required="true"
+        android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <uses-sdk android:minSdkVersion="14" />
+
 
 </manifest>

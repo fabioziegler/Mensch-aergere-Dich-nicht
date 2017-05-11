@@ -2,8 +2,11 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 
-import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_PLAYER_HAS_CHEATED;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 
 /**
  * Created by Demi on 11.04.2017.
@@ -31,7 +34,7 @@ public class Cheat {
         boolean isHost = gameLogic.isHost();
 
         if (!isHost){
-            gameLogic.sendToHost(TAG_PLAYER_HAS_CHEATED, "true");
+			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + "true");
         }
     }
 

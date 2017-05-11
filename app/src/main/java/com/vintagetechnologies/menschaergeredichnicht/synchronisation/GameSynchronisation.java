@@ -2,10 +2,9 @@ package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 
 import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
-import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 
-import static com.vintagetechnologies.menschaergeredichnicht.networking.NetworkTags.TAG_SYNCHRONIZE_GAME;
 
 /**
  * Created by Simon on 25.04.2017.
@@ -15,11 +14,11 @@ public class GameSynchronisation {
 
     /**
      * Synchronisiert Gamedaten der clients
-     * @param game
      */
     public static void synchronize(ActualGame game){
-        String message = encode(game);
-        sendToOtherDevices(message);
+		//Game game = Game.getInstance();
+        //String message = encode(game);
+        sendToOtherDevices(game);
     }
 
     /**
@@ -50,11 +49,15 @@ public class GameSynchronisation {
 
     /**
      * Sendet Gamedaten an clients in String-Format
-     * @param json
+     * @param message
      */
-    private static void sendToOtherDevices(String json){
-        GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve("GAMELOGIC");
-        gameLogic.sendToClientDevices(TAG_SYNCHRONIZE_GAME, json);
+    private static void sendToOtherDevices(Object message){
+
+		// TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
+
+        GameLogicHost gameLogic = (GameLogicHost) DataHolder.getInstance().retrieve("GAMELOGIC");
+		//gameLogic.sendToAllClientDevices(TAG_SYNCHRONIZE_GAME + MESSAGE_DELIMITER + json);
+		gameLogic.sendToAllClientDevices(message);
     }
 
 }

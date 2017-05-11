@@ -1,10 +1,10 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
-/**
- * Created by johannesholzl on 06.05.17.
- */
+import com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 
 public abstract class Game {
+
     public abstract void init(String ... names);
 
     public abstract void play() throws IllegalAccessException;

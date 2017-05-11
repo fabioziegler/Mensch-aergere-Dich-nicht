@@ -128,35 +128,35 @@
 
     <Button
         android:id="@+id/Select_Figur"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Figur wählen"
+        android:layout_width="110dp"
+        android:layout_height="43dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="0.984"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.233" />
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Figur wählen"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/imageButton_wuerfel"
+        app:layout_constraintRight_toLeftOf="@+id/Move_Figur"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.984"
+        tools:layout_editor_absoluteY="508dp"/>
 
     <Button
         android:id="@+id/Move_Figur"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Figur setzen"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="110dp"
+        android:layout_height="43dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="0.984"
         android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.726" />
+        android:layout_marginTop="8dp"
+        android:text="Figur setzen"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/imageButton_aufdecken"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.984"
+        tools:layout_editor_absoluteY="508dp"/>
 
     <ImageView
         android:id="@+id/imgViewDice"

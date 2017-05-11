@@ -87,6 +87,16 @@ public class GameSettings {
     }
 
 
+	/**
+	 * Applys the same settings as a given remote settings class.
+	 * @param remoteGameSettings
+	 */
+	public void apply(GameSettings remoteGameSettings){
+		setCheatingEnabled(remoteGameSettings.isCheatingEnabled());	// only force cheat
+		//setMusicEnabled(remoteGameSettings.isMusicEnabled());
+		//setBoardDesign(remoteGameSettings.getBoardDesign());
+	}
+
     /**
      * Save settings to disk
      */

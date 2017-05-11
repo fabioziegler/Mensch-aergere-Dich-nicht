@@ -27,6 +27,7 @@ import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
@@ -34,8 +35,15 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
+
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
+
+
+	private GameLogic gameLogic;
+	private GameSettings gameSettings;
 
     private Sensor LightSensor;
     private SensorManager SM;
@@ -193,15 +201,23 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
+		gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
+		gameLogic.setActivity(this);
+
+		gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
 
         final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
         ActualGame.getInstance().setBoardView(bv);
 
         ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 
+        ActualGame.getInstance().setBoardView((BoardView) findViewById(R.id.spielFeld));
+
+        //Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+        //ActualGame.getInstance().init(gameLogic.getDevices().getNameList());
 
 
-        state = (TextView)(findViewById(R.id.textView_status));
+        state = (TextView) findViewById(R.id.textView_status);
 
         Schummeln = ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln();
 
@@ -225,7 +241,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                  * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
                  * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
                  */
-                for(int i=0; i <Suspechts.length; i++){
+                for(int i=0; i < Suspechts.length; i++){
                     if (Suspechts[i].getSchummeln().isPlayerCheating()) {
                         // TODO Spieler i setzt aus
                         schummelt=true;
@@ -311,7 +327,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        // init dice
+        // initialize dice
         dice = new Dice();
 
         // load image list
@@ -336,13 +352,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 try {
                     ActualGame.getInstance().play();
                 } catch (IllegalAccessException e){
-                    Log.e("Spieloberflaeche", "Error in game init", e);
+                    Log.e("Spieloberflaeche", "Error in game initialize", e);
                 }
             }
         }.start();
 	}
-
-
 
 
     /**
@@ -391,8 +405,15 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
             //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
         }
-
     }
+
+
+    @Override
+	public void onStart(){
+		super.onStart();
+
+		Toast.makeText(getApplicationContext(), (gameSettings.isCheatingEnabled() ? R.string.schummelnEin : R.string.schummelnAus), Toast.LENGTH_LONG).show();
+	}
 
 
     @Override
