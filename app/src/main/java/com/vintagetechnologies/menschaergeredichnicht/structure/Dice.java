@@ -1,23 +1,41 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 /**
  * Created by Rainer on 03.04.2017.
  */
 
 public class Dice {
 
-    private DiceNumber diceNumber;
+    private HashSet<DiceNumber> blackList = new HashSet<>();
+    protected DiceNumber diceNumber;
 
     public void roll() {
-        int length = DiceNumber.values().length;
+        //if(ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln().isPlayerCheating()){
+          //  this.diceNumber = DiceNumber.SIX;
+        //}else {
+            do {
+                int length = DiceNumber.values().length;
 
-        int n = (int) (Math.random() * length);
+                int n = (int) (Math.random() * length);
 
-        this.diceNumber = DiceNumber.values()[n];
+                this.diceNumber = DiceNumber.values()[n];
+            } while (blackList.contains(this.diceNumber));
+        //}
     }
 
     public DiceNumber getDiceNumber() {
         return diceNumber;
+    }
+
+    public void addToBlacklist(DiceNumber diceNumber){
+        this.blackList.add(diceNumber);
+    }
+
+    public void emptyBlacklist(){
+        this.blackList =  new HashSet<>();
     }
 
 }

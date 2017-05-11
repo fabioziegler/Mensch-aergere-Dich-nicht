@@ -12,31 +12,63 @@ public abstract class Spot {
 
     private GamePiece gamePiece;
 
+    /**
+     * Spot has to have x and y coordinates.
+     * 0 / 0 is the Spot on the upper left corner (red StartingSpot)
+     * @param x
+     * @param y
+     */
     public Spot(int x, int y){
         this.x = x;
         this.y = y;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     *
+     * @param x
+     */
     public void setX(int x) {
         this.x = x;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getY() {
         return y;
     }
 
+    /**
+     *
+     * @param y
+     */
     public void setY(int y) {
         this.y = y;
     }
 
+    /**
+     *
+     * @return
+     */
     public GamePiece getGamePiece() {
         return gamePiece;
     }
 
+
+    /**
+     * Similar to GamePieces setSpot() method.
+     *
+     * @param gamePiece
+     */
     public void setGamePiece(GamePiece gamePiece) {
         if(this.getGamePiece() != null) {
             this.gamePiece.nullSpot();
@@ -49,10 +81,19 @@ public abstract class Spot {
         }
     }
 
+    /**
+     * Similar to GamePieces forceSetSpot() method.
+     *
+     * @param gamePiece
+     */
     public void forceSetGamePiece(GamePiece gamePiece){
         this.gamePiece = gamePiece;
     }
 
+
+    /**
+     * Sets the GamePiece to null (the Spot is not occupied)
+     */
     public void nullGamePiece(){
         this.gamePiece = null;
     }

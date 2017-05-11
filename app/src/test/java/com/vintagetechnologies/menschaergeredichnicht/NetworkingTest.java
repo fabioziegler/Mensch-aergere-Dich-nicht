@@ -32,7 +32,7 @@ public class NetworkingTest {
 		gameSettings = new GameSettings();
 		deviceList = new DeviceList();
 		wifiReceiver = new WifiReceiver();
-		gameLogic = new GameLogicHost(null, new MyServer());
+		gameLogic = new GameLogicHost(null, new MyServer(null));
 	}
 
 

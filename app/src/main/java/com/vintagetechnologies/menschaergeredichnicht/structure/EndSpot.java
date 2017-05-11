@@ -9,6 +9,19 @@ public class EndSpot extends Spot implements Colorful{
     private PlayerColor color;
     private EndSpot nextEndSpot;
 
+
+    /**
+     * Constructor of EndSpot
+     *
+     * x/y: super() method of Spot is called
+     * color: EndSpot is Colorful
+     * nextEndSpot: the EndSpot to move next. Is null on the last EndSpot
+     *
+     * @param x
+     * @param y
+     * @param color
+     * @param nextEndSpot
+     */
     public EndSpot(int x, int y, PlayerColor color, EndSpot nextEndSpot) {
         super(x, y);
         this.color = color;

@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServer;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
@@ -162,7 +163,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 		sendToAllClientDevices(TAG_START_GAME);
 
-		GameSynchronisation.synchronize();
+		GameSynchronisation.synchronize(ActualGame.getInstance());
 	}
 
 
@@ -178,13 +179,13 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		Device clientDevice = getDevices().getDevice(connection);
 
 		// execute message based on tag
-		if (object instanceof Game){
+		if (object instanceof ActualGame){
 
 			Log.i(TAG, "Received game object.");
 
-			Game game = (Game) object;
-			Game.refreshGameInstance(game);	// replace current game class with new one
-			GameSynchronisation.synchronize();
+			ActualGame game = (ActualGame) object;
+			ActualGame.refreshGameInstance(game);	// replace current game class with new one
+			GameSynchronisation.synchronize(game);
 
 
 		} else if(object instanceof String) {	// string message
@@ -197,17 +198,17 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				getDevices().getDevice(connection).setName(value);
 
-				GameSynchronisation.synchronize();
+				GameSynchronisation.synchronize(ActualGame.getInstance());
 
 			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)) {
 
 				boolean hasCheated = Boolean.parseBoolean(value);
 
 				// set player cheating/or not
-				Game.getInstance().getPlayerByName(clientDevice.getName()).getSchummeln().setPlayerCheating(hasCheated);
+				//ActualGame.getInstance().getPlayerByName(clientDevice.getName()).getSchummeln().setPlayerCheating(hasCheated);
 
 				// send changes to others
-				GameSynchronisation.synchronize();
+				GameSynchronisation.synchronize(ActualGame.getInstance());
 			}
 
 		}else {

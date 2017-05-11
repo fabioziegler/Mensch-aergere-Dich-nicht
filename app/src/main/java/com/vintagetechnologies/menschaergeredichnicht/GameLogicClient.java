@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClient;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
@@ -76,11 +77,11 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 	@Override
 	protected void parseMessage(Connection connection, Object object) {
 
-		if(object instanceof Game) {
+		if(object instanceof ActualGame) {
 
-			Game game = (Game) object;
+			ActualGame game = (ActualGame) object;
 
-			Game.refreshGameInstance(game);
+			ActualGame.refreshGameInstance(game);
 
 		} else if (object instanceof  GameSettings) {
 

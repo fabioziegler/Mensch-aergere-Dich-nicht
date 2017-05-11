@@ -2,7 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 
 import android.animation.Animator;
-import android.content.Intent;
+
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
@@ -15,9 +15,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import android.hardware.Sensor;
@@ -28,7 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
@@ -91,22 +94,24 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        //dice.roll();
-        DummyDice.get().roll();
 
-        int result;
+        //Test if Cheated - Six or random
         if (Schummeln.isPlayerCheating()) {
-            result = 5;
-        }else if (!Schummeln.isPlayerCheating()){
-            result = DummyDice.get().getDiceNumber().getNumber() - 1;
-        }else {
-            throw new  IllegalStateException();
+            RealDice.get().setDiceNumber(DiceNumber.SIX);
+            Schummeln.setPlayerCheating(false);
+        }else{
+            RealDice.get().roll();
         }
 
-        // dice rolls for 3 seconds, and changes 5x a second it's number
+        //Sets the Result
+        final int result = RealDice.get().getDiceNumber().getNumber() - 1;
+
+
+
+        // dice rolls for 2 seconds, and changes 5x a second it's number
 
         // "roll" animation
-        for (int i = 0; i < 3; i++) {       // 3 seconds
+        for (int i = 0; i < 2; i++) {       // 2 seconds
             for (int j = 0; j < 5; j++) {   // 1 second (5 changes)
                 final int randomIndex = rand.nextInt(6);
 
@@ -121,12 +126,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         // setze Egebnis des Würfelns
-        final int finalResult = result;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // Update UI elements
-                imgViewDice.setImageResource(diceImages[finalResult]);
+                imgViewDice.setImageResource(diceImages[result]);
             }
         });
 
@@ -167,7 +171,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                                 imgViewDice.setAlpha(1f);
                                 imgViewDice.setVisibility(View.INVISIBLE);
 
-                                btnWuerfel.setImageResource(diceImages[finalResult]);
+                                btnWuerfel.setImageResource(diceImages[result]);
 
                                 btnWuerfel.setEnabled(true);
                             }
@@ -183,9 +187,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
 
-        synchronized (DummyDice.get()){
-            System.out.println("notifying: "+DummyDice.get());
-            DummyDice.get().notify();
+        synchronized (RealDice.get()){
+            System.out.println("notifying: "+ RealDice.get());
+            RealDice.get().notify();
         }
 
 
@@ -202,15 +206,20 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 		gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
 
-        Game.getInstance().setBoardView((BoardView) findViewById(R.id.spielFeld));
+        final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
+        ActualGame.getInstance().setBoardView(bv);
+
+        ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+
+        ActualGame.getInstance().setBoardView((BoardView) findViewById(R.id.spielFeld));
 
         //Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
-        Game.getInstance().init(gameLogic.getDevices().getNameList());
+        //ActualGame.getInstance().init(gameLogic.getDevices().getNameList());
 
 
         state = (TextView) findViewById(R.id.textView_status);
 
-        Schummeln = Game.getInstance().getCurrentPlayer().getSchummeln();
+        Schummeln = ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln();
 
         //Sensor Manager erstellen
         SM = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -226,7 +235,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             @Override
             public void onClick(View v) {
                 boolean schummelt = false;
-                Player[] Suspechts = Game.getInstance().getPlayers();
+                Player[] Suspechts = ActualGame.getInstance().getGameLogic().getPlayers();
 
                 /**
                  * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
@@ -253,9 +262,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         btnWuerfel.setEnabled(true);
 
-        DummyDice.get();
+        RealDice.get();
 
-        DummyDice.setDiceButton(btnWuerfel);
+        RealDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
 
@@ -272,21 +281,51 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-//        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // toDO: Zu setzende Figur auswählen
-//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-//            }
-//        });
-//
-//        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
-//                startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-//            }
-//        });
+
+        //zwischen zu bewegenden Figuren wählen
+        btnFigurSelect = (Button)(findViewById(R.id.Select_Figur));
+        btnFigurSelect.setEnabled(false);
+        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Zu setzende Figur auswählen
+                ArrayList<GamePiece> possibleGamePieces = ActualGame.getInstance().getGameLogic().getPossibleToMove();
+                if(bv.getHighlightedGamePiece() == null){
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(0));
+                    bv.invalidate();
+                }else{
+                    GamePiece gp = bv.getHighlightedGamePiece();
+                    int i = possibleGamePieces.indexOf(gp);
+                    i = (i+1)%possibleGamePieces.size();
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(i));
+                    bv.invalidate();
+                }
+            }
+        });
+
+
+        //bestätigt Eingabe
+        btnMoveFigur = (Button)(findViewById(R.id.Move_Figur));
+        btnMoveFigur.setEnabled(false);
+        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
+
+                ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
+                bv.setHighlightedGamePiece(null);
+        btnWuerfel.setEnabled(true);
+
+        RealDice.get();
+
+        RealDice.setDiceButton(btnWuerfel);
+        imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
+
+                synchronized (ActualGame.getInstance()){
+                    ActualGame.getInstance().notify();
+                }
+            }
+        });
 
         // initialize dice
         dice = new Dice();
@@ -311,7 +350,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             @Override
             public void run() {
                 try {
-                    Game.getInstance().play();
+                    ActualGame.getInstance().play();
                 } catch (IllegalAccessException e){
                     Log.e("Spieloberflaeche", "Error in game initialize", e);
                 }

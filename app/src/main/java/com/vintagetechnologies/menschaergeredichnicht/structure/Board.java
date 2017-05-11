@@ -6,10 +6,21 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 public final class Board {
 
+    /**
+     * Spots of the board is stored here.
+     */
     private Spot[] board = new Spot[72];
 
+    /**
+     * Board object.
+     */
     private static Board boardItself;
 
+    /**
+     * returns boardItself
+     *
+     * @return
+     */
     public static Board get() {
         if (boardItself == null) {
             boardItself = new Board();
@@ -18,10 +29,17 @@ public final class Board {
         return boardItself;
     }
 
+    public static void resetBoard(){
+        boardItself = new Board();
+    }
 
 
-
-
+    /**
+     * Constructor of Board
+     * private: Is a Singleton
+     *
+     * Sets all Spots to the correct position and links
+     */
     private Board() {
 
         board[0] = new RegularSpot(4, 0, null);
@@ -117,23 +135,50 @@ public final class Board {
 
     }
 
+
+    /**
+     * Returns the Spot Array
+     * @return
+     */
     public static Spot[] getBoard() {
         return boardItself.board;
     }
 
+
+    /**
+     * Returns a single Spot with given index.
+     *
+     * @param p
+     * @return
+     */
     public static Spot getBoard(int p) {
         return boardItself.board[p];
     }
 
 
-
+    /**
+     *
+     * Needs:   -DiceNumber
+     *          -GamePiece
+     *
+     * Checks if GamePiece can move a given number of Spots. The number is given as a DiceNumber.
+     *
+     * Returns the Spot, on which the GamePiece will be.
+     * Returns null if the GamePiece can't move the given number of Spots (occupied, end)
+     *
+     * @param dn
+     * @param piece
+     * @return
+     */
     public static Spot checkSpot(DiceNumber dn, GamePiece piece) {
         int steps = dn.getNumber();
         Spot targetSpot = piece.getSpot();
         for (int i = 0; i < steps; i++) {
             if (targetSpot instanceof RegularSpot) {
-                if (((RegularSpot) targetSpot).getEndSpot() == null) {
-                    targetSpot = ((RegularSpot) targetSpot).getNextSpot(); //nächster Spot ist ein RegularSpot
+
+                RegularSpot tr = (RegularSpot) targetSpot;
+                if (tr.getEndSpot() == null || (tr.getEndSpot() != null && tr.getEndSpot().getColor() != piece.getPlayerColor())) {
+                    targetSpot = tr.getNextSpot(); //nächster Spot ist ein RegularSpot
                 } else if (((RegularSpot) targetSpot).getEndSpot().getColor() == piece.getPlayerColor()) {
                     targetSpot = ((RegularSpot) targetSpot).getEndSpot(); //nächster Spot ist erster EndSpot
                 }
@@ -163,6 +208,14 @@ public final class Board {
         return targetSpot;
     }
 
+
+    /**
+     * Returns a starting spot with a given color.
+     * Needed for returning a GamePiece to a StartingSpot.
+     *
+     * @param color
+     * @return
+     */
     public static Spot getStartingSpot(PlayerColor color){
         for(Spot s : getBoard()){
             if(s instanceof StartingSpot && ((StartingSpot) s).getColor() == color && s.getGamePiece() == null){

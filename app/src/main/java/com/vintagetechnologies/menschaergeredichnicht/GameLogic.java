@@ -5,7 +5,6 @@ import android.app.Activity;
 import com.esotericsoftware.kryonet.Connection;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
-
 /**
  * Created by Fabio on 08.04.17.
  *

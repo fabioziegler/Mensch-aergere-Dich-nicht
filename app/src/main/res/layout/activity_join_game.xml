@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vintagetechnologies.menschaergeredichnicht.GameClient">
+    tools:context="com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClientActivity">
 
 
     <TextView

@@ -1,14 +1,12 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
-import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
 import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
-import com.vintagetechnologies.menschaergeredichnicht.structure.StartingSpot;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +29,7 @@ public class PlayerTest {
         new Thread(){
 			@Override
             public void run(){
-                DummyDice.get();
+                RealDice.get();
             }
         }.start();
 
@@ -69,15 +67,17 @@ public class PlayerTest {
         assertEquals(null, s.getGamePiece());
     }
 
+
+
     /*
     @Test
     public void dummyDiceTest(){
         for(int i = 0; i<10; i++) {
-            DummyDice.waitForRoll();
-            System.out.println(DummyDice.get().getDiceNumber());
+            RealDice.waitForRoll();
+            System.out.println(RealDice.get().getDiceNumber());
         }
 
-        assertNotEquals(null, DummyDice.get().getDiceNumber());
+        assertNotEquals(null, RealDice.get().getDiceNumber());
 
     }
        */
