@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
@@ -13,8 +15,10 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Theme;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -80,38 +84,49 @@ public class ActualGame extends Game {
 
         gameactivity = (Spieloberflaeche) bv.getContext();
 
+        GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
+        Theme theme = null;
+        try {
+            if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC){
+                theme = new Theme(gameactivity.getAssets().open("themes/classic.json"));
+            }else if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.VINTAGE){
+                theme = new Theme(gameactivity.getAssets().open("themes/vintage.json"));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
+        final Theme finalTheme = theme;
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 for (Player p : gameLogic.getPlayers()) {
+                    TextView tv = null;
                     switch (p.getColor()) {
                         case RED: {
-                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerRot));
-                            tv.setTextColor(Color.RED);
-                            tv.setText(p.getName());
+                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerRot));
                             break;
                         }
                         case GREEN: {
-                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGruen));
-                            tv.setTextColor(Color.GREEN);
-                            tv.setText(p.getName());
+                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGruen));
                             break;
                         }
                         case BLUE: {
-                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerBlau));
-                            tv.setTextColor(Color.BLUE);
+                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerBlau));
                             tv.setText(p.getName());
                             break;
                         }
                         case YELLOW: {
-                            TextView tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGelb));
-                            tv.setTextColor(Color.YELLOW);
-                            tv.setText(p.getName());
+                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGelb));
                             break;
                         }
                     }
+                    tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
+                    tv.setText(p.getName());
+
+
                 }
 
             }
