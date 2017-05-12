@@ -45,8 +45,17 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 	private GameLogic gameLogic;
 	private GameSettings gameSettings;
 
-    private Sensor LightSensor;
     private SensorManager SM;
+    private Sensor ShakeSensor;
+    private static final int SHAKE_THRESHOLD = 1400;
+    private long lastUpdate;
+    float last_x;
+    float last_y;
+    float last_z;
+    boolean shook = false;
+
+    private Sensor LightSensor;
+
 
     private TextView state;
     // toDO: alle Spielfunktionen ect. hinzufügen
@@ -192,7 +201,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             RealDice.get().notify();
         }
 
-
+        //jetzt kann durch erneutes schütteln wieder ein Würfeln ausgelöst werden.
+        //TODo: Anpassen an wie oft darf man würfeln. erst wenn neuer zug erlaubt ist für den Spieler auf true setzen.
+        shook=false;
     }
 
 
@@ -227,6 +238,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         //Licht Sensor erstellen
         LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
         SM.registerListener(this, LightSensor, SensorManager.SENSOR_DELAY_GAME);
+
+        //Sensor für Bewegung
+        ShakeSensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        SM.registerListener(this, ShakeSensor, SensorManager.SENSOR_DELAY_GAME);
 
         //ToDo: Disable wenn Spieler gerade spielt
         //aktuell spielender Spieler wird des Schummelns verdächtigt
@@ -383,7 +398,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         getScreenDimensions();
     }
 
-
     /**
      * ToDO: Sollte nur aktiviert sein wenn Spieler aktuell spielt.
      * ToDO: Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
@@ -391,7 +405,43 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        //ToDO schüttelsensor für würfeln impl.
+        /**
+         * SchüttelSensor: löst Würfeln aus. Nur einmal dann wird shook auf false gesetzt. (nach dem Würfeln wieder auf true)
+         */
+
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            //TODo ist das mit shook sinnvoll?! Gibt es bessere lösung
+            if(!shook) {
+                long curTime = System.currentTimeMillis();
+                // only allow one update every 100ms.
+                if ((curTime - lastUpdate) > 100) {
+                    long diffTime = (curTime - lastUpdate);
+                    lastUpdate = curTime;
+
+                    float x = event.values[0];
+                    float y = event.values[1];
+                    float z = event.values[2];
+
+                    float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
+
+                    if (speed > SHAKE_THRESHOLD) {
+                        shook = true;
+                        Runnable myRunnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                btnWuerfelClicked();
+                            }
+                        };
+                        new Thread(myRunnable).start();
+                    }
+
+                    last_x = x;
+                    last_y = y;
+                    last_z = z;
+                }
+            }
+        }
+
 
         /** Für Licht
          * Reagiert bei änderung wird entsprechender Wert zwischen 0.0 und 40000 angegeben.
