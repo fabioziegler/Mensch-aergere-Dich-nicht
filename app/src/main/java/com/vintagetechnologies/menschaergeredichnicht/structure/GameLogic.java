@@ -135,7 +135,12 @@ public class GameLogic {
 
                     if (possibleToMove.size() > 0) {
 
-                        game.waitForMovePiece();
+                        if(possibleToMove.size() > 1){
+                            game.waitForMovePiece();
+                        }else{
+                            this.selectedGamePiece = this.possibleToMove.get(0);
+                        }
+
 
                         if (possibleToMove.contains(this.selectedGamePiece)) {
                             movePiece(this.selectedGamePiece);
