@@ -3,9 +3,11 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.animation.Animator;
 
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -396,6 +398,24 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         // refresh screen dimensions when screen orientation changes
         getScreenDimensions();
+    }
+
+
+    public  void onBackPressed(){
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Geh nicht!! :-( ")
+                .setMessage("Willst du das Spiel wirklich verlassen?")
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+
+        })
+                .setNegativeButton("Nein", null)
+                .show();
     }
 
     /**
