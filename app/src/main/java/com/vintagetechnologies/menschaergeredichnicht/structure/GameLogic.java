@@ -118,7 +118,9 @@ public class GameLogic {
 
                     this.possibleToMove = new ArrayList<>();
                     for (GamePiece piece : cp.getPieces()) {
-                        if (Board.get().checkSpot(dice.getDiceNumber(), piece) != null) {
+                        boolean free = Board.get().checkSpot(dice.getDiceNumber(), piece) != null;
+                        boolean isStartingPiece = piece.getSpot()instanceof StartingSpot;
+                        if (free && !isStartingPiece) {
                             this.possibleToMove.add(piece);
                         }
                     }
