@@ -16,6 +16,7 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Theme;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import java.io.IOException;
@@ -39,6 +40,8 @@ public class ActualGame extends Game {
     private boolean initialized = false;
 
     private Spieloberflaeche gameactivity;
+
+    private boolean isNetwork = false;
 
     /**
      * Returns actualGameInstance()
@@ -64,6 +67,7 @@ public class ActualGame extends Game {
 
     private ActualGame() {
         this.gameLogic = new GameLogic();
+
     }
 
 
@@ -199,8 +203,21 @@ public class ActualGame extends Game {
 
     }
 
+    public void enableNetwork() {
+        isNetwork = true;
+    }
+
+
+    public void disableNetwork() {
+        isNetwork = false;
+    }
+
+
     @Override
     public void refreshView() {
+        if (isNetwork){
+            GameSynchronisation.synchronize(this);
+        }
         bv.postInvalidate();
     }
 

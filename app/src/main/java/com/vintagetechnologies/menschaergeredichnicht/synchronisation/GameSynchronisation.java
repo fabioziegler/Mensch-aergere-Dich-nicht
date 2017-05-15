@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 
 
 /**
@@ -18,7 +19,13 @@ public class GameSynchronisation {
     public static void synchronize(ActualGame game){
 		//Game game = Game.getInstance();
         //String message = encode(game);
-        sendToOtherDevices(game);
+
+        Player[] players = ActualGame.getInstance().getGameLogic().getPlayers();
+
+        for (Player player:players) {
+            sendToOtherDevices(player);
+        }
+
     }
 
     /**
@@ -53,7 +60,8 @@ public class GameSynchronisation {
      */
     private static void sendToOtherDevices(Object message){
 
-		// TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
+
+        // TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
 
         GameLogicHost gameLogic = (GameLogicHost) DataHolder.getInstance().retrieve("GAMELOGIC");
 		//gameLogic.sendToAllClientDevices(TAG_SYNCHRONIZE_GAME + MESSAGE_DELIMITER + json);

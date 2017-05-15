@@ -1,6 +1,8 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.ArrayList;
 
@@ -155,6 +157,7 @@ public class GameLogic {
 
 
                 game.refreshView();
+                GameSynchronisation.synchronize(ActualGame.getInstance());
             } while (dice.getDiceNumber() == DiceNumber.SIX || (attempts > 0 && !moved));
 
 
