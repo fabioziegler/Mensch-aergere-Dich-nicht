@@ -119,10 +119,15 @@ public class GameLogic {
                     //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
 
                     this.possibleToMove = new ArrayList<>();
-                    for (GamePiece piece : cp.getPieces()) {
+                    selectingLoop: for (GamePiece piece : cp.getPieces()) {
                         boolean free = Board.get().checkSpot(dice.getDiceNumber(), piece) != null;
                         boolean isStartingPiece = piece.getSpot()instanceof StartingSpot;
                         if (free && !isStartingPiece) {
+                            if(Board.getEntrance(piece.getPlayerColor()) == piece.getSpot()){
+                                possibleToMove = new ArrayList<>();
+                                this.possibleToMove.add(piece);
+                                break selectingLoop;
+                            }
                             this.possibleToMove.add(piece);
                         }
                     }
@@ -159,7 +164,7 @@ public class GameLogic {
 
 
                 game.refreshView();
-                GameSynchronisation.synchronize(ActualGame.getInstance());
+
             } while (dice.getDiceNumber() == DiceNumber.SIX || (attempts > 0 && !moved));
 
 
