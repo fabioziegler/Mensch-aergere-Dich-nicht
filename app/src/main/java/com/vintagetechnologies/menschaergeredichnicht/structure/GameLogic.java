@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.ArrayList;
 
@@ -82,6 +83,8 @@ public class GameLogic {
 
     }
 
+
+
     private void regularGame(){
         while (playing) {
 
@@ -117,8 +120,15 @@ public class GameLogic {
                     //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
 
                     this.possibleToMove = new ArrayList<>();
-                    for (GamePiece piece : cp.getPieces()) {
-                        if (Board.get().checkSpot(dice.getDiceNumber(), piece) != null) {
+                    selectingLoop: for (GamePiece piece : cp.getPieces()) {
+                        boolean free = Board.get().checkSpot(dice.getDiceNumber(), piece) != null;
+                        boolean isStartingPiece = piece.getSpot()instanceof StartingSpot;
+                        if (free && !isStartingPiece) {
+                            if(Board.getEntrance(piece.getPlayerColor()) == piece.getSpot()){
+                                possibleToMove = new ArrayList<>();
+                                this.possibleToMove.add(piece);
+                                break selectingLoop;
+                            }
                             this.possibleToMove.add(piece);
                         }
                     }
@@ -126,7 +136,12 @@ public class GameLogic {
 
                     if (possibleToMove.size() > 0) {
 
-                        game.waitForMovePiece();
+                        if(possibleToMove.size() > 1){
+                            game.waitForMovePiece();
+                        }else{
+                            this.selectedGamePiece = this.possibleToMove.get(0);
+                        }
+
 
                         if (possibleToMove.contains(this.selectedGamePiece)) {
                             movePiece(this.selectedGamePiece);
@@ -153,8 +168,8 @@ public class GameLogic {
                     attempts--;
                 }
 
-
                 game.refreshView();
+
             } while (dice.getDiceNumber() == DiceNumber.SIX || (attempts > 0 && !moved));
 
 

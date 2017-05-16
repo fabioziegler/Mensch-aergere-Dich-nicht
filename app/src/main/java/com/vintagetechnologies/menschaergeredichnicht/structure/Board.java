@@ -224,4 +224,13 @@ public final class Board {
         }
         return null;
     }
+
+    public static Spot getEntrance(PlayerColor c){
+        for(Spot s : getBoard()){
+            if(s instanceof StartingSpot && ((StartingSpot) s).getColor() == c ){
+                return ((StartingSpot) s).getEntrance();
+            }
+        }
+        return null;
+    }
 }

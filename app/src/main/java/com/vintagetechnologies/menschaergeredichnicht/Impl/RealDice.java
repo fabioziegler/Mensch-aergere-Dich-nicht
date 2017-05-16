@@ -2,6 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht.Impl;
 
 import android.widget.ImageButton;
 
+import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.logging.Level;
@@ -16,6 +17,7 @@ public class RealDice extends DiceImpl {
     private static RealDice realDice;
     private static ImageButton diceButton;
 
+
     public static RealDice get() {
         if (realDice == null) {
             realDice = new RealDice();
@@ -29,6 +31,14 @@ public class RealDice extends DiceImpl {
     }
 
     public void waitForRoll() {
+
+        Spieloberflaeche s = (Spieloberflaeche)(RealDice.diceButton.getContext());
+        s.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RealDice.diceButton.setEnabled(true);
+            }
+        });
         synchronized (realDice) {
 
             //diceButton.setEnabled(true);
@@ -47,6 +57,14 @@ public class RealDice extends DiceImpl {
             //diceButton.setEnabled(false);
 
         }
+
+
+        s.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RealDice.diceButton.setEnabled(false);
+            }
+        });
     }
 
     public static void setDiceButton(ImageButton db){

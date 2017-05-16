@@ -7,11 +7,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
@@ -47,6 +49,7 @@ public class BoardView extends View {
         board = Board.get();
 
         GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
+        paint.setStrokeWidth(2);
 
         try {
             if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC){
@@ -68,6 +71,9 @@ public class BoardView extends View {
     public BoardView(Context context) {
         super(context);
         init();
+
+
+
     }
 
     /**
@@ -165,17 +171,64 @@ public class BoardView extends View {
             }
 
         }
-        paint.setColor(Color.BLACK);
-        paint.setStyle(Paint.Style.FILL);
+
+
+        if(ActualGame.getInstance().getGameLogic().getPossibleToMove() != null){
+            for(GamePiece gp: ActualGame.getInstance().getGameLogic().getPossibleToMove()){
+                Spot s = gp.getSpot();
+
+                double x = (2*s.getX()+1)*(spotRadius+abstand);
+                double y = (2*s.getY()+1)*(spotRadius+abstand);
+
+                paint.setColor(theme.getColor((gp.getPlayerColor().toString())));
+                paint.setStyle(Paint.Style.FILL);
+
+                canvas.drawCircle((float)x, (float)y, (float)spotRadius*3/2, paint);
+
+            }
+        }
+
+        paint.setStrokeWidth(10);
+
         if(highlightedGamePiece != null){
             Spot s = highlightedGamePiece.getSpot();
 
             double x = (2*s.getX()+1)*(spotRadius+abstand);
             double y = (2*s.getY()+1)*(spotRadius+abstand);
 
-            canvas.drawCircle((float)x, (float)y, (float)spotRadius/2, paint);
+            paint.setColor(Color.WHITE);
+            paint.setStyle(Paint.Style.STROKE);
+
+            canvas.drawCircle((float)x, (float)y, (float)spotRadius*3/2, paint);
+            canvas.drawLine((float)(x-spotRadius*1.0607),  (float)(y-spotRadius*1.0607), (float)(x+spotRadius*1.0607), (float)(y+spotRadius*1.0607), paint);
+            canvas.drawLine((float)(x-spotRadius*1.0607),  (float)(y+spotRadius*1.0607), (float)(x+spotRadius*1.0607), (float)(y-spotRadius*1.0607), paint);
+
+
+            paint.setColor(theme.getColor((highlightedGamePiece.getPlayerColor().toString())));
+
+            Spot t = board.checkSpot(RealDice.get().getDiceNumber(), highlightedGamePiece);
+
+            double xx = (2*t.getX()+1)*(spotRadius+abstand);
+            double yy = (2*t.getY()+1)*(spotRadius+abstand);
+
+            //canvas.drawCircle((float)xx, (float)yy, (float)spotRadius, paint);
+            canvas.drawLine((float)(xx-spotRadius),  (float)(yy-spotRadius), (float)(xx+spotRadius), (float)(yy+spotRadius), paint);
+            canvas.drawLine((float)(xx-spotRadius),  (float)(yy+spotRadius), (float)(xx+spotRadius), (float)(yy-spotRadius), paint);
+
         }
+
+        paint.setStrokeWidth(2);
+
+
     }
+
+
+
+    public void onClick(){
+        System.out.println("CLICK");
+    }
+
+
 
 
     /**
@@ -252,5 +305,13 @@ public class BoardView extends View {
             paint.setColor(Color.BLACK);
             canvas.drawCircle((float)x, (float)y, (float)spotRadius, paint);
         }
+    }
+
+    public double getSpotRadius() {
+        return spotRadius;
+    }
+
+    public double getAbstand() {
+        return abstand;
     }
 }
