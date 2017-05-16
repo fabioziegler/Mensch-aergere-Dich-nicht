@@ -1,6 +1,5 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
@@ -84,6 +83,8 @@ public class GameLogic {
 
     }
 
+
+
     private void regularGame(){
         while (playing) {
 
@@ -166,7 +167,6 @@ public class GameLogic {
                 if (!moved) {
                     attempts--;
                 }
-
 
                 game.refreshView();
 
