@@ -26,6 +26,12 @@ public class RealDice extends DiceImpl {
         return realDice;
     }
 
+
+    public static void reset(){
+        realDice = new RealDice();
+    }
+
+
     private RealDice() {
 
     }
