@@ -83,7 +83,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private int screenHeight;
 
     // duration of the animation in ms
-    private final int ANIMATION_DURATION = 1000;
+    private final int ANIMATION_DURATION = 500;
 
 
     /**
@@ -122,8 +122,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         // dice rolls for 2 seconds, and changes 5x a second it's number
 
         // "roll" animation
-        for (int i = 0; i < 2; i++) {       // 2 seconds
-            for (int j = 0; j < 5; j++) {   // 1 second (5 changes)
+        for (int i = 0; i < 1; i++) {       // 2 seconds
+            for (int j = 0; j < 6; j++) {   // 1 second (5 changes)
                 final int randomIndex = rand.nextInt(6);
 
                 runOnUiThread(new Runnable() {
@@ -131,7 +131,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     public void run() { imgViewDice.setImageResource(diceImages[randomIndex]); }
                 });
 
-                SystemClock.sleep(200);
+                SystemClock.sleep(50);
             }
         }
 
@@ -147,7 +147,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         // zeige Ergebnis für 1 Sekunde
-        SystemClock.sleep(1000);
+        SystemClock.sleep(800);
 
         // Würfel mit Animation ausblenden:
         runOnUiThread(new Runnable() {
