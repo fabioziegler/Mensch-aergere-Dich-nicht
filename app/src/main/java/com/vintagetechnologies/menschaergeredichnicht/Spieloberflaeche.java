@@ -295,27 +295,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             public void onClick(View v) {
 
                 btnAufdeckenClicked();
-              /*
-                boolean schummelt = false;
-                Player[] Suspechts = ActualGame.getInstance().getGameLogic().getPlayers();
-
-
-                 * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
-                 * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
-
-                for(int i=0; i < Suspechts.length; i++){
-                    if (Suspechts[i].getSchummeln().isPlayerCheating()) {
-                        // TODO Spieler i setzt aus
-                        schummelt=true;
-                    }
-                }
-                if (!schummelt){
-                    // ToDO getSpieler der gerade spielt.
-                    // ToDo Spieler, der falsch verdächtigt hat (den Btn gedrückt hat), setzt aus.
-                }
-
-                //ToDO: dem currentPlayer (der button gedrückt hat) Feedback geben. [oder allen?]
-                */
             }
         });
 
