@@ -164,6 +164,7 @@ public class ActualGame extends Game {
     @Override
     public void whomsTurn(Player p) {
         printInfo(p.getName() + " ist dran!");
+
     }
 
     @Override

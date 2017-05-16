@@ -46,6 +46,11 @@ public class Network {
 
 
 	/**
+	 * Reveal.
+	 */
+	public static final String TAG_REVEAL = "reveal";
+
+	/**
 	 * Name of the player.
 	 */
 	public static final String TAG_PLAYER_NAME = "my_name";

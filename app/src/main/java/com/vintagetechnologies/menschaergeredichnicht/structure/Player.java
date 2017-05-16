@@ -19,8 +19,9 @@ public class Player {
     //Saves if Player Cheated
     private Cheat Schummeln;
 
-    //nicht mehr benötigt toDo Löschen
-    private boolean aktive;
+    private int networkId;
+
+    private boolean hasToSkip;
 
 
     /**
@@ -49,14 +50,6 @@ public class Player {
      */
     public Cheat getSchummeln() {
         return Schummeln;
-    }
-
-    //Wird nicht mehr benötigt ToDo Löschen
-    public boolean isAktive() {
-        return aktive;
-    }
-    public void setAktive(boolean aktive) {
-        this.aktive = aktive;
     }
   
     /**
@@ -131,5 +124,23 @@ public class Player {
             }
         }
         return  gpr;
+    }
+
+
+    public boolean hasToSkip() {
+        return hasToSkip;
+    }
+
+    public void setHasToSkip(boolean hasToSkip) {
+        this.hasToSkip = hasToSkip;
+    }
+
+
+    public int getNetworkId() {
+        return networkId;
+    }
+
+    public void setNetworkId(int networkId) {
+        this.networkId = networkId;
     }
 }

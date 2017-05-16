@@ -39,6 +39,8 @@ import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
@@ -216,6 +218,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 		gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
 		gameLogic.setActivity(this);
+        gameLogic.identifyPlayer();
 
 		gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
 
@@ -251,13 +254,16 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnAufdecken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                btnAufdeckenClicked();
+              /*
                 boolean schummelt = false;
                 Player[] Suspechts = ActualGame.getInstance().getGameLogic().getPlayers();
 
-                /**
+
                  * Alle Spieler durch laufen ob geschummelt wurde (weil nur der aktuell Spielende noch nicht aufgerufen werden kann)
                  * Da nur der Spieler der an der Reihe ist überhaupt schummeln kann.
-                 */
+
                 for(int i=0; i < Suspechts.length; i++){
                     if (Suspechts[i].getSchummeln().isPlayerCheating()) {
                         // TODO Spieler i setzt aus
@@ -270,7 +276,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 }
 
                 //ToDO: dem currentPlayer (der button gedrückt hat) Feedback geben. [oder allen?]
-
+                */
             }
         });
 
@@ -374,6 +380,17 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         }.start();
 	}
+
+    private void btnAufdeckenClicked() {
+        if (gameLogic.isHost()) {
+
+
+
+        } else {
+            GameLogicClient gameLogicClient = (GameLogicClient) gameLogic;
+            gameLogicClient.sendToHost(TAG_REVEAL + MESSAGE_DELIMITER);
+        }
+    }
 
 
     /**

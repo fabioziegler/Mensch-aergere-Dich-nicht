@@ -3,8 +3,11 @@ package com.vintagetechnologies.menschaergeredichnicht;
 import android.app.Activity;
 
 import com.esotericsoftware.kryonet.Connection;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+
 /**
  * Created by Fabio on 08.04.17.
  *
@@ -113,5 +116,15 @@ public abstract class GameLogic {
 
 	public void setActivity(Activity activity) {
 		this.activity = activity;
+	}
+
+	public void identifyPlayer(){
+		Player[] players = ActualGame.getInstance().getGameLogic().getPlayers();
+
+		for(int i = 0; i < players.length; i++){
+			Player player = players[i];
+			String playerName = player.getName();
+			player.setNetworkId(getDevices().getPlayer(playerName).getId());
+		}
 	}
 }

@@ -12,6 +12,7 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServer;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
@@ -19,6 +20,7 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_START_GAME;
 
 /**
@@ -204,12 +206,41 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				boolean hasCheated = Boolean.parseBoolean(value);
 
+				if(hasCheated){
+					// display who has to skip
+
+					/*
+					Toast.makeText(getActivity().getApplicationContext(),
+							playerName + " hat geschummelt und muss aussetzen!",
+							Toast.LENGTH_LONG).show();
+					*/
+				}
+
 				// set player cheating/or not
 				//ActualGame.getInstance().getPlayerByName(clientDevice.getName()).getSchummeln().setPlayerCheating(hasCheated);
 
 				// send changes to others
 				GameSynchronisation.synchronize(ActualGame.getInstance());
+
+			} else if(TAG_REVEAL.equals(tag)){	// a player clicked "aufdecken"
+
+				// check if current player has cheated!
+				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
+				boolean isCheating = currentPlayer.getSchummeln().isPlayerCheating();
+
+				// send to others if player has cheated, just to display informations
+				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
+
+				currentPlayer.setHasToSkip(isCheating);
+
+				// player who clicked "aufdecken"
+				String revealerName = getDevices().getDevice(connection).getName();
+				Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
+				revealer.setHasToSkip(!isCheating);
+
+				GameSynchronisation.synchronize(ActualGame.getInstance());
 			}
+
 
 		}else {
 			Log.w(TAG, String.format("Received unknown message '%s' from player '%s'", object, clientDevice.getName()));

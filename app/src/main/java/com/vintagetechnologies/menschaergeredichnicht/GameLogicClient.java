@@ -16,7 +16,9 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 
 /**
  * Created by Fabio on 04.05.17.
@@ -99,6 +101,13 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 			if(TAG_PLAYER_NAME.equals(tag)){
 				hostDevice.setName(value);
+
+			} else if(TAG_REVEAL.equals(tag)){
+				boolean hasRemotePlayerCheated = Boolean.valueOf(value);
+
+
+			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)){
+
 			}
 
 		} else {
@@ -136,6 +145,14 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 	public void sendToHost(final Object message) throws IllegalArgumentException {
 		if (message == null)
 			throw new IllegalArgumentException("Message must not be null.");
+
+		/*
+		if(message instanceof String){
+			String msgString = (String) message;
+			if(!((String)message).contains(MESSAGE_DELIMITER))
+				msgString += MESSAGE_DELIMITER;
+		}
+		*/
 
 		// send in own thread
 		Thread sendingThread = new Thread(new Runnable() {
