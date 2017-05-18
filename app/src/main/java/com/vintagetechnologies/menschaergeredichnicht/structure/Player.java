@@ -19,8 +19,10 @@ public class Player {
     //Saves if Player Cheated
     private Cheat Schummeln;
 
+	// An id which associates the player with the corresponding network connection
     private int networkId;
 
+	// if the player has to skip in the next round TODO: implement logic
     private boolean hasToSkip;
 
 
@@ -34,15 +36,20 @@ public class Player {
     public Player(PlayerColor color, String name) {
         this.pieces = new GamePiece[4];
 
-        for(int i = 0; i<4;i++){
+        for(int i = 0; i < 4; i++){
             this.pieces[i] = new GamePiece(color);
         }
 
-       // this.aktive = false; //sollte dann wenn der Spieler am zug ist auf true gesetz werden ->current Spieler
         this.Schummeln = new Cheat();
         this.color = color;
         this.name = name;
     }
+
+	/**
+	 * Empty constructor for kryo deserialization.
+	 */
+	public Player(){
+	}
 
     /**
      * Getter

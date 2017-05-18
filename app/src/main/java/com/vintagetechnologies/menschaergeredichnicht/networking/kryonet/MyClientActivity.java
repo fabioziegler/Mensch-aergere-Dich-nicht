@@ -80,26 +80,30 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 
 	@Override
 	public void onReceived(Connection connection, Object object) {
-		if(!(object instanceof String))
+		if(!(object instanceof String) || object == null)
 			return;
+
+		String message = (String) object;
 
 		// start game
-		if(Network.TAG_START_GAME.equals(object)){
+		if(Network.TAG_START_GAME.equals(message)){
 			startGame();
 			return;
+
+		} else if(message.startsWith(Network.TAG_PLAYER_NAME)) {	// received name of the host
+
+			// else, add player to game
+			String[] data = message.split(Network.MESSAGE_DELIMITER);
+			String nameOfHost = data[1];
+
+			hostNames.add(nameOfHost);
+
+			listAdapter.notifyDataSetChanged();
+
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.joinedGame, nameOfHost),
+					Toast.LENGTH_LONG).show();
 		}
-
-		// else, add player to game
-		String[] data = ((String) object).split(Network.MESSAGE_DELIMITER);
-		String nameOfHost = data[1];
-
-		hostNames.add(nameOfHost);
-
-		listAdapter.notifyDataSetChanged();
-
-		Toast.makeText(getApplicationContext(),
-				getString(R.string.joinedGame, nameOfHost),
-				Toast.LENGTH_LONG).show();
 	}
 
 

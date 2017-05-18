@@ -1,9 +1,16 @@
 package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 
 
@@ -14,19 +21,17 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 public class GameSynchronisation {
 
     /**
-     * Synchronisiert Gamedaten der clients
+     * Synchronizes game data from the host with clients.
      */
-    public static void synchronize(ActualGame game){
-		//Game game = Game.getInstance();
-        //String message = encode(game);
+    public static void synchronize(){
 
         Player[] players = ActualGame.getInstance().getGameLogic().getPlayers();
 
-        for (Player player:players) {
+        for (Player player : players) {
             sendToOtherDevices(player);
         }
-
     }
+
 
     /**
      * Umwandeln von ActualGame Objekt in String
@@ -41,6 +46,7 @@ public class GameSynchronisation {
         return json;
     }
 
+
     /**
      * Rückumwandlung von String in ActualGame-Objekt
      * @param fromJson
@@ -54,18 +60,26 @@ public class GameSynchronisation {
         return game;
     }
 
+
     /**
      * Sendet Gamedaten an clients in String-Format
      * @param message
      */
     private static void sendToOtherDevices(Object message){
 
+		// TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
+		// TODO: Methode in dieser Klasse die, die empfangenen Klassen ausliest und die Game Klasse entsprechend aktualisiert.
 
-        // TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
 
-        GameLogicHost gameLogic = (GameLogicHost) DataHolder.getInstance().retrieve("GAMELOGIC");
-		//gameLogic.sendToAllClientDevices(TAG_SYNCHRONIZE_GAME + MESSAGE_DELIMITER + json);
-		gameLogic.sendToAllClientDevices(message);
+		//Log.i("SYNC", "Sending sync to clients...");
+
+        GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
+
+		if(gameLogic.isHost()) {
+			((GameLogicHost)gameLogic).sendToAllClientDevices(message);
+		} else {
+			((GameLogicClient)gameLogic).sendToHost(message);
+		}
     }
 
 }

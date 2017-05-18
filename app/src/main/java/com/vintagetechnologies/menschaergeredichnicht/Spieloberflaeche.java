@@ -35,7 +35,7 @@ import android.widget.Toast;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
@@ -46,12 +46,15 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
 
+    // toDO: alle Spielfunktionen ect. hinzufügen
 
     private GameLogic gameLogic;
     private GameSettings gameSettings;
 
     private SensorManager SM;
     private Sensor ShakeSensor;
+    private Sensor LightSensor;
+
     private static final int SHAKE_THRESHOLD = 1400;
     private long lastUpdate;
     float last_x;
@@ -59,11 +62,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     float last_z;
     boolean shook = false;
 
-    private Sensor LightSensor;
-
-
     private TextView state;
-    // toDO: alle Spielfunktionen ect. hinzufügen
     private Cheat Schummeln;
 
     private Button btnFigurSelect;
@@ -225,65 +224,72 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spieloberflaeche);
 
-		gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
-		gameLogic.setActivity(this);
-        gameLogic.identifyPlayer();
-
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
 
-        final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
-        bv.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
+		final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
+		bv.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
 
+				if (ActualGame.getInstance().getGameLogic().getPossibleToMove() != null && event.getAction() == MotionEvent.ACTION_UP) {
 
-                if (ActualGame.getInstance().getGameLogic().getPossibleToMove() != null && event.getAction() == MotionEvent.ACTION_UP) {
+					float xx = event.getX();
+					float yy = event.getY();
 
-                    float xx = event.getX();
-                    float yy = event.getY();
+					for (GamePiece gp : ActualGame.getInstance().getGameLogic().getPossibleToMove()) {
 
-                    for(GamePiece gp : ActualGame.getInstance().getGameLogic().getPossibleToMove()){
-                        double x =  xx-(2*gp.getSpot().getX()+1)*(bv.getSpotRadius()+bv.getAbstand());
-                        double y =  yy-(2*gp.getSpot().getY()+1)*(bv.getSpotRadius()+bv.getAbstand());
+						double x = xx - (2 * gp.getSpot().getX() + 1) * (bv.getSpotRadius() + bv.getAbstand());
+						double y = yy - (2 * gp.getSpot().getY() + 1) * (bv.getSpotRadius() + bv.getAbstand());
 
+						if (Math.sqrt(x * x + y * y) < 100) {
+							bv.setHighlightedGamePiece(gp);
+							bv.invalidate();
+						}
+					}
 
+					System.out.println(event.getAction() + ": (" + event.getX() + " / " + event.getY() + " )");
 
-                        if(Math.sqrt(x*x+y*y)<100){
-                            bv.setHighlightedGamePiece(gp);
-                            bv.invalidate();
-                        }
-                    }
-
-                    System.out.println(event.getAction() + ": (" + event.getX() + " / " + event.getY() + " )");
-
-                }
-                return true;
-            }
-        });
-
+				}
+				return true;
+			}
+		});
 
         ActualGame.getInstance().setBoardView(bv);
 
-        ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 
-        ActualGame.getInstance().setBoardView((BoardView) findViewById(R.id.spielFeld));
+		/* Check if local or network game */
+		if(!ActualGame.getInstance().isLocalGame()){
 
-        //Game.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
-        //ActualGame.getInstance().init(gameLogic.getDevices().getNameList());
+			gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
+			gameLogic.setActivity(this);
+
+			ActualGame.getInstance().init(gameLogic.getDevices().getPlayerNames());
+
+			if(gameLogic.isHost()) {
+				GameSynchronisation.synchronize();    // sync for the first time (e.g. after player were setup)
+				gameLogic.setupNetworkIDs();
+			}
+
+		} else {	// local game:
+
+			ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+		}
+
+		//ActualGame.getInstance().setBoardView((BoardView) findViewById(R.id.spielFeld));
 
 
         state = (TextView) findViewById(R.id.textView_status);
 
         Schummeln = ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln();
 
-        //Sensor Manager erstellen
+        // Sensor Manager erstellen
         SM = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        //Licht Sensor erstellen
+        // Licht Sensor erstellen
         LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
         SM.registerListener(this, LightSensor, SensorManager.SENSOR_DELAY_GAME);
 
-        //Sensor für Bewegung
+        // Sensor für Bewegung
         ShakeSensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         SM.registerListener(this, ShakeSensor, SensorManager.SENSOR_DELAY_GAME);
 
@@ -293,14 +299,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnAufdecken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 btnAufdeckenClicked();
             }
         });
 
-
         btnWuerfel = (ImageButton) (findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
-
         btnWuerfel.setEnabled(true);
 
         RealDice.get();
@@ -323,7 +326,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
 
-        //zwischen zu bewegenden Figuren wählen
+        // zwischen zu bewegenden Figuren wählen
         btnFigurSelect = (Button) (findViewById(R.id.Select_Figur));
         btnFigurSelect.setEnabled(false);
         btnFigurSelect.setOnClickListener(new View.OnClickListener() {
@@ -345,7 +348,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
 
-        //bestätigt Eingabe
+        // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
         btnMoveFigur.setEnabled(false);
         btnMoveFigur.setOnClickListener(new View.OnClickListener() {
@@ -528,6 +531,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     public void setStatus(String status) {
         state.setText(status);
+
+		// TODO: send status over network??
     }
 
 }

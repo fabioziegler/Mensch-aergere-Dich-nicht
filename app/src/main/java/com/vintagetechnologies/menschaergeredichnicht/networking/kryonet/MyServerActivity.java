@@ -19,7 +19,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.Hauptmenue;
 import com.vintagetechnologies.menschaergeredichnicht.R;
-import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 
 import java.util.ArrayList;
@@ -91,6 +90,14 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 
 			String playerName = data[1];
 
+			// check if name is already taken, if taken rename to "Username 2", "Username 3", ...
+			if(playerNames.contains(playerName)) {
+				int c = 2;
+				while (playerNames.contains(playerName + " " + c)) { c++; }
+
+				playerName += " " + c;
+			}
+
 			playerNames.add(playerName);
 
 			listAdapter.notifyDataSetChanged();
@@ -122,6 +129,8 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 				break;
 			}
 		}
+
+		gameLogic.getDevices().remove(connection);
 
 		if(!enoughPlayersConnected())
 			btnStartGame.setEnabled(false);

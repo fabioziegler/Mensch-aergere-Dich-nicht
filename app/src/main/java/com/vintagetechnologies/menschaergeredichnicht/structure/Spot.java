@@ -7,6 +7,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  */
 
 public abstract class Spot {
+
     private int x;
     private int y;
 
@@ -22,6 +23,8 @@ public abstract class Spot {
         this.x = x;
         this.y = y;
     }
+
+    public Spot(){}
 
     /**
      *

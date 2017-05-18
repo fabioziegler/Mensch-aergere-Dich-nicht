@@ -100,6 +100,14 @@ public class DeviceList {
 
 
 	/**
+	 * Removes all devices.
+	 */
+	public void clear(){
+		devices.clear();
+	}
+
+
+	/**
 	 * Get device by connection
 	 * @param connection
 	 * @return
@@ -120,21 +128,32 @@ public class DeviceList {
 
 
 	/**
-	 * Get a list of player names
+	 * Get a list of player names.
 	 * @return
 	 */
-	public String[] getNameList(){
+	public String[] getPlayerNames(){
 
 		if(devices.isEmpty())
 			return null;
 
+		/*
 		String[] names = new String[devices.size()];
 
-		for (int i = 0; i < names.length; i++) {
-			names[i] = devices.get(i).getName();
+		int j = 0;
+		for (int i = 0; i < devices.size(); i++) {
+			Device device = devices.get(i);
+			if(!device.isHost()) {
+				names[j++] = device.getName();
+			}
 		}
 
 		return names;
+		*/
+		ArrayList<String> names = new ArrayList<>(devices.size());
+		for(Device device : devices)
+			names.add(device.getName());
+
+		return names.toArray(new String[0]);
 	}
 
 

@@ -28,6 +28,8 @@ public class EndSpot extends Spot implements Colorful{
         this.nextEndSpot = nextEndSpot;
     }
 
+    public EndSpot(){}
+
     public PlayerColor getColor() {
         return color;
     }

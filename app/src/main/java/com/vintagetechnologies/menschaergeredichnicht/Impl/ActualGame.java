@@ -1,13 +1,14 @@
 package com.vintagetechnologies.menschaergeredichnicht.Impl;
 
-import android.graphics.Color;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
@@ -41,7 +42,9 @@ public class ActualGame extends Game {
 
     private Spieloberflaeche gameactivity;
 
-    private boolean isNetwork = false;
+	// if the game is played locally, disabled by default
+    private boolean isLocalGame = false;
+
 
     /**
      * Returns actualGameInstance()
@@ -58,18 +61,30 @@ public class ActualGame extends Game {
     /**
      * Called when a client received a new up to date game object from the host.
      *
-     * @param game The new game object received by the host.
+     * @param player The new player object received by the host.
      */
-    public static void refreshGameInstance(ActualGame game) {
+    public static void refreshPlayer(Player player) {
         // TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
-        actualGameInstance = game;
-    }
+
+		if(!((com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC)).hasGameStarted())
+			return;
+
+		String name = player.getName();
+		Player[] players = getInstance().getGameLogic().getPlayers();
+
+		for (int i = 0; i < players.length; i++) {
+			Player oldPlayer = players[i];
+			if(oldPlayer.getName().equals(name)){
+				players[i] = player;
+				break;
+			}
+		}
+	}
 
     private ActualGame() {
         this.gameLogic = new GameLogic();
 
     }
-
 
     /**
      * Inits the ActualGame Object, as it is a Singleton.
@@ -88,7 +103,8 @@ public class ActualGame extends Game {
 
         gameactivity = (Spieloberflaeche) bv.getContext();
 
-        GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
+        GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS);
+
         Theme theme = null;
         try {
             if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC){
@@ -130,7 +146,6 @@ public class ActualGame extends Game {
                     tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
                     tv.setText(p.getName());
 
-
                 }
 
             }
@@ -157,7 +172,6 @@ public class ActualGame extends Game {
         }
 
         gameLogic.play();
-
     }
 
     @Override
@@ -211,22 +225,23 @@ public class ActualGame extends Game {
 
     }
 
-    public void enableNetwork() {
-        isNetwork = true;
+    public void setLocalGame(boolean isLocalGame) {
+        this.isLocalGame = isLocalGame;
     }
 
-
-    public void disableNetwork() {
-        isNetwork = false;
+    public boolean isLocalGame() {
+        return isLocalGame;
     }
-
 
     @Override
     public void refreshView() {
-        if (isNetwork){
-            GameSynchronisation.synchronize(this);
-        }
         bv.postInvalidate();
+
+        if (!isLocalGame){
+			//com.vintagetechnologies.menschaergeredichnicht.GameLogic gameLogic = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
+            //if(gameLogic.isHost())
+            	GameSynchronisation.synchronize();
+        }
     }
 
     private void printInfo(String info) {
@@ -236,7 +251,6 @@ public class ActualGame extends Game {
             @Override
             public void run() {
                 gameactivity.setStatus(finalInfo);
-
             }
         });
     }
@@ -302,7 +316,6 @@ public class ActualGame extends Game {
         this.bv = bv;
     }
 
-
     public GameLogic getGameLogic() {
         return gameLogic;
     }
@@ -310,4 +323,11 @@ public class ActualGame extends Game {
     public void setGameLogic(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
     }
+
+	/**
+	 * Reset game instance.
+	 */
+	public static void reset(){
+		actualGameInstance = new ActualGame();
+	}
 }

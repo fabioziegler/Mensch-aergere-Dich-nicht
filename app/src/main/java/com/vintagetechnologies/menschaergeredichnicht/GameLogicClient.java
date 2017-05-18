@@ -11,11 +11,12 @@ import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClient;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_CLIENT_PLAYER_NAME;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
@@ -62,6 +63,7 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 	public void onConnected(Connection connection) {
 
 		hostDevice = new Device(connection.getID(), true);
+		getDevices().add(hostDevice);
 
 		// send name to host
 		GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
@@ -73,17 +75,21 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 		Toast.makeText(	getActivity().getApplicationContext(),
 				getActivity().getString(R.string.hostEndedGame), Toast.LENGTH_LONG).show();
 
+		getDevices().clear();
+
 		leaveGame();
 	}
 
 	@Override
 	protected void parseMessage(Connection connection, Object object) {
 
-		if(object instanceof ActualGame) {
+		if(object instanceof Player) {	// client received game update
 
-			ActualGame game = (ActualGame) object;
+			Player player = (Player) object;
 
-			ActualGame.refreshGameInstance(game);
+			ActualGame.refreshPlayer(player);
+
+			setupNetworkIDs();	// TODO: call only once
 
 		} else if (object instanceof  GameSettings) {
 
@@ -99,15 +105,15 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 			String tag = data[0];
 			String value = data[1];
 
-			if(TAG_PLAYER_NAME.equals(tag)){
+			if(TAG_PLAYER_NAME.equals(tag)){	// when receiving the name of the host
+
 				hostDevice.setName(value);
-
-			} else if(TAG_REVEAL.equals(tag)){
-				boolean hasRemotePlayerCheated = Boolean.valueOf(value);
-
 
 			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)){
 
+			} else if(TAG_CLIENT_PLAYER_NAME.equals(tag)) {	// if hosts send the name of a client
+
+				getDevices().add(new Device(value));
 			}
 
 		} else {
@@ -158,6 +164,12 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 		Thread sendingThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				try {
+					synchronized (client) {
+						client.wait(1);
+					}
+				} catch (InterruptedException e) { Log.e(TAG, "Client wait Fehler", e); }
+
 				client.sendTCP(message);
 			}
 		}, "Sending");

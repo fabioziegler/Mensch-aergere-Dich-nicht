@@ -8,7 +8,7 @@ package com.vintagetechnologies.menschaergeredichnicht.networking;
 
 public class Device {
 
-    private int id;
+    private int id;	// -1 if not set
     private String name;
     private boolean isHost;
 
@@ -22,6 +22,21 @@ public class Device {
 		this.id = id;
 		this.name = "name not set";
 		this.isHost = isHost;
+	}
+
+	public Device(String name, boolean isHost){
+		this.name = name;
+		this.isHost = isHost;
+	}
+
+	/**
+	 * Add a new client player.
+	 * @param name
+	 */
+	public Device(String name){
+		this.id = -1;
+		this.name = name;
+		this.isHost = false;
 	}
 
     public int getId() {

@@ -80,7 +80,6 @@ public class GameLogic {
         currentPlayer = bestPlayer;
         dice.emptyBlacklist();
         regularGame();
-
     }
 
 
@@ -89,7 +88,6 @@ public class GameLogic {
         while (playing) {
 
             final Player cp = players[currentPlayer];
-
 
             game.whomsTurn(cp);
 
@@ -103,19 +101,16 @@ public class GameLogic {
                 moved = false;
                 if (dice.getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
 
-
                     StartingSpot s = (StartingSpot) (gp.getSpot());
 
                     Spot entrance = s.getEntrance();
 
-
                     if (entrance.getGamePiece() == null || (entrance.getGamePiece() != null && entrance.getGamePiece().getPlayerColor() != gp.getPlayerColor())) {
                         moved = movePieceToEntrance(gp);
                     }
-
                 }
-                if (!cp.isAtStartingPosition() && !moved) { //muss noch "herauswürfeln"
 
+                if (!cp.isAtStartingPosition() && !moved) { //muss noch "herauswürfeln"
 
                     //GamePiece gp = cp.getPieces()[0]; //TODO: select piece
 
@@ -172,16 +167,11 @@ public class GameLogic {
 
             } while (dice.getDiceNumber() == DiceNumber.SIX || (attempts > 0 && !moved));
 
+			GameSynchronisation.synchronize();
 
             currentPlayer = (currentPlayer + 1) % players.length;
 
-
         }
-
-
-
-
-
     }
 
 

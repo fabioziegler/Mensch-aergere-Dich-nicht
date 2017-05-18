@@ -11,13 +11,13 @@ import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServer;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_CLIENT_PLAYER_NAME;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
@@ -50,6 +50,10 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		DataHolder.getInstance().save(DATAHOLDER_GAMELOGIC, this);
 
 		gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
+
+		// add host to device list
+		Device hostDevice = new Device(gameSettings.getPlayerName(), true);
+		getDevices().add(hostDevice);
 	}
 
 
@@ -101,6 +105,11 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		Thread sendingThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				try {
+					synchronized (server) {
+						server.wait(1);
+					}
+				} catch (InterruptedException e) { Log.e(TAG, "Server wait Fehler", e); }
 
 				server.sendToTCP(playerID, message);
 			}
@@ -128,6 +137,11 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		Thread sendingThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				try {
+					synchronized (server) {
+						server.wait(1);
+					}
+				} catch (InterruptedException e) { Log.e(TAG, "Server wait Fehler", e); }
 
 				server.sendToAllTCP(message);
 			}
@@ -159,13 +173,23 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 	public void startGame(){
 		setGameStarted(true);
 
+		// send host settings
+		sendToAllClientDevices(gameSettings);
+
+		// send name of players to clients
+		String[] playerNames = getDevices().getPlayerNames();
+
+		for(int i = 0; i < playerNames.length; i++){
+			sendToAllClientDevices(TAG_CLIENT_PLAYER_NAME + MESSAGE_DELIMITER + playerNames[i]);
+		}
+
 		// show main menu
 		Intent intent = new Intent(getActivity(), Spieloberflaeche.class);
 		getActivity().startActivity(intent);
 
 		sendToAllClientDevices(TAG_START_GAME);
 
-		GameSynchronisation.synchronize(ActualGame.getInstance());
+		//GameSynchronisation.synchronize(); später in Spieloberfläche
 	}
 
 
@@ -181,13 +205,14 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		Device clientDevice = getDevices().getDevice(connection);
 
 		// execute message based on tag
-		if (object instanceof ActualGame){
+		if (object instanceof Player){
 
-			Log.i(TAG, "Received game object.");
+			Log.i(TAG, "Received player object.");
 
-			ActualGame game = (ActualGame) object;
-			ActualGame.refreshGameInstance(game);	// replace current game class with new one
-			GameSynchronisation.synchronize(game);
+			Player player= (Player) object;
+			ActualGame.refreshPlayer(player);	// replace current game class with new one
+
+			GameSynchronisation.synchronize();
 
 
 		} else if(object instanceof String) {	// string message
@@ -200,7 +225,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				getDevices().getDevice(connection).setName(value);
 
-				GameSynchronisation.synchronize(ActualGame.getInstance());
+				//GameSynchronisation.synchronize(); noch nicht..
 
 			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)) {
 
@@ -216,11 +241,12 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 					*/
 				}
 
+				// TODO: implement
 				// set player cheating/or not
 				//ActualGame.getInstance().getPlayerByName(clientDevice.getName()).getSchummeln().setPlayerCheating(hasCheated);
 
 				// send changes to others
-				GameSynchronisation.synchronize(ActualGame.getInstance());
+				//GameSynchronisation.synchronize();
 
 			} else if(TAG_REVEAL.equals(tag)){	// a player clicked "aufdecken"
 
@@ -238,7 +264,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
 				revealer.setHasToSkip(!isCheating);
 
-				GameSynchronisation.synchronize(ActualGame.getInstance());
+				GameSynchronisation.synchronize();
 			}
 
 

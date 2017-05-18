@@ -46,14 +46,21 @@ public class Network {
 
 
 	/**
-	 * Reveal.
+	 * If a client wants to reveal if a player cheated.
 	 */
 	public static final String TAG_REVEAL = "reveal";
 
+
 	/**
-	 * Name of the player.
+	 * Name of the player. Used to send names during game search/setup (client <-> host)
 	 */
 	public static final String TAG_PLAYER_NAME = "my_name";
+
+
+	/**
+	 * Tag if the host send the name of a newly connected player to a client.
+	 */
+	public static final String TAG_CLIENT_PLAYER_NAME = "name_of_client";
 
 
 	/**
@@ -67,28 +74,38 @@ public class Network {
 	 * @param kryo
 	 */
 	public static void registerKryoClasses(Kryo kryo){
+
+		kryo.setReferences(true);
+
 		kryo.register(String.class);
 		kryo.register(GameSettings.class);
+		kryo.register(GameSettings.BoardDesign.class);
 
 		// for Game
-		kryo.register(Game.class);
-		kryo.register(Board.class);
 		kryo.register(Player.class);
+		kryo.register(GamePiece[].class);
+		kryo.register(GamePiece.class);
+		kryo.register(Spot.class);
+		kryo.register(PlayerColor.class);
+		kryo.register(Cheat.class);
+
+
+		// all needed: ????
+		//kryo.register(Game.class);
+		kryo.register(Board.class);
 		kryo.register(Dice.class);
 		kryo.register(BoardView.class);
 		kryo.register(Paint.class);
 		kryo.register(BoardView.class);
 		kryo.register(DiceNumber.class);
 		kryo.register(GamePiece.class);
-		kryo.register(PlayerColor.class);
 		kryo.register(Colorful.class);
-		kryo.register(Cheat.class);
 
-		kryo.register(Spot.class);
 		kryo.register(Spot[].class);
 		kryo.register(StartingSpot.class);
 		kryo.register(RegularSpot.class);
 		kryo.register(EndSpot.class);
+
 	}
 
 

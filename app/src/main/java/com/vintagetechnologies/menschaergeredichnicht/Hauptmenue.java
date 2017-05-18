@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClientActivity;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServerActivity;
@@ -28,6 +29,16 @@ public class Hauptmenue extends AppCompatActivity {
         startActivity(new Intent(Hauptmenue.this, Regeln.class));
     }
 
+    private void btnLocalMultiplayerClicked(){
+		startActivity(new Intent(Hauptmenue.this, Spieloberflaeche.class));
+		ActualGame.getInstance().setLocalGame(true);
+		ActualGame.getInstance().reset();	// reset e.g. when a multiplayer game was played before..
+	}
+
+
+	private void btnAboutClicked(){
+		startActivity(new Intent(Hauptmenue.this, AboutActivity.class));
+	}
 
     /**
      * Called when the button "Neues Spiel" is clicked
@@ -40,6 +51,7 @@ public class Hauptmenue extends AppCompatActivity {
 			return;
 		}
 
+		ActualGame.getInstance().reset();
         Intent intent = new Intent(this, MyServerActivity.class);
         startActivity(intent);
         finish();
@@ -57,6 +69,7 @@ public class Hauptmenue extends AppCompatActivity {
 			return;
 		}
 
+		ActualGame.getInstance().reset();
         Intent intent = new Intent(this, MyClientActivity.class);
         startActivity(intent);
         finish();
@@ -104,7 +117,7 @@ public class Hauptmenue extends AppCompatActivity {
         btnLocalMultiplayer.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Hauptmenue.this, Spieloberflaeche.class));
+                btnLocalMultiplayerClicked();
             }
         });
 
@@ -132,7 +145,7 @@ public class Hauptmenue extends AppCompatActivity {
         btnAbout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Hauptmenue.this, AboutActivity.class));
+				btnAboutClicked();
             }
         });
     }

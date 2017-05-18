@@ -9,5 +9,5 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  * Is used by EndSpot and StartingSpot as they need to have a PlayerColor.
  */
 public interface Colorful {
-    public PlayerColor getColor();
+    PlayerColor getColor();
 }

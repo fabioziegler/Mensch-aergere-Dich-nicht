@@ -24,6 +24,11 @@ public class GamePiece {
         this.returnToStart();
     }
 
+	/**
+	 * Empty constructor for kryo deserialization.
+	 */
+	public GamePiece(){}
+
     /**
      *
      * @return playerColor

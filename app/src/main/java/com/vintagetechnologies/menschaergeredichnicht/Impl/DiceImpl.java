@@ -8,9 +8,11 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
  */
 
 public abstract class DiceImpl extends Dice {
+
     public abstract void waitForRoll();
 
     public void setDiceNumber(DiceNumber dn){
         this.diceNumber = dn;
     }
+
 }
