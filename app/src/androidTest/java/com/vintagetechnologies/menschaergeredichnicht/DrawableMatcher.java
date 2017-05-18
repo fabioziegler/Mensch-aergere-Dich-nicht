@@ -29,6 +29,7 @@ public class DrawableMatcher extends TypeSafeMatcher<View> {
         if (!(target instanceof ImageView)){
             return false;
         }
+
         ImageView imageView = (ImageView) target;
         if (expectedId < 0){
             return imageView.getDrawable() == null;

@@ -30,6 +30,7 @@ public class NetworkingTest {
 	@Before
 	public void before() {
 		gameSettings = new GameSettings();
+		DataHolder.getInstance().save(Network.DATAHOLDER_GAMESETTINGS, gameSettings);
 		deviceList = new DeviceList();
 		wifiReceiver = new WifiReceiver();
 		gameLogic = new GameLogicHost(null, new MyServer(null));
