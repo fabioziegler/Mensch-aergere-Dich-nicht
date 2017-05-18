@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.ArrayList;
@@ -225,6 +226,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         setContentView(R.layout.activity_spieloberflaeche);
 
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
+        Board.resetBoard();
+        ActualGame.reset();
+        RealDice.reset();
 
 		final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
 		bv.setOnTouchListener(new View.OnTouchListener() {
@@ -307,6 +311,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnWuerfel.setEnabled(true);
 
         RealDice.get();
+
 
         RealDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));

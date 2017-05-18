@@ -58,6 +58,11 @@ public class ActualGame extends Game {
         return actualGameInstance;
     }
 
+
+    public static void reset(){
+        actualGameInstance = new ActualGame();
+    }
+
     /**
      * Called when a client received a new up to date game object from the host.
      *
