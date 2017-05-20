@@ -8,11 +8,15 @@ import android.widget.Toast;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServer;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
+
+import java.util.List;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
@@ -22,6 +26,7 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_START_GAME;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_STATUS_MESSAGE;
 
 /**
  * Created by Fabio on 04.05.17.
@@ -105,12 +110,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		Thread sendingThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					synchronized (server) {
-						server.wait(1);
-					}
-				} catch (InterruptedException e) { Log.e(TAG, "Server wait Fehler", e); }
-
 				server.sendToTCP(playerID, message);
 			}
 		}, "Sending");
@@ -137,12 +136,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		Thread sendingThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					synchronized (server) {
-						server.wait(1);
-					}
-				} catch (InterruptedException e) { Log.e(TAG, "Server wait Fehler", e); }
-
 				server.sendToAllTCP(message);
 			}
 		}, "Sending");
@@ -177,10 +170,13 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		sendToAllClientDevices(gameSettings);
 
 		// send name of players to clients
-		String[] playerNames = getDevices().getPlayerNames();
+		List<Device> devices = getDevices().getList();
 
-		for(int i = 0; i < playerNames.length; i++){
-			sendToAllClientDevices(TAG_CLIENT_PLAYER_NAME + MESSAGE_DELIMITER + playerNames[i]);
+		int uniqueId = 10;
+		for(int i = 0; i < devices.size(); i++){
+			Device device = devices.get(i);
+			String message = TAG_CLIENT_PLAYER_NAME + MESSAGE_DELIMITER + device.getName() + MESSAGE_DELIMITER + uniqueId++;
+			sendToAllClientDevices(message);
 		}
 
 		// show main menu
@@ -188,8 +184,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		getActivity().startActivity(intent);
 
 		sendToAllClientDevices(TAG_START_GAME);
-
-		//GameSynchronisation.synchronize(); später in Spieloberfläche
 	}
 
 
@@ -205,15 +199,22 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		Device clientDevice = getDevices().getDevice(connection);
 
 		// execute message based on tag
-		if (object instanceof Player){
+		if (object instanceof Player) {
 
 			Log.i(TAG, "Received player object.");
 
-			Player player= (Player) object;
-			ActualGame.refreshPlayer(player);	// replace current game class with new one
+			Player player = (Player) object;
+			ActualGame.refreshPlayer(player);    // replace current game class with new one
 
 			GameSynchronisation.synchronize();
 
+		} else if(object instanceof DiceNumber){
+
+			// client hat gewuerfelt
+			synchronized (RealDice.get()) {
+				RealDice.get().setDiceNumber((DiceNumber) object);
+				RealDice.get().notify();
+			}
 
 		} else if(object instanceof String) {	// string message
 
@@ -265,6 +266,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				revealer.setHasToSkip(!isCheating);
 
 				GameSynchronisation.synchronize();
+
 			}
 
 

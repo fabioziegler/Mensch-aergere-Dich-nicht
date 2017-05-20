@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
+import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClient;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
@@ -17,15 +18,16 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_CLIENT_PLAYER_NAME;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_CURRENT_PLAYER;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_STATUS_MESSAGE;
 
 /**
  * Created by Fabio on 04.05.17.
  *
  * Implements the game rules and logic. Sends and receives messages to/from other players.
- * TODO: implement own classes GameLogicClient, GameLogicHost which extend GameLogic...
  */
 public class GameLogicClient extends GameLogic implements NetworkListener {
 
@@ -95,9 +97,7 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 			GameSettings remoteGameSettings = (GameSettings) object;
 
-			GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
-
-			gameSettings.apply(remoteGameSettings);
+			getGameSettings().apply(remoteGameSettings);
 
 		} else if (object instanceof String){
 
@@ -113,7 +113,31 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 			} else if(TAG_CLIENT_PLAYER_NAME.equals(tag)) {	// if hosts send the name of a client
 
-				getDevices().add(new Device(value));
+				DeviceList deviceList = getDevices();
+				String[] playerData = value.split(MESSAGE_DELIMITER);
+				String deviceName = data[1];
+				int id = Integer.parseInt(data[2]);
+
+				if(!deviceList.contains(deviceName))
+					deviceList.add(new Device(id, deviceName, false));
+
+			} else if(TAG_STATUS_MESSAGE.equals(tag)){
+
+				Spieloberflaeche activity = (Spieloberflaeche) getActivity();
+				activity.setStatus(value);
+
+			} else if(TAG_CURRENT_PLAYER.equals(tag)) {
+
+				Spieloberflaeche activity = (Spieloberflaeche) getActivity();
+
+				// network id of the players who's turn it is.
+				int currentPlayerID = Integer.parseInt(value);
+
+				if(currentPlayerID == getDevices().getPlayer(getGameSettings().getPlayerName()).getId()){
+					activity.setDiceEnabled(true);
+				} else {
+					activity.setDiceEnabled(false);
+				}
 			}
 
 		} else {
@@ -152,24 +176,11 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 		if (message == null)
 			throw new IllegalArgumentException("Message must not be null.");
 
-		/*
-		if(message instanceof String){
-			String msgString = (String) message;
-			if(!((String)message).contains(MESSAGE_DELIMITER))
-				msgString += MESSAGE_DELIMITER;
-		}
-		*/
 
 		// send in own thread
 		Thread sendingThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					synchronized (client) {
-						client.wait(1);
-					}
-				} catch (InterruptedException e) { Log.e(TAG, "Client wait Fehler", e); }
-
 				client.sendTCP(message);
 			}
 		}, "Sending");

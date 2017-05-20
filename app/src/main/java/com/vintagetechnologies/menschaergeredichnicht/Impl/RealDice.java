@@ -1,5 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht.Impl;
 
+import android.util.Log;
 import android.widget.ImageButton;
 
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
@@ -33,24 +34,24 @@ public class RealDice extends DiceImpl {
 
 
     private RealDice() {
-
     }
 
     public void waitForRoll() {
 
-        Spieloberflaeche s = (Spieloberflaeche)(RealDice.diceButton.getContext());
+        Spieloberflaeche s = (Spieloberflaeche) RealDice.diceButton.getContext();
+
         s.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 RealDice.diceButton.setEnabled(true);
             }
         });
+
         synchronized (realDice) {
 
-            //diceButton.setEnabled(true);
             //realDice.notify();
 
-            System.out.println("waiting: "+ realDice);
+            Log.i("Dice", "waiting: "+ realDice);
 
             try {
                 realDice.wait();
@@ -63,7 +64,6 @@ public class RealDice extends DiceImpl {
             //diceButton.setEnabled(false);
 
         }
-
 
         s.runOnUiThread(new Runnable() {
             @Override

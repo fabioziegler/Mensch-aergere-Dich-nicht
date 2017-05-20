@@ -1,16 +1,15 @@
 package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
+import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
-import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 
 
@@ -25,11 +24,18 @@ public class GameSynchronisation {
      */
     public static void synchronize(){
 
-        Player[] players = ActualGame.getInstance().getGameLogic().getPlayers();
+		com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic gameLogic = ActualGame.getInstance().getGameLogic();
+
+		/* send player objects */
+        Player[] players = gameLogic.getPlayers();
 
         for (Player player : players) {
-            sendToOtherDevices(player);
+            send(player);
         }
+
+        /* send current player id (=network id) */
+        int currentPlayerNetworkId = gameLogic.getCurrentPlayer().getUniqueId();
+        send(Network.TAG_CURRENT_PLAYER + Network.MESSAGE_DELIMITER + String.valueOf(currentPlayerNetworkId));
     }
 
 
@@ -62,22 +68,19 @@ public class GameSynchronisation {
 
 
     /**
-     * Sendet Gamedaten an clients in String-Format
+     * Sendet Gamedaten.
      * @param message
      */
-    private static void sendToOtherDevices(Object message){
+    private static void send(Object message){
 
 		// TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
 		// TODO: Methode in dieser Klasse die, die empfangenen Klassen ausliest und die Game Klasse entsprechend aktualisiert.
-
-
-		//Log.i("SYNC", "Sending sync to clients...");
 
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
 
 		if(gameLogic.isHost()) {
 			((GameLogicHost)gameLogic).sendToAllClientDevices(message);
-		} else {
+		} else {	// client needed??
 			((GameLogicClient)gameLogic).sendToHost(message);
 		}
     }

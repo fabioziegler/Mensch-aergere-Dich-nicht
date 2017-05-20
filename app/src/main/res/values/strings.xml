@@ -6,7 +6,7 @@
     <string name="TXTspielaufruf">Gib den Ton an und Starte ein neues Spiel!</string>
     <string name="TXTlable">Mensch ärgere Dich nicht!</string>
     <string name="TXTtitelMitspielerwahl">Wähle deine Mitspieler</string>
-    <string name="joinedPlayers">Spieler:</string>
+    <string name="joinedPlayers">Beigetreten:</string>
     <string name="TXTspielerauswahl">gewählt: 0/3</string>
     <string name="TXTspielstartenBTN">STARTEN</string>
     <string name="TXTinfoBTN">info</string>

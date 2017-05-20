@@ -30,9 +30,9 @@ public class Hauptmenue extends AppCompatActivity {
     }
 
     private void btnLocalMultiplayerClicked(){
-		startActivity(new Intent(Hauptmenue.this, Spieloberflaeche.class));
 		ActualGame.reset();	// reset e.g. when a multiplayer game was played before..
 		ActualGame.getInstance().setLocalGame(true);
+		startActivity(new Intent(Hauptmenue.this, Spieloberflaeche.class));
 	}
 
 
@@ -53,6 +53,7 @@ public class Hauptmenue extends AppCompatActivity {
 
 		ActualGame.reset();
 		ActualGame.getInstance().setLocalGame(false);
+
         Intent intent = new Intent(this, MyServerActivity.class);
         startActivity(intent);
         finish();
@@ -72,6 +73,7 @@ public class Hauptmenue extends AppCompatActivity {
 
 		ActualGame.reset();
 		ActualGame.getInstance().setLocalGame(false);
+
         Intent intent = new Intent(this, MyClientActivity.class);
         startActivity(intent);
         finish();

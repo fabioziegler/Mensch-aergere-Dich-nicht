@@ -39,6 +39,10 @@ public class Device {
 		this.isHost = false;
 	}
 
+	/**
+	 * Get the network ID.
+	 * @return
+	 */
     public int getId() {
         return id;
     }

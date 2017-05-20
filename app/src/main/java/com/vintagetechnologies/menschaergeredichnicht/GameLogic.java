@@ -9,6 +9,8 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
+
 /**
  * Created by Fabio on 08.04.17.
  *
@@ -26,11 +28,14 @@ public abstract class GameLogic {
     /* The activity which sends/receives messages. Used to change layouts. */
     private Activity activity;
 
+	private GameSettings gameSettings;
+
 	private boolean isHost;
 
     public GameLogic(Activity activity, boolean isHost){
         this.activity = activity;
         gameStarted = false;
+		gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
 		this.isHost = isHost;
         devices = new DeviceList();
     }
@@ -117,6 +122,10 @@ public abstract class GameLogic {
 
 	public void setActivity(Activity activity) {
 		this.activity = activity;
+	}
+
+	public GameSettings getGameSettings() {
+		return gameSettings;
 	}
 
 	/**

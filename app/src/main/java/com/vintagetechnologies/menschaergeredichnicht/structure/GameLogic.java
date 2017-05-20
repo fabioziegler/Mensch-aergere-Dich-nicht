@@ -1,6 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import android.util.Log;
+
+import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.ArrayList;
@@ -79,7 +84,9 @@ public class GameLogic {
 
         currentPlayer = bestPlayer;
         dice.emptyBlacklist();
-        regularGame();
+
+		Log.i("Game", "Starting regular game.");
+		regularGame();
     }
 
 
@@ -167,9 +174,14 @@ public class GameLogic {
 
             } while (dice.getDiceNumber() == DiceNumber.SIX || (attempts > 0 && !moved));
 
-			GameSynchronisation.synchronize();
-
             currentPlayer = (currentPlayer + 1) % players.length;
+
+			// sync
+			if(!ActualGame.getInstance().isLocalGame()) {
+				com.vintagetechnologies.menschaergeredichnicht.GameLogic gameLogic = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
+				if(gameLogic.isHost())	// check not needed, because only the host runs the game
+					GameSynchronisation.synchronize();
+			}
 
         }
     }
@@ -227,11 +239,19 @@ public class GameLogic {
     }
 
     /**
-     * @return
+     * Get current player.
      */
     public Player getCurrentPlayer() {
         return players[currentPlayer];
     }
+
+
+	/**
+	 * Get the index of the current player.
+	 */
+	public int getCurrentPlayerIndex() {
+		return currentPlayer;
+	}
 
 
     /**

@@ -1,5 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.Impl;
 
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -47,8 +49,7 @@ public class ActualGame extends Game {
 
 
     /**
-     * Returns actualGameInstance()
-     *
+     * Returns actualGame Instance
      * @return
      */
     public static ActualGame getInstance() {
@@ -57,6 +58,7 @@ public class ActualGame extends Game {
         }
         return actualGameInstance;
     }
+
 
     /**
      * Called when a client received a new up to date game object from the host.
@@ -79,6 +81,9 @@ public class ActualGame extends Game {
 				break;
 			}
 		}
+
+		// refresh board
+		getInstance().getBoardView().postInvalidate();
 	}
 
     private ActualGame() {
@@ -113,39 +118,60 @@ public class ActualGame extends Game {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+			Log.e("Actual Game init", "Fehler", e);
         }
 
         final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
         final Theme finalTheme = theme;
+
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+				boolean red = false, green = false, blue = false, yellow = false;
+
                 for (Player p : gameLogic.getPlayers()) {
+
                     TextView tv = null;
                     switch (p.getColor()) {
                         case RED: {
                             tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerRot));
+							red = true;
                             break;
                         }
                         case GREEN: {
                             tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGruen));
+							green = true;
                             break;
                         }
                         case BLUE: {
                             tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerBlau));
-                            tv.setText(p.getName());
+							blue = true;
                             break;
                         }
                         case YELLOW: {
                             tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGelb));
+							yellow = true;
                             break;
                         }
                     }
+
                     tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
                     tv.setText(p.getName());
-
                 }
+
+                // hide not used fields
+                if(!red)
+					((TextView) gameactivity.findViewById(R.id.textView_spielerRot)).setVisibility(View.INVISIBLE);
+
+                if(!green)
+					((TextView) gameactivity.findViewById(R.id.textView_spielerGruen)).setVisibility(View.INVISIBLE);
+
+                if(!blue)
+					((TextView) gameactivity.findViewById(R.id.textView_spielerBlau)).setVisibility(View.INVISIBLE);
+
+                if(!yellow)
+					((TextView) gameactivity.findViewById(R.id.textView_spielerGelb)).setVisibility(View.INVISIBLE);
 
             }
         });
@@ -190,8 +216,6 @@ public class ActualGame extends Game {
         this.bv.setHighlightedGamePiece(this.gameLogic.getPossibleToMove().get(0));
 
 
-
-
         final Button btnFigurSelect = (Button) (gameactivity.findViewById(R.id.Select_Figur));
         final Button btnMoveFigur = (Button) (gameactivity.findViewById(R.id.Move_Figur));
 
@@ -220,8 +244,6 @@ public class ActualGame extends Game {
                 btnMoveFigur.setEnabled(false);
             }
         });
-
-
     }
 
     public void setLocalGame(boolean isLocalGame) {
@@ -236,20 +258,18 @@ public class ActualGame extends Game {
     public void refreshView() {
         bv.postInvalidate();
 
-        if (!isLocalGame){
-			//com.vintagetechnologies.menschaergeredichnicht.GameLogic gameLogic = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
-            //if(gameLogic.isHost())
+        if (!isLocalGame){	// needed here?
+			com.vintagetechnologies.menschaergeredichnicht.GameLogic gameLogic = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
+            if(gameLogic.isHost())
             	GameSynchronisation.synchronize();
         }
     }
 
-    private void printInfo(String info) {
-
-        final String finalInfo = info;
+    private void printInfo(final String info) {
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                gameactivity.setStatus(finalInfo);
+                gameactivity.setStatus(info);
             }
         });
     }

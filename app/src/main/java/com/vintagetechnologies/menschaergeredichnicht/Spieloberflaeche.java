@@ -4,6 +4,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 import android.animation.Animator;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.SystemClock;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -43,6 +45,7 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_STATUS_MESSAGE;
 
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
@@ -58,10 +61,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     private static final int SHAKE_THRESHOLD = 1400;
     private long lastUpdate;
-    float last_x;
-    float last_y;
-    float last_z;
-    boolean shook = false;
+    private float last_x;
+	private float last_y;
+	private float last_z;
+	private boolean shook = false;
 
     private TextView state;
     private Cheat Schummeln;
@@ -121,7 +124,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         final int result = RealDice.get().getDiceNumber().getNumber() - 1;
 
 
-
         // dice rolls for 2 seconds, and changes 5x a second it's number
 
         // "roll" animation
@@ -141,7 +143,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         }
 
 
-        // setze Egebnis des Würfelns
+        // setze Ergebnis des Würfelns
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -209,10 +211,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
 
-        synchronized (RealDice.get()) {
-            System.out.println("notifying: " + RealDice.get());
-            RealDice.get().notify();
-        }
+		if(ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
+			synchronized (RealDice.get()) {
+				System.out.println("notifying: " + RealDice.get());
+				RealDice.get().notify();
+			}
+		} else {	// client:
+			((GameLogicClient)gameLogic).sendToHost(RealDice.get().getDiceNumber());	// send diceNumber to host
+		}
 
         //jetzt kann durch erneutes schütteln wieder ein Würfeln ausgelöst werden.
         //TODo: Anpassen an wie oft darf man würfeln. erst wenn neuer zug erlaubt ist für den Spieler auf true setzen.
@@ -220,14 +226,24 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
+	/**
+	 * Called when a client
+	 * @param diceNumber
+	 */
+	public void remoteDiceClicked(DiceNumber diceNumber){
+		RealDice.get().setDiceNumber(diceNumber);
+	}
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_spieloberflaeche);
 
         gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
+
         Board.resetBoard();
-        ActualGame.reset();
         RealDice.reset();
 
 		final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
@@ -251,7 +267,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 						}
 					}
 
-					System.out.println(event.getAction() + ": (" + event.getX() + " / " + event.getY() + " )");
+					Log.i("BoardView", event.getAction() + ": (" + event.getX() + " / " + event.getY() + " )");
 
 				}
 				return true;
@@ -262,7 +278,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
 		/* Check if local or network game */
-		if(!ActualGame.getInstance().isLocalGame()){
+		if(!ActualGame.getInstance().isLocalGame()){	// network game:
 
 			gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
 			gameLogic.setActivity(this);
@@ -297,8 +313,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         ShakeSensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         SM.registerListener(this, ShakeSensor, SensorManager.SENSOR_DELAY_GAME);
 
-        //ToDo: Disable wenn Spieler gerade spielt
-        //aktuell spielender Spieler wird des Schummelns verdächtigt
+        // ToDo: Disable wenn Spieler gerade spielt
+        // aktuell spielender Spieler wird des Schummelns verdächtigt
         btnAufdecken = (ImageButton) (findViewById(R.id.imageButton_aufdecken)); // ToDO: Disable für gerade spielenden Spieler
         btnAufdecken.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,42 +395,57 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         // initialize dice
         dice = new Dice();
 
-        // load image list
-        diceImages = new int[6];
-
-        diceImages[0] = R.drawable.dice1;
-        diceImages[1] = R.drawable.dice2;
-        diceImages[2] = R.drawable.dice3;
-        diceImages[3] = R.drawable.dice4;
-        diceImages[4] = R.drawable.dice5;
-        diceImages[5] = R.drawable.dice6;
+        // load dice images into array
+        loadDiceImages();
 
         rand = new Random(System.currentTimeMillis());
 
         // get screen size
         getScreenDimensions();
 
+		// prevent phone from entering sleep mode
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    ActualGame.getInstance().play();
-                } catch (IllegalAccessException e) {
-                    Log.e("Spieloberflaeche", "Error in game initialize", e);
-                }
-            }
-        }.start();
+		// start playing
+		if(ActualGame.getInstance().isLocalGame() || gameLogic.isHost())
+			startPlayThread();
     }
 
+
+    private void startPlayThread(){
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					ActualGame.getInstance().play();
+				} catch (IllegalAccessException e) {
+					Log.e("Spieloberflaeche", "Error in game initialize", e);
+				}
+			}
+		}.start();
+	}
+
+
+    private void loadDiceImages(){
+		diceImages = new int[6];
+
+		diceImages[0] = R.drawable.dice1;
+		diceImages[1] = R.drawable.dice2;
+		diceImages[2] = R.drawable.dice3;
+		diceImages[3] = R.drawable.dice4;
+		diceImages[4] = R.drawable.dice5;
+		diceImages[5] = R.drawable.dice6;
+	}
+
     private void btnAufdeckenClicked() {
+
         if (gameLogic.isHost()) {
 
-
+			// TODO: implement
 
         } else {
             GameLogicClient gameLogicClient = (GameLogicClient) gameLogic;
-            gameLogicClient.sendToHost(TAG_REVEAL + MESSAGE_DELIMITER);
+            gameLogicClient.sendToHost(TAG_REVEAL);
         }
     }
 
@@ -445,21 +476,30 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
-    public void onBackPressed() {
+	/**
+	 * Called when the user presses the back button.
+	 */
+	public void onBackPressed() {
         new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Geh nicht!! :-( ")
+                .setTitle("Geh nicht!! :-(")
                 .setMessage("Willst du das Spiel wirklich verlassen?")
                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        finish();
+						if(ActualGame.getInstance().isLocalGame()){
+							startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+							finish();
+						} else {
+							gameLogic.leaveGame();
+						}
                     }
 
                 })
                 .setNegativeButton("Nein", null)
                 .show();
     }
+
 
     /**
      * ToDO: Sollte nur aktiviert sein wenn Spieler aktuell spielt.
@@ -534,10 +574,18 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         //nicht in verwendung
     }
 
+
     public void setStatus(String status) {
         state.setText(status);
 
-		// TODO: send status over network??
+		if(ActualGame.getInstance().isLocalGame())
+			return;
+
+		if(gameLogic.isHost())
+			((GameLogicHost) gameLogic).sendToAllClientDevices(TAG_STATUS_MESSAGE + MESSAGE_DELIMITER + status);
     }
 
+    public void setDiceEnabled(boolean enabled){
+		btnWuerfel.setEnabled(enabled);
+	}
 }

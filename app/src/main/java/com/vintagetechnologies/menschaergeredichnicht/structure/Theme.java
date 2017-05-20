@@ -2,6 +2,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 
 import android.graphics.Color;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,38 +45,33 @@ public class Theme {
             readJson(new JSONObject(tmp));
 
         } catch (JSONException e) {
-            e.printStackTrace();
+			Log.e("Test", "Fehler", e);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+			Log.e("Test", "Fehler", e);
         } catch (IOException e) {
-            e.printStackTrace();
+			Log.e("Test", "Fehler", e);
         }
     }
 
     private void readJson(JSONObject jo){
+		int i = 0;
+		Iterator<String> it = jo.keys();
 
-
-
-            int i = 0;
-            Iterator<String> it = jo.keys();
-
-            try {
-                while(it.hasNext()){
-                    String key = it.next();
-                    Object o = jo.get(key);
-                    if(o instanceof String){
-                        setColor(key, (String)o);
-                    }else if(o instanceof JSONObject){
-                        readJson((JSONObject)o);
-                    }else{
-                        System.err.println("NOT A VALID FIELD!");
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
+		try {
+			while(it.hasNext()){
+				String key = it.next();
+				Object o = jo.get(key);
+				if(o instanceof String){
+					setColor(key, (String)o);
+				}else if(o instanceof JSONObject){
+					readJson((JSONObject)o);
+				}else{
+					System.err.println("NOT A VALID FIELD!");
+				}
+			}
+		} catch (JSONException e) {
+			Log.e("Test", "Fehler", e);
+		}
     }
 
     private void setColor(String key, String value){

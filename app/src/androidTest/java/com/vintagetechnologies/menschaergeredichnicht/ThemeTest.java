@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Theme;
@@ -27,11 +28,7 @@ public class ThemeTest {
 
     @Test
     public void testTheme() {
-
-
         AssetManager am = getInstrumentation().getContext().getAssets();
-
-
 
         try {
             String s [] = am.list("/");
@@ -44,15 +41,15 @@ public class ThemeTest {
                 System.out.println("2 "+i);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+			Log.e("Test", "Fehler", e);
+		}
 
 
         Theme t = null;
         try {
             t = new Theme(am.open("themes/classic.json"));
         } catch (IOException e) {
-            e.printStackTrace();
+			Log.e("Test", "Fehler", e);
         }
 
         System.out.println("Working Directory = " +

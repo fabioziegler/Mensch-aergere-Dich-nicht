@@ -1,5 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import android.util.Log;
+
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
@@ -108,11 +110,11 @@ public class NetworkingTest {
 		assertNull(DataHolder.getInstance().retrieve("MYITEM"));
 
 		// save object
-		Device device = new Device(1, "Fabio", false);
-		DataHolder.getInstance().save("ITEM", device);
+		Device dev = new Device(1, "Fabio", false);
+		DataHolder.getInstance().save("ITEM", dev);
 
 		// get saved item
-		assertEquals(device, DataHolder.getInstance().retrieve("ITEM"));
+		assertEquals(dev, DataHolder.getInstance().retrieve("ITEM"));
 	}
 
 	@Test
@@ -134,6 +136,7 @@ public class NetworkingTest {
 			});
 
 		} catch (Exception e){
+			Log.e("Test", "Fehler", e);
 			errorInitialisingNewWifiReceiver = true;
 		}
 

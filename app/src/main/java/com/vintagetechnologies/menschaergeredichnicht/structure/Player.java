@@ -22,6 +22,8 @@ public class Player {
 	// An id which associates the player with the corresponding network connection
     private int networkId;
 
+	private int uniqueId;
+
 	// if the player has to skip in the next round TODO: implement logic
     private boolean hasToSkip;
 
@@ -133,6 +135,9 @@ public class Player {
         return  gpr;
     }
 
+    public void setUniqueId(int id){
+		this.uniqueId = id;
+	}
 
     public boolean hasToSkip() {
         return hasToSkip;
@@ -142,6 +147,9 @@ public class Player {
         this.hasToSkip = hasToSkip;
     }
 
+    public int getUniqueId(){
+		return uniqueId;
+	}
 
     public int getNetworkId() {
         return networkId;

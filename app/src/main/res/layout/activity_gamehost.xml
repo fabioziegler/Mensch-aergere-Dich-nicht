@@ -44,15 +44,6 @@
         app:layout_constraintBottom_toTopOf="@+id/listViewPlayers"
         app:layout_constraintLeft_toLeftOf="@+id/listViewPlayers"/>
 
-    <TextView
-        android:id="@+id/lblSelectedPlayers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/TXTspielerauswahl"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/listViewPlayers"
-        app:layout_constraintRight_toRightOf="@+id/listViewPlayers" />
-
     <Button
         android:id="@+id/btnStartGame"
         android:layout_width="162dp"
@@ -76,5 +67,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_info_details"
         tools:ignore="RtlHardcoded" />
+
+    <ProgressBar
+        android:id="@+id/progBarWaiting"
+        android:layout_width="20dp"
+        android:layout_height="23dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="155dp"
+        android:visibility="visible"
+        app:layout_constraintHorizontal_bias="0.69"
+        app:layout_constraintLeft_toRightOf="@+id/lblStatus"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

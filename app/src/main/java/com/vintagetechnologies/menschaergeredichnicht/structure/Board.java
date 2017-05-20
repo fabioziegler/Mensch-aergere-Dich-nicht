@@ -197,8 +197,6 @@ public final class Board {
         }
 
 
-
-
         if (targetSpot != null && targetSpot.getGamePiece() != null) {
             if (targetSpot.getGamePiece().getPlayerColor() == piece.getPlayerColor()) {
                 return null;

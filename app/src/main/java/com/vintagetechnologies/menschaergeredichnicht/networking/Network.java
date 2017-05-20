@@ -48,7 +48,7 @@ public class Network {
 	/**
 	 * If a client wants to reveal if a player cheated.
 	 */
-	public static final String TAG_REVEAL = "reveal";
+	public static final String TAG_REVEAL = "reveal" + MESSAGE_DELIMITER;
 
 
 	/**
@@ -70,11 +70,24 @@ public class Network {
 
 
 	/**
+	 * Used to send a new status.
+	 */
+	public static final String TAG_STATUS_MESSAGE = "status";
+
+
+	/**
+	 * Indicates which player's turn it is.
+	 */
+	public static final String TAG_CURRENT_PLAYER = "current_player";
+
+
+	/**
 	 * Register classes that will be send.
 	 * @param kryo
 	 */
 	public static void registerKryoClasses(Kryo kryo){
 
+		// enable self-references
 		kryo.setReferences(true);
 
 		kryo.register(String.class);
@@ -89,6 +102,7 @@ public class Network {
 		kryo.register(PlayerColor.class);
 		kryo.register(Cheat.class);
 
+		kryo.register(DiceNumber.class);
 
 		// all needed: ????
 		//kryo.register(Game.class);

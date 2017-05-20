@@ -34,6 +34,19 @@ public class DeviceList {
     }
 
 
+	/**
+	 * If the list contains the player with the specified name.
+	 * @return The endpoint which is the host or null if there is no host
+	 */
+	public boolean contains(String playerName){
+		for (int i = 0; i < devices.size(); i++) {
+			if(devices.get(i).getName().equals(playerName))
+				return true;
+		}
+		return false;
+	}
+
+
     /**
      * Add an device
      * @param device

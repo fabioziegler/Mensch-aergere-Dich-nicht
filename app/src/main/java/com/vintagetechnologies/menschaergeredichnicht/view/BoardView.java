@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -59,7 +60,7 @@ public class BoardView extends View {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+			Log.e("BoardView", "Fehler", e);
         }
     }
 
