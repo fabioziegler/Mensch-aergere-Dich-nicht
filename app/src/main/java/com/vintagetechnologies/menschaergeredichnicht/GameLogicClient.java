@@ -110,7 +110,14 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				hostDevice.setName(value);
 
 			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)){
-
+				//wird vom Host empfangen wenn Spieler aufdeckt?!
+				boolean hasCheated = Boolean.parseBoolean(value);
+				/*
+				//TODO: make right..
+				Toast.makeText(getApplicationContext(),
+						(hasCheated ? R.string.Eswurdegeschummelt : R.string.EswurdeNichtgeschummelt),
+						Toast.LENGTH_LONG).show();
+				*/
 			} else if(TAG_CLIENT_PLAYER_NAME.equals(tag)) {	// if hosts send the name of a client
 
 				DeviceList deviceList = getDevices();
@@ -127,11 +134,16 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				activity.setStatus(value);
 
 			} else if(TAG_CURRENT_PLAYER.equals(tag)) {
+				//Wird das bei Spielerwechsel aufgerufen und an alle geschickt???
 
 				Spieloberflaeche activity = (Spieloberflaeche) getActivity();
 
 				// network id of the players who's turn it is.
 				int currentPlayerID = Integer.parseInt(value);
+
+				//Currentplayer startet bei "null" als nicht Cheater.
+				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
+				currentPlayer.getSchummeln().setPlayerCheating(false);
 
 				if(currentPlayerID == getDevices().getPlayer(getGameSettings().getPlayerName()).getId()){
 					activity.setDiceEnabled(true);

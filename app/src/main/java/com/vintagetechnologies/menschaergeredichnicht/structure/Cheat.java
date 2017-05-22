@@ -22,17 +22,17 @@ public class Cheat {
 
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
-        //für Testen ausgelagert und direkt in Spieleroberfläche aufgerufen (ToDo Sinnvoll?)
-        //sendMessageToHost();
+        //TODo unterscheidung ob vom Host oder Client bearbeitet? Wird in GamLogicHost&Client bearbeitet..
+        //informHost(c);
     }
 
-    public void informHost(){
+    public void informHost(boolean c){
         // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
         boolean isHost = gameLogic.isHost();
 
         if (!isHost){
-			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(true));
+			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(c));
         }
     }
 

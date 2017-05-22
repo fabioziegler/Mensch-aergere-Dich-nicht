@@ -50,8 +50,6 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
 
-    // toDO: alle Spielfunktionen ect. hinzufügen
-
     private GameLogic gameLogic;
     private GameSettings gameSettings;
 
@@ -222,7 +220,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 		}
 
         //jetzt kann durch erneutes schütteln wieder ein Würfeln ausgelöst werden.
-        //TODo: Anpassen an wie oft darf man würfeln. erst wenn neuer zug erlaubt ist für den Spieler auf true setzen.
         shook = false;
     }
 
@@ -314,9 +311,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         ShakeSensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         SM.registerListener(this, ShakeSensor, SensorManager.SENSOR_DELAY_GAME);
 
-        // ToDo: Disable wenn Spieler gerade spielt
         // aktuell spielender Spieler wird des Schummelns verdächtigt
-        btnAufdecken = (ImageButton) (findViewById(R.id.imageButton_aufdecken)); // ToDO: Disable für gerade spielenden Spieler
+        btnAufdecken = (ImageButton) (findViewById(R.id.imageButton_aufdecken));
         btnAufdecken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -324,7 +320,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        btnWuerfel = (ImageButton) (findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
+        btnWuerfel = (ImageButton) (findViewById(R.id.imageButton_wuerfel));
         btnWuerfel.setEnabled(true);
 
         RealDice.get();
@@ -445,6 +441,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 			// TODO: implement
 
         } else {
+
             GameLogicClient gameLogicClient = (GameLogicClient) gameLogic;
             gameLogicClient.sendToHost(TAG_REVEAL);
         }
@@ -558,7 +555,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     //state.setText("Schummeln: " + true);  //Test
                     Schummeln.setPlayerCheating(true);
                 }
-                //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
+
             }
 
         }
@@ -589,6 +586,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 			((GameLogicHost) gameLogic).sendToAllClientDevices(TAG_STATUS_MESSAGE + MESSAGE_DELIMITER + status);
     }
 
+    /**
+     * Getting updated with the change auf the player status to currentPlayer.
+     * @param enabled
+     */
     //Sensors are only used when player == currentPlayer
     public void setSensorOn(boolean enabled) {
         sensorOn = enabled;
