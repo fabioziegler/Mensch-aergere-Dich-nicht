@@ -135,10 +135,15 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 				if(currentPlayerID == getDevices().getPlayer(getGameSettings().getPlayerName()).getId()){
 					activity.setDiceEnabled(true);
+					activity.setRevealEnabled(false);
+					activity.setSensorOn(true);
 				} else {
 					activity.setDiceEnabled(false);
+					activity.setRevealEnabled(true);
+					activity.setSensorOn(false);
 				}
 			}
+
 
 		} else {
 			Log.w(TAG, "Received unknown message from host.");

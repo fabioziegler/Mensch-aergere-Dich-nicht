@@ -267,11 +267,10 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				GameSynchronisation.synchronize();
 
-			}
 
-
-		}else {
+			}else {
 			Log.w(TAG, String.format("Received unknown message '%s' from player '%s'", object, clientDevice.getName()));
+			}
 		}
 	}
 
