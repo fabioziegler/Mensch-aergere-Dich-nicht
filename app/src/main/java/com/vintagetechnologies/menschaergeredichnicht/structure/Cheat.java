@@ -20,12 +20,13 @@ public class Cheat {
 
     public Cheat (){}
 
+    //Dient nur dem Würfel auf 6 bei Schummeln
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
-        //TODo unterscheidung ob vom Host oder Client bearbeitet? Wird in GamLogicHost&Client bearbeitet..
-        //informHost(c);
     }
 
+    //wird seperat aufgerufen in Spieleroberfläche wenn geschummelt wird und vom Host wenn neue Runde um wieder auf false zu setzen.
+    //-> Dient nur der Schummeln-Aufdecken funktion.
     public void informHost(boolean c){
         // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);

@@ -554,6 +554,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 if (Lichtwert <= 10) {
                     //state.setText("Schummeln: " + true);  //Test
                     Schummeln.setPlayerCheating(true);
+                    Schummeln.informHost(true);
                 }
 
             }
