@@ -237,9 +237,10 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				currentPlayer.getSchummeln().setPlayerCheating(hasCheated);
 
 				//Soll das an alle geschickt werden? Wird nur benötigt zum Aufdecken, also braucht eigentlich nur der Host..
+				//! Wird nur in der Aufdeck methode an alle geschickt!! (um zu verraten ob player gecheated hat oder nicht)
 
 
-				// send changes to others
+				//send changes to others
 				//GameSynchronisation.synchronize();
 
 			} else if(TAG_REVEAL.equals(tag)){	// a player clicked "aufdecken"

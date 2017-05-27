@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -112,12 +113,16 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)){
 				//wird vom Host empfangen wenn Spieler aufdeckt?!
 				boolean hasCheated = Boolean.parseBoolean(value);
-				/*
+				Context context = getActivity().getApplicationContext();
+
 				//TODO: make right..
-				Toast.makeText(getApplicationContext(),
-						(hasCheated ? R.string.Eswurdegeschummelt : R.string.EswurdeNichtgeschummelt),
-						Toast.LENGTH_LONG).show();
-				*/
+				if(hasCheated) {
+					Toast.makeText(context, "Das Schummeln wurde enttarnt, Schummler stetzt nächste Runde aus", Toast.LENGTH_LONG).show();
+				}else{
+					Toast.makeText(context, "Es wurde falsch verdächtigt, verdacht äußernder setzt nächste Runde aus", Toast.LENGTH_LONG).show();
+				}
+
+
 			} else if(TAG_CLIENT_PLAYER_NAME.equals(tag)) {	// if hosts send the name of a client
 
 				DeviceList deviceList = getDevices();
