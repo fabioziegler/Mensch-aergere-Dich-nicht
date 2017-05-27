@@ -152,9 +152,9 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				currentPlayer.getSchummeln().informHost(false); //Damit der Host auch weiß, dass (noch) nicht geschummelt wurde.
 
 				if(currentPlayerID == getDevices().getPlayer(getGameSettings().getPlayerName()).getId()){
-					activity.setDiceEnabled(true);
-					activity.setRevealEnabled(false);
-					activity.setSensorOn(true);
+					activity.setDiceEnabled(true); //Würfeln
+					activity.setRevealEnabled(false);  //Aufdecken
+					activity.setSensorOn(true); //Schummeln und Würfeln durch Schütteln
 				} else {
 					activity.setDiceEnabled(false);
 					activity.setRevealEnabled(true);
