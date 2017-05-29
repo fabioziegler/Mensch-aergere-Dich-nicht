@@ -43,7 +43,8 @@ public class RealDice extends DiceImpl {
         s.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RealDice.diceButton.setEnabled(true);
+                RealDice.diceButton.setClickable(true);
+                RealDice.diceButton.setAlpha(1f);
             }
         });
 
@@ -68,7 +69,9 @@ public class RealDice extends DiceImpl {
         s.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RealDice.diceButton.setEnabled(false);
+                RealDice.diceButton.setClickable(false);
+                RealDice.diceButton.setAlpha(0.5f);
+
             }
         });
     }
