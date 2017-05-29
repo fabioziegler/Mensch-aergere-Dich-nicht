@@ -105,7 +105,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
 
                 imgViewDice.setVisibility(View.VISIBLE);
-                btnWuerfel.setEnabled(false);
                 btnWuerfel.setImageResource(R.drawable.dice_undefined);
                 imgViewDice.setImageResource(R.drawable.dice_undefined);
             }
@@ -347,31 +346,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
 
-        // zwischen zu bewegenden Figuren wählen
-        btnFigurSelect = (Button) (findViewById(R.id.Select_Figur));
-        btnFigurSelect.setEnabled(false);
-        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // toDO: Zu setzende Figur auswählen
-                ArrayList<GamePiece> possibleGamePieces = ActualGame.getInstance().getGameLogic().getPossibleToMove();
-                if (bv.getHighlightedGamePiece() == null) {
-                    bv.setHighlightedGamePiece(possibleGamePieces.get(0));
-                    bv.invalidate();
-                } else {
-                    GamePiece gp = bv.getHighlightedGamePiece();
-                    int i = possibleGamePieces.indexOf(gp);
-                    i = (i + 1) % possibleGamePieces.size();
-                    bv.setHighlightedGamePiece(possibleGamePieces.get(i));
-                    bv.invalidate();
-                }
-            }
-        });
-
-
         // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
         btnMoveFigur.setEnabled(false);
+        btnMoveFigur.setVisibility(View.INVISIBLE);
         btnMoveFigur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

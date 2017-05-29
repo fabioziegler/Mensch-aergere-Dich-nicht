@@ -216,15 +216,14 @@ public class ActualGame extends Game {
         this.bv.setHighlightedGamePiece(this.gameLogic.getPossibleToMove().get(0));
 
 
-        final Button btnFigurSelect = (Button) (gameactivity.findViewById(R.id.Select_Figur));
         final Button btnMoveFigur = (Button) (gameactivity.findViewById(R.id.Move_Figur));
 
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 bv.invalidate();
-                btnFigurSelect.setEnabled(true);
                 btnMoveFigur.setEnabled(true);
+                btnMoveFigur.setVisibility(View.VISIBLE);
             }
         });
         synchronized (this) {
@@ -240,8 +239,8 @@ public class ActualGame extends Game {
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnFigurSelect.setEnabled(false);
                 btnMoveFigur.setEnabled(false);
+                btnMoveFigur.setVisibility(View.INVISIBLE);
             }
         });
     }
