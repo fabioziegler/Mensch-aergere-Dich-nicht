@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -173,29 +174,46 @@ public class BoardView extends View {
 
         }
 
+        paint.setStrokeWidth(10);
 
         if(ActualGame.getInstance().getGameLogic().getPossibleToMove() != null){
             for(GamePiece gp: ActualGame.getInstance().getGameLogic().getPossibleToMove()){
                 Spot s = gp.getSpot();
+                Spot t = board.checkSpot(RealDice.get().getDiceNumber(), gp);
+
 
                 double x = (2*s.getX()+1)*(spotRadius+abstand);
                 double y = (2*s.getY()+1)*(spotRadius+abstand);
+
+                double xx = (2*t.getX()+1)*(spotRadius+abstand);
+                double yy = (2*t.getY()+1)*(spotRadius+abstand);
 
                 paint.setColor(theme.getColor((gp.getPlayerColor().toString())));
                 paint.setStyle(Paint.Style.FILL);
 
                 canvas.drawCircle((float)x, (float)y, (float)spotRadius*3/2, paint);
 
+                paint.setStyle(Paint.Style.STROKE);
+
+                canvas.drawCircle((float)xx, (float)yy, (float)spotRadius*3/2, paint);
+
             }
         }
 
-        paint.setStrokeWidth(10);
 
         if(highlightedGamePiece != null){
             Spot s = highlightedGamePiece.getSpot();
+            Spot t = board.checkSpot(RealDice.get().getDiceNumber(), highlightedGamePiece);
 
             double x = (2*s.getX()+1)*(spotRadius+abstand);
             double y = (2*s.getY()+1)*(spotRadius+abstand);
+
+            double xx = (2*t.getX()+1)*(spotRadius+abstand);
+            double yy = (2*t.getY()+1)*(spotRadius+abstand);
+
+
+
+
 
             paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.STROKE);
@@ -205,16 +223,53 @@ public class BoardView extends View {
             canvas.drawLine((float)(x-spotRadius*1.0607),  (float)(y+spotRadius*1.0607), (float)(x+spotRadius*1.0607), (float)(y-spotRadius*1.0607), paint);
 
 
+
+            // highlight destination:
+
             paint.setColor(theme.getColor((highlightedGamePiece.getPlayerColor().toString())));
 
-            Spot t = board.checkSpot(RealDice.get().getDiceNumber(), highlightedGamePiece);
 
-            double xx = (2*t.getX()+1)*(spotRadius+abstand);
-            double yy = (2*t.getY()+1)*(spotRadius+abstand);
 
-            //canvas.drawCircle((float)xx, (float)yy, (float)spotRadius, paint);
-            canvas.drawLine((float)(xx-spotRadius),  (float)(yy-spotRadius), (float)(xx+spotRadius), (float)(yy+spotRadius), paint);
-            canvas.drawLine((float)(xx-spotRadius),  (float)(yy+spotRadius), (float)(xx+spotRadius), (float)(yy-spotRadius), paint);
+
+            //canvas.drawLine((float)(xx-spotRadius),  (float)(yy-spotRadius), (float)(xx+spotRadius), (float)(yy+spotRadius), paint);
+            //canvas.drawLine((float)(xx-spotRadius),  (float)(yy+spotRadius), (float)(xx+spotRadius), (float)(yy-spotRadius), paint);
+
+
+
+            //DRAW ARROW
+
+            paint.setColor(Color.BLACK);
+            paint.setStyle(Paint.Style.STROKE);
+            canvas.drawLine((float)(x),  (float)(y), (float)(xx), (float)(yy), paint);
+
+            double arrowHeadLength = spotRadius*2;
+
+            double multiplier = arrowHeadLength/Math.sqrt((xx-x)*(xx-x)+(yy-y)*(yy-y));
+
+            double aPosX = (x-xx)*multiplier;
+            double aPosY = (y-yy)*multiplier;
+
+
+            canvas.drawLine((float)(x),  (float)(y), (float)(xx+aPosX), (float)(yy+aPosY), paint); //arrow itself
+
+
+            double ratio = 0.5;
+
+            Path p = new Path();
+            p.setFillType(Path.FillType.EVEN_ODD);
+
+            p.moveTo((float)(xx+aPosX+aPosY*ratio), (float)(yy+aPosY-aPosX*ratio));
+            p.lineTo((float)(xx+aPosX-aPosY*ratio), (float)(yy+aPosY+aPosX*ratio));
+            p.lineTo((float)(xx),  (float)(yy));
+            p.close();
+
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+            canvas.drawPath(p, paint);
+
+            //canvas.drawLine((float)(xx+aPosX+aPosY), (float)(yy+aPosY-aPosX), (float)(xx+aPosX-aPosY), (float)(yy+aPosY+aPosX), paint); //head
+            //canvas.drawLine((float)(xx),  (float)(yy), (float)(xx+aPosX-aPosY), (float)(yy+aPosY+aPosX), paint);
+            //canvas.drawLine((float)(xx),  (float)(yy), (float)(xx+aPosX+aPosY), (float)(yy+aPosY-aPosX), paint);
 
         }
 
