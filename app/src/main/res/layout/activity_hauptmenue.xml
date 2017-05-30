@@ -24,11 +24,10 @@
         android:id="@+id/btnShowRules"
         android:layout_width="153dp"
         android:layout_height="48dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="97dp"
         android:text="@string/TXTspielregelnBTN"
         android:textAlignment="center"
         android:textSize="16sp"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnOpenSettings" />
@@ -37,7 +36,7 @@
         android:id="@+id/btnOpenSettings"
         android:layout_width="152dp"
         android:layout_height="48dp"
-        android:layout_marginTop="170dp"
+        android:layout_marginTop="165dp"
         android:text="@string/TXTeinstellungenBTN"
         android:textAlignment="center"
         android:textSize="16sp"
@@ -89,7 +88,7 @@
     <Button
         android:id="@+id/btnJoinGame"
         android:layout_width="152dp"
-        android:layout_height="45dp"
+        android:layout_height="48dp"
         android:layout_marginBottom="37dp"
         android:layout_marginTop="8dp"
         android:text="@string/strJoinGame"
@@ -105,12 +104,28 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="36dp"
         android:text="Lokaler Multiplayer"
         android:textSize="10sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnShowRules" />
+        app:layout_constraintTop_toBottomOf="@+id/btnShowRules"
+        app:layout_constraintHorizontal_bias="0.525"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <Button
+        android:id="@+id/btnShowManual"
+        android:layout_width="152dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="240dp"
+        android:text="Anleitung"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>
