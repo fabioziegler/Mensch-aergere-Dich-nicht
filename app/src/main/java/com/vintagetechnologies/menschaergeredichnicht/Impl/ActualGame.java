@@ -319,6 +319,9 @@ public class ActualGame extends Game {
 
     }
 
+    public Spieloberflaeche getGameactivity() {
+        return gameactivity;
+    }
 
     /**
      * @return
