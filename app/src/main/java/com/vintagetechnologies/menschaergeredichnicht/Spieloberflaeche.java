@@ -50,8 +50,6 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 
 public class Spieloberflaeche extends AppCompatActivity implements SensorEventListener {
 
-    // toDO: alle Spielfunktionen ect. hinzufügen
-
     private GameLogic gameLogic;
     private GameSettings gameSettings;
 
@@ -97,6 +95,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      * UI Updates finden auf dem Main Thread statt
      */
     private void btnWuerfelClicked() {
+
         // ui elementes must be updated on main thread:
         runOnUiThread(new Runnable() {
             public void run() {
@@ -105,7 +104,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
 
                 imgViewDice.setVisibility(View.VISIBLE);
-                btnWuerfel.setEnabled(false);
                 btnWuerfel.setImageResource(R.drawable.dice_undefined);
                 imgViewDice.setImageResource(R.drawable.dice_undefined);
             }
@@ -221,7 +219,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 		}
 
         //jetzt kann durch erneutes schütteln wieder ein Würfeln ausgelöst werden.
-        //TODo: Anpassen an wie oft darf man würfeln. erst wenn neuer zug erlaubt ist für den Spieler auf true setzen.
         shook = false;
     }
 
@@ -313,9 +310,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         ShakeSensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         SM.registerListener(this, ShakeSensor, SensorManager.SENSOR_DELAY_GAME);
 
-        // ToDo: Disable wenn Spieler gerade spielt
         // aktuell spielender Spieler wird des Schummelns verdächtigt
-        btnAufdecken = (ImageButton) (findViewById(R.id.imageButton_aufdecken)); // ToDO: Disable für gerade spielenden Spieler
+        btnAufdecken = (ImageButton) (findViewById(R.id.imageButton_aufdecken));
         btnAufdecken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -323,7 +319,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        btnWuerfel = (ImageButton) (findViewById(R.id.imageButton_wuerfel)); //ToDo: Disable für Spieler die nicht am Zug sind
+        btnWuerfel = (ImageButton) (findViewById(R.id.imageButton_wuerfel));
         btnWuerfel.setEnabled(true);
 
         RealDice.get();
@@ -347,31 +343,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
 
-        // zwischen zu bewegenden Figuren wählen
-        btnFigurSelect = (Button) (findViewById(R.id.Select_Figur));
-        btnFigurSelect.setEnabled(false);
-        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // toDO: Zu setzende Figur auswählen
-                ArrayList<GamePiece> possibleGamePieces = ActualGame.getInstance().getGameLogic().getPossibleToMove();
-                if (bv.getHighlightedGamePiece() == null) {
-                    bv.setHighlightedGamePiece(possibleGamePieces.get(0));
-                    bv.invalidate();
-                } else {
-                    GamePiece gp = bv.getHighlightedGamePiece();
-                    int i = possibleGamePieces.indexOf(gp);
-                    i = (i + 1) % possibleGamePieces.size();
-                    bv.setHighlightedGamePiece(possibleGamePieces.get(i));
-                    bv.invalidate();
-                }
-            }
-        });
-
-
         // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
         btnMoveFigur.setEnabled(false);
+        btnMoveFigur.setVisibility(View.INVISIBLE);
         btnMoveFigur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -444,6 +419,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 			// TODO: implement
 
         } else {
+
             GameLogicClient gameLogicClient = (GameLogicClient) gameLogic;
             gameLogicClient.sendToHost(TAG_REVEAL);
         }
@@ -501,62 +477,66 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
+    boolean sensorOn = true;
     /**
-     * ToDO: Sollte nur aktiviert sein wenn Spieler aktuell spielt.
-     * ToDO: Schummelfunktion sollte bei jedem Spielerwechsel auf false gesetzt werden.
-     * Da auf änderung reagiert, dürfte nicht wenn bevor man am zug ist verdunkelt wird nicht reagiert werden.
+     * The Sensor reactions for shaking the Dice and for Cheating
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        /**
-         * SchüttelSensor: löst Würfeln aus. Nur einmal dann wird shook auf false gesetzt. (nach dem Würfeln wieder auf true)
-         */
+        //If Player == Currentplayer sensor is true and you can shake and cheat.
+        if (sensorOn) {
 
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            //TODo ist das mit shook sinnvoll?! Gibt es bessere lösung
-            if (!shook) {
-                long curTime = System.currentTimeMillis();
-                // only allow one update every 100ms.
-                if ((curTime - lastUpdate) > 100) {
-                    long diffTime = (curTime - lastUpdate);
-                    lastUpdate = curTime;
+            /**
+             * SchüttelSensor: löst Würfeln aus. Nur einmal dann wird shook auf false gesetzt. (nach dem Würfeln wieder auf true)
+             */
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                //Shook wird nach dem würfeln wieder auf false gesetzt. bzw wenn dich der Spieler status ändert geändert.
+                if (!shook) {
+                    long curTime = System.currentTimeMillis();
+                    // only allow one update every 100ms.
+                    if ((curTime - lastUpdate) > 100) {
+                        long diffTime = (curTime - lastUpdate);
+                        lastUpdate = curTime;
 
-                    float x = event.values[0];
-                    float y = event.values[1];
-                    float z = event.values[2];
+                        float x = event.values[0];
+                        float y = event.values[1];
+                        float z = event.values[2];
 
-                    float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
+                        float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
 
-                    if (speed > SHAKE_THRESHOLD) {
-                        shook = true;
-                        Runnable myRunnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                btnWuerfelClicked();
-                            }
-                        };
-                        new Thread(myRunnable).start();
+                        if (speed > SHAKE_THRESHOLD) {
+                            shook = true;
+                            Runnable myRunnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnWuerfelClicked();
+                                }
+                            };
+                            new Thread(myRunnable).start();
+                        }
+
+                        last_x = x;
+                        last_y = y;
+                        last_z = z;
                     }
-
-                    last_x = x;
-                    last_y = y;
-                    last_z = z;
                 }
             }
-        }
 
 
-        /** Für Licht
-         * Reagiert bei änderung wird entsprechender Wert zwischen 0.0 und 40000 angegeben.
-         * wenn schummel funktion ab Dunkel sich einschaltet. Annahme Dunkel ab 1000.
-         */
-        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
-            float Lichtwert = event.values[0];
-            if (Lichtwert <= 10) {
-                //state.setText("Schummeln: " + true);  //Test
-                Schummeln.setPlayerCheating(true);
+            /** Für Licht
+             * Reagiert bei änderung wird entsprechender Wert zwischen 0.0 und 40000 angegeben.
+             * wenn schummel funktion ab Dunkel sich einschaltet. Annahme Dunkel ab 1000.
+             */
+            if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
+                float Lichtwert = event.values[0];
+                if (Lichtwert <= 10) {
+                    //state.setText("Schummeln: " + true);  //Test
+                    Schummeln.setPlayerCheating(true);
+                    Schummeln.informHost(true);
+                }
+
             }
-            //Kein else da nach spieler wechsel allgemein auf false zurückgesetz wird
+
         }
     }
 
@@ -585,7 +565,18 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 			((GameLogicHost) gameLogic).sendToAllClientDevices(TAG_STATUS_MESSAGE + MESSAGE_DELIMITER + status);
     }
 
+    /**
+     * Getting updated with the change auf the player status to currentPlayer.
+     * @param enabled
+     */
+    //Sensors are only used when player == currentPlayer
+    public void setSensorOn(boolean enabled) {
+        sensorOn = enabled;
+    }
     public void setDiceEnabled(boolean enabled){
 		btnWuerfel.setEnabled(enabled);
 	}
+    public void setRevealEnabled(boolean enabled){
+        btnAufdecken.setEnabled(enabled);
+    }
 }
