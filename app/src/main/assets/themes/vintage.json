@@ -6,8 +6,8 @@
   "PlayerColors":{
     "RED": "0xFF0000",
     "BLUE": "0x000000",
-    "GREEN": "0x00FF00",
-    "YELLOW": "0xFFFF00"
+    "GREEN": "0x228B22",
+    "YELLOW": "0xFFB90F"
   }
 
 

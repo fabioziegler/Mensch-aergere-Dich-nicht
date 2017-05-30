@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -292,7 +293,22 @@ public class BoardView extends View {
      * @param canvas
      */
     private void drawBoard(Canvas canvas){
-        setBackgroundColor(theme.getColor("Backgroundcolor"));
+
+        //GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
+        /**
+        String path = "vintage_holz.jpg";
+        Drawable d = null;
+        try {
+            d = Drawable.createFromStream(ActualGame.getInstance().getGameactivity().getAssets().open(path), null);
+        } catch(Exception e) {
+
+        }
+         */
+        // if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC)
+
+            setBackgroundColor(theme.getColor("Backgroundcolor"));
+        //else
+          //  setBackgroundColor();
 
         paint.reset();
         paint.setColor(Color.BLACK);
