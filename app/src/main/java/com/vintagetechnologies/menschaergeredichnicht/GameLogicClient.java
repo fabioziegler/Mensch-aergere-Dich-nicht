@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -110,6 +111,17 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				hostDevice.setName(value);
 
 			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)){
+				//wird vom Host empfangen wenn Spieler aufdeckt?!
+				boolean hasCheated = Boolean.parseBoolean(value);
+				Context context = getActivity().getApplicationContext();
+
+
+				if(hasCheated) {
+					Toast.makeText(context, "Das Schummeln wurde enttarnt, Schummler stetzt nächste Runde aus", Toast.LENGTH_LONG).show();
+				}else{
+					Toast.makeText(context, "Es wurde falsch verdächtigt, verdacht äußernder setzt nächste Runde aus", Toast.LENGTH_LONG).show();
+				}
+
 
 			} else if(TAG_CLIENT_PLAYER_NAME.equals(tag)) {	// if hosts send the name of a client
 
@@ -127,18 +139,29 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				activity.setStatus(value);
 
 			} else if(TAG_CURRENT_PLAYER.equals(tag)) {
+				//Wird das bei Spielerwechsel aufgerufen und an alle geschickt???
 
 				Spieloberflaeche activity = (Spieloberflaeche) getActivity();
 
 				// network id of the players who's turn it is.
 				int currentPlayerID = Integer.parseInt(value);
 
+				//Currentplayer startet bei "null" als nicht Cheater.
+				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
+				currentPlayer.getSchummeln().setPlayerCheating(false); //Damit der Würfel weiß, dass noch nicht geschummelt wurde.
+				currentPlayer.getSchummeln().informHost(false); //Damit der Host auch weiß, dass (noch) nicht geschummelt wurde.
+
 				if(currentPlayerID == getDevices().getPlayer(getGameSettings().getPlayerName()).getId()){
-					activity.setDiceEnabled(true);
+					activity.setDiceEnabled(true); //Würfeln
+					activity.setRevealEnabled(false);  //Aufdecken
+					activity.setSensorOn(true); //Schummeln und Würfeln durch Schütteln
 				} else {
 					activity.setDiceEnabled(false);
+					activity.setRevealEnabled(true);
+					activity.setSensorOn(false);
 				}
 			}
+
 
 		} else {
 			Log.w(TAG, "Received unknown message from host.");

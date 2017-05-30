@@ -174,7 +174,13 @@ public class GameLogic {
 
             } while (dice.getDiceNumber() == DiceNumber.SIX || (attempts > 0 && !moved));
 
+
             currentPlayer = (currentPlayer + 1) % players.length;
+
+            while (players[currentPlayer].hasToSkip()){
+                players[currentPlayer].setHasToSkip(false);
+                currentPlayer = (currentPlayer + 1) % players.length;
+            }
 
 			// sync
 			if(!ActualGame.getInstance().isLocalGame()) {
