@@ -232,21 +232,15 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				boolean hasCheated = Boolean.parseBoolean(value);
 
-				if(hasCheated){
-					// display who has to skip
+				//Jetziger Spieler wird als (nicht) Cheater makiert
+				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
+				currentPlayer.getSchummeln().setPlayerCheating(hasCheated);
 
-					/*
-					Toast.makeText(getActivity().getApplicationContext(),
-							playerName + " hat geschummelt und muss aussetzen!",
-							Toast.LENGTH_LONG).show();
-					*/
-				}
+				//Soll das an alle geschickt werden? Wird nur benötigt zum Aufdecken, also braucht eigentlich nur der Host..
+				//! Wird nur in der Aufdeck methode an alle geschickt!! (um zu verraten ob player gecheated hat oder nicht)
 
-				// TODO: implement
-				// set player cheating/or not
-				//ActualGame.getInstance().getPlayerByName(clientDevice.getName()).getSchummeln().setPlayerCheating(hasCheated);
 
-				// send changes to others
+				//send changes to others
 				//GameSynchronisation.synchronize();
 
 			} else if(TAG_REVEAL.equals(tag)){	// a player clicked "aufdecken"
@@ -254,10 +248,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				// check if current player has cheated!
 				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
 				boolean isCheating = currentPlayer.getSchummeln().isPlayerCheating();
-
-				// send to others if player has cheated, just to display informations
-				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
-
 				currentPlayer.setHasToSkip(isCheating);
 
 				// player who clicked "aufdecken"
@@ -265,13 +255,17 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
 				revealer.setHasToSkip(!isCheating);
 
+                // send to others if player has cheated, just to display informations
+				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
+
+				// CurrentPlayer wurde als Cheater erkannt..kann wieder auf false gesetz werden?! - wenn noch jemand aufdeckt is er selbst schuld und muss aussetzen
+				currentPlayer.getSchummeln().setPlayerCheating(false);
+
 				GameSynchronisation.synchronize();
 
-			}
-
-
-		}else {
+			}else {
 			Log.w(TAG, String.format("Received unknown message '%s' from player '%s'", object, clientDevice.getName()));
+			}
 		}
 	}
 

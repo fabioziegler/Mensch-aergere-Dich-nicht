@@ -27,7 +27,8 @@ public class Player {
 	// if the player has to skip in the next round TODO: implement logic
     private boolean hasToSkip;
 
-
+    //if ture, player clicked during his turn.
+    private boolean clickerAktive;
     /**
      * creates a new Player Object with a specified PlayerColor and player name.
      * This constructor also creates the players GamePieces (fixed number: 4) and sets its other attributes.

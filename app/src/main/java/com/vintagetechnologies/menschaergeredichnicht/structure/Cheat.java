@@ -20,19 +20,20 @@ public class Cheat {
 
     public Cheat (){}
 
+    //Dient nur dem Würfel auf 6 bei Schummeln
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
-        //für Testen ausgelagert und direkt in Spieleroberfläche aufgerufen (ToDo Sinnvoll?)
-        //sendMessageToHost();
     }
 
-    public void informHost(){
+    //wird seperat aufgerufen in Spieleroberfläche wenn geschummelt wird und vom Host wenn neue Runde um wieder auf false zu setzen.
+    //-> Dient nur der Schummeln-Aufdecken funktion.
+    public void informHost(boolean c){
         // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
         boolean isHost = gameLogic.isHost();
 
         if (!isHost){
-			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(true));
+			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(c));
         }
     }
 
