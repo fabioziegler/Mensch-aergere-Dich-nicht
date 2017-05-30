@@ -13,6 +13,7 @@ import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClientActivity;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServerActivity;
+import com.vintagetechnologies.menschaergeredichnicht.view.Manual;
 
 
 public class Hauptmenue extends AppCompatActivity {
@@ -24,10 +25,13 @@ public class Hauptmenue extends AppCompatActivity {
     private Button btnJoinGame;
     private Button btnLocalMultiplayer;
     private ImageButton btnAbout;
+    private Button btnShowManual;
 
     private void btnShowRulesClicked(){
         startActivity(new Intent(Hauptmenue.this, Regeln.class));
     }
+
+    private void btnShowManualClicked() {startActivity(new Intent(Hauptmenue.this, Manual.class));}
 
     private void btnLocalMultiplayerClicked(){
 		ActualGame.reset();	// reset e.g. when a multiplayer game was played before..
@@ -110,6 +114,7 @@ public class Hauptmenue extends AppCompatActivity {
         btnJoinGame = (Button)(findViewById(R.id.btnJoinGame));
         btnLocalMultiplayer = (Button)(findViewById(R.id.btnLocalMultiplayer));
         btnAbout = (ImageButton)(findViewById(R.id.imageButton_about));
+        btnShowManual = (Button)(findViewById(R.id.btnShowManual));
 
         btnShowRules.setOnClickListener(new OnClickListener() {
             @Override
@@ -117,6 +122,12 @@ public class Hauptmenue extends AppCompatActivity {
                 btnShowRulesClicked();
             }
         });
+
+        btnShowManual.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnShowManualClicked();}}
+           );
 
         btnLocalMultiplayer.setOnClickListener(new OnClickListener() {
             @Override

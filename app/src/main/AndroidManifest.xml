@@ -27,6 +27,7 @@
 
         <activity android:name=".Hauptmenue" android:launchMode="singleTask" />
         <activity android:name=".Regeln" android:launchMode="singleTask" />
+        <activity android:name=".view.Manual" android:launchMode="singleTask" />
         <activity android:name=".AboutActivity" android:launchMode="singleTask" />
         <activity android:name=".Spieloberflaeche" android:launchMode="singleTask" android:configChanges="orientation|screenSize" />
 
