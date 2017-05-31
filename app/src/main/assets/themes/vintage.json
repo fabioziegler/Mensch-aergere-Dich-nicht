@@ -2,12 +2,18 @@
 
   "SpotColor": "0xEEEEEE",
   "Backgroundcolor": "0xF4A858",
+  "BackgroundImage": "vintage_holz02",
 
   "PlayerColors":{
     "RED": "0xFF0000",
     "BLUE": "0x000000",
     "GREEN": "0x228B22",
-    "YELLOW": "0xFFB90F"
+    "YELLOW": "0xFFB90F",
+
+    "START_RED": "0xFDA07E",
+    "START_BLUE": "0xB0B0B0",
+    "START_GREEN": "0x93EC94",
+    "START_YELLOW": "0xF9EB7C"
   }
 
 

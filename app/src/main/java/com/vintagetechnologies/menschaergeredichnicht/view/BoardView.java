@@ -1,7 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht.view;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,11 +21,13 @@ import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
 import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.StartingSpot;
@@ -294,23 +300,16 @@ public class BoardView extends View {
      */
     private void drawBoard(Canvas canvas){
 
-        //GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve("GAMESETTINGS");
-        /**
-        String path = "vintage_holz.jpg";
-        Drawable d = null;
-        try {
-            d = Drawable.createFromStream(ActualGame.getInstance().getGameactivity().getAssets().open(path), null);
-        } catch(Exception e) {
-
-        }
-         */
-        // if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC)
-
-            setBackgroundColor(theme.getColor("Backgroundcolor"));
-        //else
-          //  setBackgroundColor();
+        setBackgroundColor(theme.getColor("Backgroundcolor"));
 
         paint.reset();
+        String backgroundImage;
+        if ((backgroundImage = theme.getAttribute("BackgroundImage")) != null){
+            int id = getResources().getIdentifier(backgroundImage, "drawable", getContext().getPackageName());
+            Bitmap vintageBackground = BitmapFactory.decodeResource(getResources(), id);
+            canvas.drawBitmap(vintageBackground, 0, 0, paint);
+        }
+
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(2);
         paint.setStyle(Paint.Style.FILL);
@@ -350,6 +349,11 @@ public class BoardView extends View {
 
             if(spot instanceof RegularSpot) {
                 paint.setColor(theme.getColor("SpotColor"));
+                for (PlayerColor colorP: PlayerColor.values() ){
+                    if(Board.getEntrance(colorP) == spot){
+                        paint.setColor(theme.getColor("START_"+colorP.toString()));
+                    }
+                }
             }else if(spot instanceof EndSpot || spot instanceof  StartingSpot){
                 paint.setColor(theme.getColor(((Colorful) spot).getColor().toString()));
                 /*

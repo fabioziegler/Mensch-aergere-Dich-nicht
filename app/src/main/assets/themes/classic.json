@@ -7,7 +7,12 @@
     "RED": "0xFF0000",
     "BLUE": "0x0000FF",
     "GREEN": "0x00CD00",
-    "YELLOW": "0xFFFF00"
+    "YELLOW": "0xFFFF00",
+
+    "START_RED": "0xFDA07E",
+    "START_BLUE": "0x6697EA",
+    "START_GREEN": "0x93EC94",
+    "START_YELLOW": "0xF9EB7C"
   }
 
 
