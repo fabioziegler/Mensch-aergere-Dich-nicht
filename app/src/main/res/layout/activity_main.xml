@@ -33,6 +33,7 @@
         android:inputType="textPersonName"
         android:maxLength="20"
         android:textColor="@android:color/white"
+        android:textColorLink="@android:color/white"
         app:layout_constraintLeft_toLeftOf="@+id/TextView_titel"
         app:layout_constraintTop_toBottomOf="@+id/TextView_titel"
         tools:ignore="RtlHardcoded" />

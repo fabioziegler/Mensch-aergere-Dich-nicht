@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/Background_Layout"
     tools:context="com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClientActivity">
 
 
@@ -11,25 +12,26 @@
         android:id="@+id/lblTitleJoin"
         android:layout_width="327dp"
         android:layout_height="75dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="25dp"
+        android:layout_marginTop="45dp"
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="center"
         android:text="@string/strJoinTitle"
         android:textAlignment="center"
         android:textAllCaps="false"
+        android:textColor="@android:color/white"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:ignore="RtlHardcoded"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="45dp"
-        app:layout_constraintHorizontal_bias="0.195"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintHorizontal_bias="0.195"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="RtlHardcoded" />
 
     <ListView
         android:id="@+id/listViewHosts"
@@ -52,6 +54,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="TextView"
+        android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="visible"
@@ -61,7 +64,7 @@
         app:layout_constraintRight_toLeftOf="@+id/pbLoading"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.993"
-        tools:text="@string/msgSearchingGameHost"/>
+        tools:text="@string/msgSearchingGameHost" />
 
     <ProgressBar
         android:id="@+id/pbLoading"
@@ -75,7 +78,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/lblSelectHostFromList"
@@ -84,11 +87,12 @@
         android:layout_marginBottom="0dp"
         android:layout_marginLeft="0dp"
         android:textAllCaps="true"
+        android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold|italic"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/listViewHosts"
         app:layout_constraintLeft_toLeftOf="@+id/listViewHosts"
-        tools:text="@string/strSelectGameFromList"/>
+        tools:text="@string/strSelectGameFromList" />
 
 </android.support.constraint.ConstraintLayout>
