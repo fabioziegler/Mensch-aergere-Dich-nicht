@@ -19,4 +19,6 @@ public abstract class Game {
 
     public abstract GameLogic getGameLogic();
 
+    public abstract void regularGameStarted();
+
 }

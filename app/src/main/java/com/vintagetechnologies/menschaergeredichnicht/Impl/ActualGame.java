@@ -341,6 +341,11 @@ public class ActualGame extends Game {
         return gameLogic;
     }
 
+    @Override
+    public void regularGameStarted() {
+        Log.i("Game", "Starting regular game.");
+    }
+
     public void setGameLogic(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
     }

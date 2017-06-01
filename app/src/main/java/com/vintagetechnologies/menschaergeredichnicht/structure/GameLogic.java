@@ -10,6 +10,8 @@ import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchr
 
 import java.util.ArrayList;
 
+import javax.xml.parsers.SAXParser;
+
 /**
  * Created by johannesholzl on 06.05.17.
  */
@@ -85,7 +87,7 @@ public class GameLogic {
         currentPlayer = bestPlayer;
         dice.emptyBlacklist();
 
-		Log.i("Game", "Starting regular game.");
+        game.regularGameStarted();
 		regularGame();
     }
 
@@ -177,7 +179,7 @@ public class GameLogic {
             currentPlayer = (currentPlayer + 1) % players.length;
 
 			// sync
-			if(!ActualGame.getInstance().isLocalGame()) {
+			if(game instanceof ActualGame && !ActualGame.getInstance().isLocalGame()) {
 				com.vintagetechnologies.menschaergeredichnicht.GameLogic gameLogic = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
 				if(gameLogic.isHost())	// check not needed, because only the host runs the game
 					GameSynchronisation.synchronize();
