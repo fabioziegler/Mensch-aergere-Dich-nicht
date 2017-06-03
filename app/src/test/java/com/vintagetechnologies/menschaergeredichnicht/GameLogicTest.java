@@ -182,7 +182,7 @@ public class GameLogicTest {
      */
 
     @Test
-    public void testEinwürfeln(){
+    public void testEinwuerfeln(){
         Board.resetBoard();
 
 
