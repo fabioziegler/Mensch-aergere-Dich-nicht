@@ -82,6 +82,24 @@ public class Network {
 
 
 	/**
+	 * Indicates that a player has to choose which gamepiece he wants to move.
+	 */
+	public static final String TAG_WAIT_FOR_MOVE = "wait_for_move";
+
+
+	/**
+	 * Used to show a toast on the clients.
+	 */
+	public static final String TAG_TOAST = "toast";
+
+
+	/**
+	 * Indicates that a client player has chosen a gamepiece to move.
+	 */
+	public static final String TAG_MOVE_PIECE = "move_piece";
+
+
+	/**
 	 * Register classes that will be send.
 	 * @param kryo
 	 */
@@ -140,7 +158,7 @@ public class Network {
 	public static final String DATAHOLDER_GAMELOGIC = "GAMELOGIC";
 	public static final String DATAHOLDER_GAMESETTINGS = "GAMESETTINGS";
 
-	public static final int WRITE_BUFFER_SIZE = 1000 * 1000 * 10;
-	public static final int OBJECT_BUFFER_SIZE = 1000 * 1000 * 10;
+	public static final int WRITE_BUFFER_SIZE = 1000 * 100;
+	public static final int OBJECT_BUFFER_SIZE = 1000 * 100;
 
 }

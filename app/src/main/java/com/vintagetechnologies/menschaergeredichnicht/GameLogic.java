@@ -131,13 +131,13 @@ public abstract class GameLogic {
 	/**
 	 *  Associates each player with the corresponding network connection ID.
 	 */
-	public void setupNetworkIDs(){
+	public void generateUniqueIds(){
 		Player[] players = ActualGame.getInstance().getGameLogic().getPlayers();
 
 		for(int i = 0; i < players.length; i++){
 			Player player = players[i];
 			Device device = getDevices().getPlayer(player.getName());
-			player.setNetworkId(device.getId());
+			player.setUniqueId(device.getId());
 		}
 	}
 }

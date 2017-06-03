@@ -147,7 +147,10 @@ public class MyClient {
 					hostAddress = client.discoverHost(54777, discoverTimeout);
 
 					// sleep 0.5s
-					try { Thread.sleep(500); } catch (InterruptedException e) { Log.e(TAG, "Thread exception.", e); }
+					try { Thread.sleep(500); } catch (InterruptedException e) {
+						Log.e(TAG, "Thread exception.", e);
+						Thread.currentThread().interrupt();
+					}
 
 				}while (hostAddress == null);
 

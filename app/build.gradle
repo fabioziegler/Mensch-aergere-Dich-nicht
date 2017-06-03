@@ -41,9 +41,6 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.json:json:20160810'
-
-
-
 }
 
 

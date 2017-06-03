@@ -3,6 +3,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -13,6 +14,7 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServer;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
@@ -22,11 +24,11 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_CLIENT_PLAYER_NAME;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_MOVE_PIECE;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_START_GAME;
-import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_STATUS_MESSAGE;
 
 /**
  * Created by Fabio on 04.05.17.
@@ -120,11 +122,11 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 	/**
 	 * Sends a message to a player.
-	 * @param device The device of the player.
+	 * @param playerName The name of the player.
 	 * @param message The message to be sent.
 	 */
-	public void sendMessageToClient(Device device, Object message){
-		sendMessageToClient(device.getId(), message);
+	public void sendMessageToClient(String playerName, Object message){
+		sendMessageToClient(getDevices().getPlayer(playerName).getId(), message);
 	}
 
 
@@ -201,20 +203,27 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		// execute message based on tag
 		if (object instanceof Player) {
 
-			Log.i(TAG, "Received player object.");
+			// this is called when the client had to choose which figure to move...
+			// the moved figure is sent to host, which sends it to all other clients
 
 			Player player = (Player) object;
 			ActualGame.refreshPlayer(player);    // replace current game class with new one
 
 			GameSynchronisation.synchronize();
 
-		} else if(object instanceof DiceNumber){
+		} else if(object instanceof DiceNumber) {
 
 			// client hat gewuerfelt
 			synchronized (RealDice.get()) {
 				RealDice.get().setDiceNumber((DiceNumber) object);
 				RealDice.get().notify();
 			}
+
+		} else if(object instanceof GamePiece){
+
+			GamePiece gamePiece = (GamePiece) object;
+			ActualGame.getInstance().getBoardView().setHighlightedGamePiece(gamePiece);
+			ActualGame.getInstance().getBoardView().invalidate();
 
 		} else if(object instanceof String) {	// string message
 
@@ -230,42 +239,67 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)) {
 
-				boolean hasCheated = Boolean.parseBoolean(value);
+				boolean hasCheated = Boolean.parseBoolean(value);	// is always true at that stage..
 
-				//Jetziger Spieler wird als (nicht) Cheater makiert
-				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
-				currentPlayer.getSchummeln().setPlayerCheating(hasCheated);
+				if(hasCheated){
+					// display who has to skip
 
-				//Soll das an alle geschickt werden? Wird nur benötigt zum Aufdecken, also braucht eigentlich nur der Host..
-				//! Wird nur in der Aufdeck methode an alle geschickt!! (um zu verraten ob player gecheated hat oder nicht)
+					/*
+					Toast.makeText(getActivity().getApplicationContext(),
+							playerName + " hat geschummelt und muss aussetzen!",
+							Toast.LENGTH_LONG).show();
+					*/
+				}
 
+				// TODO: implement, is implemented?
+				// set player cheating/or not
+				ActualGame.getInstance().getGameLogic().getPlayerByName(clientDevice.getName()).getSchummeln().setPlayerCheating(hasCheated);
 
-				//send changes to others
-				//GameSynchronisation.synchronize();
+				// send status update to others
+				GameSynchronisation.synchronize();
 
 			} else if(TAG_REVEAL.equals(tag)){	// a player clicked "aufdecken"
 
 				// check if current player has cheated!
 				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
 				boolean isCheating = currentPlayer.getSchummeln().isPlayerCheating();
+
+				// send to others if player has cheated, just to display informations
+				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
+
 				currentPlayer.setHasToSkip(isCheating);
+				currentPlayer.getSchummeln().setPlayerCheating(false);
 
 				// player who clicked "aufdecken"
 				String revealerName = getDevices().getDevice(connection).getName();
-				Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
-				revealer.setHasToSkip(!isCheating);
-
-                // send to others if player has cheated, just to display informations
-				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
-
-				// CurrentPlayer wurde als Cheater erkannt..kann wieder auf false gesetz werden?! - wenn noch jemand aufdeckt is er selbst schuld und muss aussetzen
-				currentPlayer.getSchummeln().setPlayerCheating(false);
+				Player playerWhoRevealed = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
+				playerWhoRevealed.setHasToSkip(!isCheating);
 
 				GameSynchronisation.synchronize();
 
-			}else {
-			Log.w(TAG, String.format("Received unknown message '%s' from player '%s'", object, clientDevice.getName()));
+				// send toast
+				String message = currentPlayer.getName() + " hat gecheated & muss aussetzen!";
+				GameSynchronisation.sendToast(message);
+
+			} else if(TAG_MOVE_PIECE.equals(tag)) {
+
+				int number = Integer.parseInt(value);
+
+				synchronized (RealDice.get()) {
+					RealDice.get().getDiceNumber().setNumber(number);
+					RealDice.get().notify();
+				}
+
+				Button btnMoveFigur = ((Spieloberflaeche) getActivity()).btnMoveFigur;
+				btnMoveFigur.callOnClick();
+
+				ActualGame.getInstance().getBoardView().invalidate();
+
 			}
+
+
+		}else {
+			Log.w(TAG, String.format("Received unknown message '%s' from player '%s'", object, clientDevice.getName()));
 		}
 	}
 

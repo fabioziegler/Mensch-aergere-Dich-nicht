@@ -3,9 +3,11 @@ package com.vintagetechnologies.menschaergeredichnicht.Impl;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.R;
@@ -69,6 +71,9 @@ public class ActualGame extends Game {
         // TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
 
 		if(!((com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC)).hasGameStarted())
+			return;
+
+		if(!getInstance().isInitialized())
 			return;
 
 		String name = player.getName();
@@ -208,14 +213,45 @@ public class ActualGame extends Game {
     public void whomsTurn(Player p) {
         printInfo(p.getName() + " ist dran!");
 
+		GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
+
+		if(!p.getName().equals(gameSettings.getPlayerName())){
+			// enable buttons
+			final ImageButton btnWuerfel = (ImageButton) (gameactivity.findViewById(R.id.imageButton_wuerfel));
+
+			gameactivity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					bv.invalidate();
+					btnWuerfel.setEnabled(false);
+				}
+			});
+		}
     }
 
     @Override
     public void waitForMovePiece() {
 
+		com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, com.vintagetechnologies.menschaergeredichnicht.GameLogic.class);
+		GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
+
+		// check if we are in multiplayer game and it's a client's turn - then inform the client that he should choose which game piece to move.
+		if(!isLocalGame() && gl.isHost() && !getGameLogic().getCurrentPlayer().getName().equals(gameSettings.getPlayerName())){
+
+			GameLogicHost gameLogicHost = (GameLogicHost) gl;
+
+			gameLogicHost.sendMessageToClient(getGameLogic().getCurrentPlayer().getName(), Network.TAG_WAIT_FOR_MOVE);
+
+			_waitForMove();
+
+			return;
+		}
+
         this.bv.setHighlightedGamePiece(this.gameLogic.getPossibleToMove().get(0));
 
 
+		// enable buttons
+        //final Button btnFigurSelect = (Button) (gameactivity.findViewById(R.id.Select_Figur));
         final Button btnMoveFigur = (Button) (gameactivity.findViewById(R.id.Move_Figur));
 
         gameactivity.runOnUiThread(new Runnable() {
@@ -226,16 +262,57 @@ public class ActualGame extends Game {
                 btnMoveFigur.setVisibility(View.VISIBLE);
             }
         });
-        synchronized (this) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
 
-                Thread.currentThread().interrupt();
+        _waitForMove();
+
+		// send result to host?
+		if(!isLocalGame() && !gl.isHost()){	// send Player (with Gamepieces) to host
+			getGameLogic()._movePiece();
+			//GameLogicClient gameLogicClient = (GameLogicClient) gl;
+			//Player me = getGameLogic().getPlayerByName(gameSettings.getPlayerName());
+			//gameLogicClient.sendToHost(me);
+		}
+
+        // disable buttons
+        gameactivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //btnFigurSelect.setEnabled(false);
+                btnMoveFigur.setEnabled(false);
             }
-        }
+        });
+    }
 
+
+	/**
+	 * Let thread wait.
+	 */
+	private void _waitForMove(){
+
+		com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, com.vintagetechnologies.menschaergeredichnicht.GameLogic.class);
+
+		if(isLocalGame() || gl.isHost()) {
+			synchronized (this) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
+					Thread.currentThread().interrupt();
+				}
+			}
+		} else {
+
+			Thread clientPlayThread = getGameLogic().getClientPlayThread();
+			synchronized (clientPlayThread){
+				try {
+					clientPlayThread.wait();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
+
+      /*
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -243,6 +320,7 @@ public class ActualGame extends Game {
                 btnMoveFigur.setVisibility(View.INVISIBLE);
             }
         });
+	*/
     }
 
     public void setLocalGame(boolean isLocalGame) {
@@ -355,5 +433,9 @@ public class ActualGame extends Game {
 	 */
 	public static void reset(){
 		actualGameInstance = new ActualGame();
+	}
+
+	public boolean isInitialized(){
+		return initialized;
 	}
 }

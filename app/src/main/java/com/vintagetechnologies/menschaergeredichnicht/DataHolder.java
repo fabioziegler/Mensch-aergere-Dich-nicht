@@ -53,6 +53,21 @@ public class DataHolder {
 		return data.get(id);
     }
 
+
+	/**
+	 * Retrieve an object from the global data holder.
+	 * @param id A String referencing the object
+	 * @param type The class that should be casted to.
+	 * @return The object saved for by the given id, casted to the given class or null if the object does not exist.
+	 */
+    public <T> T retrieve(String id, Class<T> type){
+		Object o = retrieve(id);
+		if(o != null)
+			return type.cast(retrieve(id));
+		else
+			return null;
+	}
+
     /**
      * Get the instance of the global data holder
      * @return
