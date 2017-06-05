@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -80,6 +81,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private Dice dice;
 
     private int[] diceImages;
+
 
     // für Zufallszahlen
     private Random rand;
@@ -330,15 +332,18 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         RealDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
-
+        //DiceSound imitating dice roll.
+        final MediaPlayer diceSound = MediaPlayer.create(getApplicationContext(), R.raw.dice2);
 
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                diceSound.start();
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
                         btnWuerfelClicked();
+
                     }
                 };
                 new Thread(myRunnable).start();
