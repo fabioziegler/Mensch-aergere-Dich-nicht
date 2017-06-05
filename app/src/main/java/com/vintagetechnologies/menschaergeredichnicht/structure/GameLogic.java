@@ -1,11 +1,14 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
+import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
+import com.vintagetechnologies.menschaergeredichnicht.R;
+import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
@@ -247,12 +250,14 @@ public class GameLogic {
      * @param gp
      * @return
      */
+    //ToDO Sound einfügen final MediaPlayer moveSound = MediaPlayer.create(this.Spieloberflaeche, R.raw.dice2);
     private boolean movePiece(GamePiece gp) {
 
         Spot s = Board.checkSpot(dice.getDiceNumber(), gp);
 
         if (s != null) {
             gp.moveTo(s);
+            // TODO: 05.06.2017 moveSound.start();
             return true;
         }
 

@@ -338,6 +338,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //ToDo:Music enabled if Music is enabled
                 diceSound.start();
                 Runnable myRunnable = new Runnable() {
                     @Override
@@ -388,16 +389,21 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 		*/
 
+        final MediaPlayer moveSound = MediaPlayer.create(getApplicationContext(), R.raw.click);
 
         // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
         btnMoveFigur.setEnabled(false);
         btnMoveFigur.setVisibility(View.INVISIBLE);
+
+        //!!ToDO: Fehlerbeheben: nach auswahl kann nur mit schütteln weiter gewürfelt werden..
         btnMoveFigur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
 
+                //sound für setzen einer figur
+                moveSound.start();
                 ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
                 bv.setHighlightedGamePiece(null);
                 //btnWuerfel.setEnabled(true);	// TODO: remove? (multiplayer)
