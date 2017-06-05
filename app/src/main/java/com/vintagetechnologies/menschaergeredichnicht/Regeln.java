@@ -15,25 +15,25 @@ import java.io.File;
 /**
  * Created by Simon on 21.04.2017.
  */
-
 public class Regeln extends AppCompatActivity {
 
-    private WebView webView;
+	private WebView webView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);
 
 
-        setContentView(R.layout.activity_spielregeln);
+		setContentView(R.layout.activity_spielregeln);
 
-        webView = (WebView)(findViewById(R.id.Regeln_WV));
+		webView = (WebView)(findViewById(R.id.Regeln_WV));
 
 		optimizeWebView(webView);
 
-        webView.loadUrl("file:///android_asset/regeln.html");
-    }
+		webView.loadUrl("file:///android_asset/regeln.html");
+	}
+
 
 
 	/**

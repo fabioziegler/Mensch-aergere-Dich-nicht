@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
@@ -10,6 +11,8 @@ import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,9 +21,11 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+
 /**
  * Created by johannesholzl on 06.05.17.
  */
+
 
 public class GameLogicTest {
 
@@ -39,6 +44,7 @@ public class GameLogicTest {
 
         private GameLogic gameLogic;
 
+        private TestDice td = new TestDice();
 
         public TestGame(){
             this.gameLogic = new GameLogic();
@@ -46,7 +52,7 @@ public class GameLogicTest {
 
         @Override
         public void init(String... names) {
-            this.gameLogic.init(td, this, names);
+            this.gameLogic.init(this.td, this, names);
         }
 
         @Override
@@ -86,12 +92,25 @@ public class GameLogicTest {
         public GameLogic getGameLogic() {
             return this.gameLogic;
         }
+
+        @Override
+        public void regularGameStarted() {
+
+        }
+
+        public TestDice getTd() {
+            return td;
+        }
+
+        public void setTd(TestDice td) {
+            this.td = td;
+        }
     }
 
     private class TestDice extends DiceImpl {
 
         public TestDice(){
-
+            this.diceNumber = DiceNumber.ONE;
         }
 
         @Override
@@ -157,5 +176,39 @@ public class GameLogicTest {
             assertEquals(tg.getGameLogic().getPlayers()[i], tg.getGameLogic().getPlayerByName(names[i]));
         }
     }
+
+    /**
+     * testet Richtigkeit beim Einwürfeln
+     */
+
+    @Test
+    public void testEinwuerfeln(){
+        Board.resetBoard();
+
+
+
+        TestGame tg = new TestGame(){
+            @Override
+            public void whomsTurn(Player p){
+                assertEquals(names[3], p.getName());
+                this.getGameLogic().setPlaying(false);
+            }
+        };
+        tg.setTd(new TestDice(){
+            @Override
+            public void waitForRoll() {
+                int dice  = (this.diceNumber.getNumber() )% DiceNumber.values().length;
+                this.diceNumber =  DiceNumber.values()[dice];
+            }
+        });
+        tg.init(names[0],names[1],names[2],names[3]);
+        try {
+            tg.play();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 }

@@ -22,8 +22,9 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_CURRENT_PLAYER;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_NAME;
-import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_STATUS_MESSAGE;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_TOAST;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_WAIT_FOR_MOVE;
 
 /**
  * Created by Fabio on 04.05.17.
@@ -86,13 +87,13 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 	@Override
 	protected void parseMessage(Connection connection, Object object) {
 
+		//if(!hasGameStarted()) return;
+
 		if(object instanceof Player) {	// client received game update
 
 			Player player = (Player) object;
 
 			ActualGame.refreshPlayer(player);
-
-			setupNetworkIDs();	// TODO: call only once
 
 		} else if (object instanceof  GameSettings) {
 
@@ -104,13 +105,19 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 			String[] data = ((String) object).split(MESSAGE_DELIMITER);
 			String tag = data[0];
-			String value = data[1];
+			String value = null;
+
+			try{
+				value = data[1];
+			} catch (Exception e){
+				Log.e(TAG, "Error", e);
+			}
 
 			if(TAG_PLAYER_NAME.equals(tag)){	// when receiving the name of the host
 
 				hostDevice.setName(value);
 
-			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)){
+			} else if(TAG_PLAYER_HAS_CHEATED.equals(tag)) {
 				//wird vom Host empfangen wenn Spieler aufdeckt?!
 				boolean hasCheated = Boolean.parseBoolean(value);
 				Context context = getActivity().getApplicationContext();
@@ -123,35 +130,52 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				}
 
 
+				// TODO: not needed: (delete)
+
+				/*
+				// if the remote player cheated
+				boolean hasCheated = Boolean.valueOf(value);
+
+				if(hasCheated){
+					Toast.makeText(getActivity().getApplicationContext(), , Toast.LENGTH_LONG).show();
+				}
+				*/
+			} else if(TAG_TOAST.equals(tag)) {	// show a toast
+
+				String message = value;
+				Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
 			} else if(TAG_CLIENT_PLAYER_NAME.equals(tag)) {	// if hosts send the name of a client
 
 				DeviceList deviceList = getDevices();
-				String[] playerData = value.split(MESSAGE_DELIMITER);
 				String deviceName = data[1];
 				int id = Integer.parseInt(data[2]);
 
 				if(!deviceList.contains(deviceName))
 					deviceList.add(new Device(id, deviceName, false));
 
+				deviceList.getPlayer(deviceName).setId(id);
+
 			} else if(TAG_STATUS_MESSAGE.equals(tag)){
 
-				Spieloberflaeche activity = (Spieloberflaeche) getActivity();
-				activity.setStatus(value);
+				if(hasGameStarted()) {
+					Spieloberflaeche activity = (Spieloberflaeche) getActivity();
+					activity.setStatus(value);
+				}
 
 			} else if(TAG_CURRENT_PLAYER.equals(tag)) {
-				//Wird das bei Spielerwechsel aufgerufen und an alle geschickt???
 
 				Spieloberflaeche activity = (Spieloberflaeche) getActivity();
 
 				// network id of the players who's turn it is.
-				int currentPlayerID = Integer.parseInt(value);
+				String currentPlayerName = value;
 
 				//Currentplayer startet bei "null" als nicht Cheater.
 				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
 				currentPlayer.getSchummeln().setPlayerCheating(false); //Damit der Würfel weiß, dass noch nicht geschummelt wurde.
 				currentPlayer.getSchummeln().informHost(false); //Damit der Host auch weiß, dass (noch) nicht geschummelt wurde.
 
-				if(currentPlayerID == getDevices().getPlayer(getGameSettings().getPlayerName()).getId()){
+				if(currentPlayerName.equals(getGameSettings().getPlayerName())){
 					activity.setDiceEnabled(true); //Würfeln
 					activity.setRevealEnabled(false);  //Aufdecken
 					activity.setSensorOn(true); //Schummeln und Würfeln durch Schütteln
@@ -160,8 +184,25 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 					activity.setRevealEnabled(true);
 					activity.setSensorOn(false);
 				}
-			}
 
+			} else if(TAG_WAIT_FOR_MOVE.equals(tag)){
+
+				Thread thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// wait for move piece
+						ActualGame.getInstance().getGameLogic()._findPossibleToMove();
+						ActualGame.getInstance().waitForMovePiece();
+
+						// send changed to host
+						//Player me = ActualGame.getInstance().getGameLogic().getPlayerByName(getGameSettings().getPlayerName());
+						//sendToHost(me);
+					}
+				}, "PlayThread");
+				ActualGame.getInstance().getGameLogic().setClientPlayThread(thread);
+				thread.start();
+
+			}
 
 		} else {
 			Log.w(TAG, "Received unknown message from host.");
@@ -171,11 +212,11 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
 	@Override
 	public void startGame() {
-		setGameStarted(true);
-
 		// show main menu
 		Intent intent = new Intent(getActivity(), Spieloberflaeche.class);
 		getActivity().startActivity(intent);
+
+		setGameStarted(true);
 	}
 
 	@Override

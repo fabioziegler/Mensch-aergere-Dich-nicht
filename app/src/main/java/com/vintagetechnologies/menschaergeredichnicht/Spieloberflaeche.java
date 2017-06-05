@@ -22,6 +22,7 @@ import android.widget.ImageView;
 
 import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
@@ -38,6 +39,7 @@ import android.widget.Toast;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
@@ -68,7 +70,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private Cheat Schummeln;
 
     private Button btnFigurSelect;
-    private Button btnMoveFigur;
+    public Button btnMoveFigur;
 
     private ImageButton btnAufdecken;
     private ImageButton btnWuerfel;
@@ -283,12 +285,13 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 			ActualGame.getInstance().init(gameLogic.getDevices().getPlayerNames());
 
 			if(gameLogic.isHost()) {
+				gameLogic.generateUniqueIds();
 				GameSynchronisation.synchronize();    // sync for the first time (e.g. after player were setup)
-				gameLogic.setupNetworkIDs();
+			} else {
+				gameLogic.generateUniqueIds();
 			}
 
 		} else {	// local game:
-
 			ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 		}
 
@@ -343,6 +346,44 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
 
+        // zwischen zu bewegenden Figuren wählen
+		/*
+        btnFigurSelect = (Button) (findViewById(R.id.Select_Figur));
+        btnFigurSelect.setEnabled(false);
+        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+				gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
+
+                // Zu setzende Figur auswählen
+                ArrayList<GamePiece> possibleGamePieces = ActualGame.getInstance().getGameLogic().getPossibleToMove();
+
+                if (bv.getHighlightedGamePiece() == null) {
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(0));
+                    bv.invalidate();
+
+					if(!ActualGame.getInstance().isLocalGame() && !gameLogic.isHost()){	// am I client in mp game?
+						((GameLogicClient)gameLogic).sendToHost(possibleGamePieces.get(0));
+					}
+
+                } else {
+
+                    GamePiece gp = bv.getHighlightedGamePiece();
+                    int i = possibleGamePieces.indexOf(gp);
+                    i = (i + 1) % possibleGamePieces.size();
+                    bv.setHighlightedGamePiece(possibleGamePieces.get(i));
+                    bv.invalidate();
+
+					if(!ActualGame.getInstance().isLocalGame() && !gameLogic.isHost()){	// am I client in mp game?
+						((GameLogicClient)gameLogic).sendToHost(possibleGamePieces.get(i));
+					}
+                }
+            }
+        });
+		*/
+
+
         // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
         btnMoveFigur.setEnabled(false);
@@ -354,16 +395,41 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
                 ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
                 bv.setHighlightedGamePiece(null);
-                btnWuerfel.setEnabled(true);
+                //btnWuerfel.setEnabled(true);	// TODO: remove? (multiplayer)
 
                 RealDice.get();
 
                 RealDice.setDiceButton(btnWuerfel);
                 imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
-                synchronized (ActualGame.getInstance()) {
-                    ActualGame.getInstance().notify();
-                }
+				if(ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {	// host or local game:
+					synchronized (ActualGame.getInstance()) {
+						ActualGame.getInstance().notify();
+					}
+				} else {	// client in mp game:
+
+					((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + RealDice.get().getDiceNumber().getNumber());
+
+					/*
+					Thread clientPlayThread = ActualGame.getInstance().getGameLogic().getClientPlayThread();
+
+					// move piece manually instead using the regularGame() routine, which is only called on the host device
+
+					synchronized (clientPlayThread) {
+						// notify own client thread
+						clientPlayThread.notify();
+					}
+
+					ActualGame.getInstance().getGameLogic()._movePiece();
+
+					Player me = ActualGame.getInstance().getGameLogic().getPlayerByName(gameSettings.getPlayerName());
+					((GameLogicClient)gameLogic).sendToHost(me);
+					((GameLogicClient)gameLogic).sendToHost(RealDice.get().getDiceNumber());
+
+					ActualGame.getInstance().refreshView();
+					*/
+				}
+
             }
         });
 
@@ -411,6 +477,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 		diceImages[4] = R.drawable.dice5;
 		diceImages[5] = R.drawable.dice6;
 	}
+
 
     private void btnAufdeckenClicked() {
 
@@ -529,7 +596,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
              */
             if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
                 float Lichtwert = event.values[0];
-                if (Lichtwert <= 10) {
+                if (Lichtwert <= 2) {
                     //state.setText("Schummeln: " + true);  //Test
                     Schummeln.setPlayerCheating(true);
                     Schummeln.informHost(true);
@@ -561,8 +628,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 		if(ActualGame.getInstance().isLocalGame())
 			return;
 
-		if(gameLogic.isHost())
-			((GameLogicHost) gameLogic).sendToAllClientDevices(TAG_STATUS_MESSAGE + MESSAGE_DELIMITER + status);
+		if(gameLogic.isHost()) {	// is anyway always host?
+			GameLogicHost gameLogicHost = (GameLogicHost) gameLogic;
+			gameLogicHost.sendToAllClientDevices(TAG_STATUS_MESSAGE + MESSAGE_DELIMITER + status);
+			GameSynchronisation.nextRound();
+		}
     }
 
     /**

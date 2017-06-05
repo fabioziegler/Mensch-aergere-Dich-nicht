@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/Background_Layout"
     tools:context="com.vintagetechnologies.menschaergeredichnicht.MainActivity">
 
     <TextView
@@ -15,6 +16,7 @@
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="center"
         android:text="@string/TXTlable"
+        android:textColor="@android:color/white"
         android:textSize="45sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,13 +26,15 @@
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="@string/TXTnameneingabe"
-        android:maxLength="20"
         android:layout_marginLeft="0dp"
-        app:layout_constraintLeft_toLeftOf="@+id/TextView_titel"
         android:layout_marginTop="60dp"
+        android:ems="10"
+        android:hint="@string/TXTnameneingabe"
+        android:inputType="textPersonName"
+        android:maxLength="20"
+        android:textColor="@android:color/white"
+        android:textColorLink="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="@+id/TextView_titel"
         app:layout_constraintTop_toBottomOf="@+id/TextView_titel"
         tools:ignore="RtlHardcoded" />
 

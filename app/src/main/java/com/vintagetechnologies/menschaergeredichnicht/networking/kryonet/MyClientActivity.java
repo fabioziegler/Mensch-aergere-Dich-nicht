@@ -80,7 +80,7 @@ public class MyClientActivity extends AppCompatActivity implements NetworkListen
 
 	@Override
 	public void onReceived(Connection connection, Object object) {
-		if(!(object instanceof String) || object == null)
+		if(object == null || !(object instanceof String))
 			return;
 
 		String message = (String) object;

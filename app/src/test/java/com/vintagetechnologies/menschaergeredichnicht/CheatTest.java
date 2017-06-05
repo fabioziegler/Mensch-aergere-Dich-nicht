@@ -1,5 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
@@ -35,8 +36,9 @@ public class CheatTest {
 
     @Test
     public void testCheatSetting(){
+		ActualGame.getInstance().setLocalGame(true);
         schummeln.setPlayerCheating(true);
-        assertEquals(true,schummeln.isPlayerCheating());
+        assertEquals(true, schummeln.isPlayerCheating());
     }
 
     /*

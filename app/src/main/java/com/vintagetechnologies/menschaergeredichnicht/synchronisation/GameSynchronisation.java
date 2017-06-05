@@ -1,5 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
@@ -23,48 +25,37 @@ public class GameSynchronisation {
      * Synchronizes game data from the host with clients.
      */
     public static void synchronize(){
-
-		com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic gameLogic = ActualGame.getInstance().getGameLogic();
-
 		/* send player objects */
-        Player[] players = gameLogic.getPlayers();
+        Player[] players = ActualGame.getInstance().getGameLogic().getPlayers();
 
-        for (Player player : players) {
+        for (Player player : players)
             send(player);
-        }
-
-        /* send current player id (=network id) */
-        int currentPlayerNetworkId = gameLogic.getCurrentPlayer().getUniqueId();
-        send(Network.TAG_CURRENT_PLAYER + Network.MESSAGE_DELIMITER + String.valueOf(currentPlayerNetworkId));
     }
 
 
-    /**
-     * Umwandeln von ActualGame Objekt in String
-     * @param game
-     * @return
-     */
-    private static String encode(ActualGame game){
-        Gson gson = new Gson();
+	/**
+	 * Informs all players who's turn it is.
+	 */
+	public static void nextRound(){
 
-        String json = gson.toJson(game);
+		/* send current player name */
+		String currentPlayerName = ActualGame.getInstance().getGameLogic().getCurrentPlayer().getName();
 
-        return json;
-    }
+		send(Network.TAG_CURRENT_PLAYER + Network.MESSAGE_DELIMITER + String.valueOf(currentPlayerName));
+	}
 
 
-    /**
-     * Rückumwandlung von String in ActualGame-Objekt
-     * @param fromJson
-     * @return
-     */
-    public static ActualGame decode(String fromJson){
-        Gson gson = new Gson();
 
-        ActualGame game = gson.fromJson(fromJson, ActualGame.class);
+	public static void sendToast(String message){
 
-        return game;
-    }
+		GameLogic gameLogicHost = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, GameLogicHost.class);
+
+		// send to clients
+		send(Network.TAG_TOAST + Network.MESSAGE_DELIMITER + message);
+
+		// finally, show toast on host device too:
+		Toast.makeText(gameLogicHost.getActivity().getApplicationContext(), message, Toast.LENGTH_LONG);
+	}
 
 
     /**
@@ -85,4 +76,31 @@ public class GameSynchronisation {
 		}
     }
 
+
+	/**
+	 * Umwandeln von ActualGame Objekt in String
+	 * @param game
+	 * @return
+	 */
+	private static String encode(ActualGame game){
+		Gson gson = new Gson();
+
+		String json = gson.toJson(game);
+
+		return json;
+	}
+
+
+	/**
+	 * Rückumwandlung von String in ActualGame-Objekt
+	 * @param fromJson
+	 * @return
+	 */
+	private static ActualGame decode(String fromJson){
+		Gson gson = new Gson();
+
+		ActualGame game = gson.fromJson(fromJson, ActualGame.class);
+
+		return game;
+	}
 }

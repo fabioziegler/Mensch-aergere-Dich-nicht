@@ -3,12 +3,15 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 import android.util.Log;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.ArrayList;
+
+import javax.xml.parsers.SAXParser;
 
 /**
  * Created by johannesholzl on 06.05.17.
@@ -18,6 +21,8 @@ public class GameLogic {
 
     private int currentPlayer;
     private Player players[];
+
+	private Thread clientPlayThread;
 
     private GamePiece selectedGamePiece;
     private ArrayList<GamePiece> possibleToMove;
@@ -65,6 +70,8 @@ public class GameLogic {
         int bestPlayer = -1;
         int bestNumber = 0;
 
+		// TODO: adjust for multiplayer
+
         for(int p = 0; p < players.length; p++){
 
             //
@@ -85,7 +92,7 @@ public class GameLogic {
         currentPlayer = bestPlayer;
         dice.emptyBlacklist();
 
-		Log.i("Game", "Starting regular game.");
+        game.regularGameStarted();
 		regularGame();
     }
 
@@ -124,7 +131,8 @@ public class GameLogic {
                     this.possibleToMove = new ArrayList<>();
                     selectingLoop: for (GamePiece piece : cp.getPieces()) {
                         boolean free = Board.get().checkSpot(dice.getDiceNumber(), piece) != null;
-                        boolean isStartingPiece = piece.getSpot()instanceof StartingSpot;
+                        boolean isStartingPiece = piece.getSpot() instanceof StartingSpot;
+
                         if (free && !isStartingPiece) {
                             if(Board.getEntrance(piece.getPlayerColor()) == piece.getSpot()){
                                 possibleToMove = new ArrayList<>();
@@ -183,7 +191,7 @@ public class GameLogic {
             }
 
 			// sync
-			if(!ActualGame.getInstance().isLocalGame()) {
+			if(game instanceof ActualGame && !ActualGame.getInstance().isLocalGame()) {
 				com.vintagetechnologies.menschaergeredichnicht.GameLogic gameLogic = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
 				if(gameLogic.isHost())	// check not needed, because only the host runs the game
 					GameSynchronisation.synchronize();
@@ -198,8 +206,39 @@ public class GameLogic {
     }
 
     public ArrayList<GamePiece> getPossibleToMove() {
-        return this.possibleToMove;
+		return possibleToMove;
     }
+
+    public void _findPossibleToMove(){
+		Player cp = getPlayerByName(DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class).getPlayerName());
+
+		this.possibleToMove = new ArrayList<>();
+		selectingLoop: for (GamePiece piece : cp.getPieces()) {
+			boolean free = Board.get().checkSpot(dice.getDiceNumber(), piece) != null;
+			boolean isStartingPiece = piece.getSpot() instanceof StartingSpot;
+
+			if (free && !isStartingPiece) {
+				if(Board.getEntrance(piece.getPlayerColor()) == piece.getSpot()){
+					possibleToMove = new ArrayList<>();
+					this.possibleToMove.add(piece);
+					break selectingLoop;
+				}
+				this.possibleToMove.add(piece);
+			}
+		}
+	}
+
+
+	public void _movePiece(){
+		this.selectedGamePiece = this.possibleToMove.get(0);
+
+		if (possibleToMove.contains(this.selectedGamePiece)) {
+			movePiece(this.selectedGamePiece);
+			selectedGamePiece = null;
+			possibleToMove = null;
+		}
+	}
+
 
     /**
      * Moves a GamePiece by the number the Dices face shows.
@@ -268,7 +307,6 @@ public class GameLogic {
     }
 
 
-
     /**
      * Get the Player by providing the Players name
      *
@@ -290,4 +328,12 @@ public class GameLogic {
     public void setPlaying(boolean playing) {
         this.playing = playing;
     }
+
+	public Thread getClientPlayThread() {
+		return clientPlayThread;
+	}
+
+	public void setClientPlayThread(Thread clientPlayThread) {
+		this.clientPlayThread = clientPlayThread;
+	}
 }

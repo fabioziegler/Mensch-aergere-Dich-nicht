@@ -28,9 +28,11 @@ import java.util.StringTokenizer;
 public class Theme {
 
     private HashMap<String, Integer> color;
+    private HashMap<String, String> otherAttributes;
 
     public Theme(InputStream inputStream) {
         this.color = new HashMap<>();
+        this.otherAttributes = new HashMap<>();
         JSONObject jo = null;
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
@@ -62,7 +64,11 @@ public class Theme {
 				String key = it.next();
 				Object o = jo.get(key);
 				if(o instanceof String){
-					setColor(key, (String)o);
+                    if(((String) o).startsWith("0x")) {
+                        setColor(key, (String) o);
+                    }else{
+                        this.otherAttributes.put(key, (String) o);
+                    }
 				}else if(o instanceof JSONObject){
 					readJson((JSONObject)o);
 				}else{
@@ -88,4 +94,7 @@ public class Theme {
         return color.get(s);
     }
 
+    public String getAttribute(String key){
+        return otherAttributes.get(key);
+    }
 }

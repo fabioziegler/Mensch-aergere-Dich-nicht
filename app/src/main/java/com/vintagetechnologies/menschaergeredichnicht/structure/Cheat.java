@@ -4,6 +4,7 @@ import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
+import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
@@ -23,11 +24,21 @@ public class Cheat {
     //Dient nur dem Würfel auf 6 bei Schummeln
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
+
+        //für Testen ausgelagert und direkt in Spieleroberfläche aufgerufen (ToDo Sinnvoll?)
+        //sendMessageToHost();
+
+		if(playerCheating)
+			informHost(c);
     }
 
     //wird seperat aufgerufen in Spieleroberfläche wenn geschummelt wird und vom Host wenn neue Runde um wieder auf false zu setzen.
     //-> Dient nur der Schummeln-Aufdecken funktion.
     public void informHost(boolean c){
+
+		if(ActualGame.getInstance().isLocalGame())
+			return;
+
         // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
         boolean isHost = gameLogic.isHost();
