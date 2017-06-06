@@ -18,7 +18,11 @@ public enum DiceNumber {
         return number;
     }
 
-    public void setNumber(int number){
-		this.number = number;
+    private void setNumber(int number) {
+        this.number = number;
+    }
+
+    public void diceNum(int number){
+		this.setNumber(number);
 	}
 }

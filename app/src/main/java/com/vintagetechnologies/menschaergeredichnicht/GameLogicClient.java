@@ -34,7 +34,7 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 public class GameLogicClient extends GameLogic implements NetworkListener {
 
 
-	private final String TAG = GameLogic.class.getSimpleName();
+	private static final String TAG = GameLogic.class.getSimpleName();
 
 	private MyClient myClient;
 
@@ -175,7 +175,7 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				currentPlayer.getSchummeln().setPlayerCheating(false); //Damit der Würfel weiß, dass noch nicht geschummelt wurde.
 				currentPlayer.getSchummeln().informHost(false); //Damit der Host auch weiß, dass (noch) nicht geschummelt wurde.
 
-				if(currentPlayerName.equals(getGameSettings().getPlayerName())){
+				if(currentPlayerName != null && currentPlayerName.equals(getGameSettings().getPlayerName())){
 					activity.setDiceEnabled(true); //Würfeln
 					activity.setRevealEnabled(false);  //Aufdecken
 					activity.setSensorOn(true); //Schummeln und Würfeln durch Schütteln

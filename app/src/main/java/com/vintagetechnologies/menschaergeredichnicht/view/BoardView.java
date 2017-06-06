@@ -268,8 +268,8 @@ public class BoardView extends View {
         paint.setAntiAlias(true);
 
 
-        double prev_x = (2 * board.getBoard()[0].getX() + 1) * (spotRadius + abstand);
-        double prev_y = (2 * board.getBoard()[0].getY() + 1) * (spotRadius + abstand);
+        double prevX = (2 * board.getBoard()[0].getX() + 1) * (spotRadius + abstand);
+        double prevY = (2 * board.getBoard()[0].getY() + 1) * (spotRadius + abstand);
 
 
         RegularSpot s = (RegularSpot) board.getBoard()[0];
@@ -285,9 +285,9 @@ public class BoardView extends View {
             double y = (2 * n.getY() + 1) * (spotRadius + abstand);
 
 
-            canvas.drawLine((float) prev_x, (float) prev_y, (float) x, (float) y, paint);
-            prev_x = x;
-            prev_y = y;
+            canvas.drawLine((float) prevX, (float) prevY, (float) x, (float) y, paint);
+            prevX = x;
+            prevY = y;
 
         }
 

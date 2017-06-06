@@ -1,8 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import android.content.Context;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
@@ -17,6 +15,7 @@ import java.io.IOException;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Created by johannesholzl on 10.05.17.
@@ -31,15 +30,8 @@ public class ThemeTest {
         AssetManager am = getInstrumentation().getContext().getAssets();
 
         try {
-            String s [] = am.list("/");
-            for(String i : s){
-                System.out.println("1 "+i);
-            }
-
-            String a [] = am.list("themes");
-            for(String i : a){
-                System.out.println("2 "+i);
-            }
+            String[] s = am.list("/");
+            String[] a = am.list("themes");
         } catch (IOException e) {
 			Log.e("Test", "Fehler", e);
 		}
@@ -52,9 +44,10 @@ public class ThemeTest {
 			Log.e("Test", "Fehler", e);
         }
 
-        System.out.println("Working Directory = " +
-                System.getProperty("user.dir"));
-
-        assertEquals((int) Color.rgb(255, 0, 0), (int) t.getColor("RED"));
+        if(t == null) {
+            assertNotNull(t);
+        }else{
+            assertEquals((int) Color.rgb(255, 0, 0), (int) t.getColor("RED"));
+        }
     }
 }

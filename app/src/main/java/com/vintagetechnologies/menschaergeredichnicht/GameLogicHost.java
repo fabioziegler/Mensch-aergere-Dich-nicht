@@ -286,7 +286,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				int number = Integer.parseInt(value);
 
 				synchronized (RealDice.get()) {
-					RealDice.get().getDiceNumber().setNumber(number);
+					RealDice.get().getDiceNumber().diceNum(number);
 					RealDice.get().notify();
 				}
 

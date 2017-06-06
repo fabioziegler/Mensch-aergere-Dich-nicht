@@ -51,6 +51,10 @@ public class ActualGame extends Game {
     private boolean isLocalGame = false;
 
 
+    private ActualGame() {
+        this.gameLogic = new GameLogic();
+    }
+
     /**
      * Returns actualGame Instance
      * @return
@@ -62,9 +66,6 @@ public class ActualGame extends Game {
         return actualGameInstance;
     }
 
-    private ActualGame() {
-        this.gameLogic = new GameLogic();
-    }
 
     /**
      * Called when a client received a new up to date game object from the host.
@@ -155,7 +156,7 @@ public class ActualGame extends Game {
 
                 for (Player p : gameLogic.getPlayers()) {
                     int id = tfs.get(p.getColor());
-                    TextView tv = ((TextView) finalGameactivity.findViewById(id));
+                    TextView tv = (TextView) finalGameactivity.findViewById(id);
                     tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
                     tv.setText(p.getName());
 
@@ -361,7 +362,7 @@ public class ActualGame extends Game {
      *
      */
     private void figureSelected() {
-
+        //not used at the moment
     }
 
     public Spieloberflaeche getGameactivity() {
