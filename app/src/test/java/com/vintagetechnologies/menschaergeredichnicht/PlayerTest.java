@@ -1,6 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import com.vintagetechnologies.menschaergeredichnicht.impl.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
@@ -66,20 +66,4 @@ public class PlayerTest {
         assertEquals(gp, t.getGamePiece());
         assertEquals(null, s.getGamePiece());
     }
-
-
-
-    /*
-    @Test
-    public void dummyDiceTest(){
-        for(int i = 0; i<10; i++) {
-            RealDice.waitForRoll();
-            System.out.println(RealDice.get().getDiceNumber());
-        }
-
-        assertNotEquals(null, RealDice.get().getDiceNumber());
-
-    }
-       */
-
 }

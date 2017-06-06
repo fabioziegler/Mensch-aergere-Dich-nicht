@@ -1,4 +1,4 @@
-package com.vintagetechnologies.menschaergeredichnicht.impl;
+package com.vintagetechnologies.menschaergeredichnicht.implementation;
 
 import android.app.Activity;
 import android.util.Log;

@@ -3,7 +3,7 @@ package com.vintagetechnologies.menschaergeredichnicht;
 import android.app.Activity;
 
 import com.esotericsoftware.kryonet.Connection;
-import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.DeviceList;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;

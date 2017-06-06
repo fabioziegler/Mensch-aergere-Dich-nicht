@@ -21,4 +21,8 @@ public abstract class Game {
 
     public abstract void regularGameStarted();
 
+    @Override
+    public String toString() {
+        return "Game{}";
+    }
 }

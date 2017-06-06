@@ -1,6 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
@@ -15,17 +15,13 @@ import static org.junit.Assert.assertEquals;
 
 public class CheatTest {
 
-    //private Spieloberflaeche spieloberflaeche;
     Dice dice;
     private Cheat schummeln;
-   // private Player player;
 
     @Before
     public void before() {
-        //spieloberflaeche = new Spieloberflaeche();
         schummeln = new Cheat();
         dice = new Dice();
-       // player = new Player(PlayerColor.BLUE, "Test");
     }
 
     @Test
@@ -34,14 +30,4 @@ public class CheatTest {
         schummeln.setPlayerCheating(true);
         assertEquals(true, schummeln.isPlayerCheating());
     }
-
-    /*
-    @Test
-    public void testCheatFunction(){
-        //nicht Testbar weil CurrentPlayer nicht Definiert
-        Game.getInstance().getCurrentPlayer().getSchummeln().setPlayerCheating(true);
-        dice.roll();
-        assertEquals(DiceNumber.SIX, dice.getDiceNumber());
-    }
-    */
 }

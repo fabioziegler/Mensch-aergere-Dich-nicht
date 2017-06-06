@@ -7,7 +7,7 @@ import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
-import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 

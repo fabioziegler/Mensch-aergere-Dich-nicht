@@ -1,13 +1,10 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
-import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
 import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
-import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 
 import org.junit.Before;
 import org.junit.Test;

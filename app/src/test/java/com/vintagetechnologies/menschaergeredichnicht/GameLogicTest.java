@@ -1,12 +1,13 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import com.vintagetechnologies.menschaergeredichnicht.impl.DiceImpl;
+import android.util.Log;
+
+import com.vintagetechnologies.menschaergeredichnicht.implementation.DiceImpl;
 import com.vintagetechnologies.menschaergeredichnicht.structure.*;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic;
 
 import org.junit.Before;
 import org.junit.Test;
-
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -21,8 +22,6 @@ import static junit.framework.Assert.assertTrue;
 public class GameLogicTest {
 
     private static final int MAXCOUNT = 1000000;
-
-    private TestDice td = new TestDice();
 
     private  String names[] = {"Alfred", "Bill", "Marilyn", "Tim"};
 
@@ -86,7 +85,7 @@ public class GameLogicTest {
 
         @Override
         public void regularGameStarted() {
-
+            this.getGameLogic().setPlaying(true);
         }
 
         public TestDice getTd() {
@@ -135,28 +134,6 @@ public class GameLogicTest {
     }
 
     @Test
-    public void testPlay(){
-		/*
-        Board.resetBoard();
-
-        TestGame tg = new TestGame();
-        tg.init(names[0],names[1],names[2],names[3]);
-
-        r = false;
-
-        try {
-            tg.play();
-        } catch (IllegalAccessException e) {
-            Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while playing!", e);
-            Thread.currentThread().interrupt();
-        }
-
-        assertEquals(MAXCOUNT, c);
-		*/
-    }
-
-
-    @Test
     public void testGetPlayerByName(){
         Board.resetBoard();
 
@@ -196,7 +173,7 @@ public class GameLogicTest {
         try {
             tg.play();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            Log.e("Test Einwürfeln", "Fehler", e);
         }
 
     }

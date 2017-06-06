@@ -33,60 +33,33 @@ public class BoardTest {
 
     @Test
     public void testCount() {
-        int cYE = 0, cGE = 0, cRE = 0, cBE = 0;
-        int cYS = 0, cGS = 0, cRS = 0, cBS = 0;
+        HashMap<PlayerColor, Integer> endCount = new HashMap<>();
+        endCount.put(PlayerColor.BLUE, 0);
+        endCount.put(PlayerColor.RED, 0);
+        endCount.put(PlayerColor.GREEN, 0);
+        endCount.put(PlayerColor.YELLOW, 0);
+
+        HashMap<PlayerColor, Integer> startCount = new HashMap<>();
+        startCount.put(PlayerColor.BLUE, 0);
+        startCount.put(PlayerColor.RED, 0);
+        startCount.put(PlayerColor.GREEN, 0);
+        startCount.put(PlayerColor.YELLOW, 0);
 
         for (Spot s : board.getBoard()) {
             if (s instanceof EndSpot) {
-                switch (((EndSpot) s).getColor()) {
-                    case RED: {
-                        cRE++;
-                        break;
-                    }
-                    case GREEN: {
-                        cGE++;
-                        break;
-                    }
-                    case BLUE: {
-                        cBE++;
-                        break;
-                    }
-                    case YELLOW: {
-                        cYE++;
-                        break;
-                    }
-                }
+                PlayerColor pc = ((EndSpot) s).getColor();
+                endCount.put(pc, endCount.get(pc) + 1);
             } else if (s instanceof StartingSpot) {
-                switch (((StartingSpot) s).getColor()) {
-                    case RED:
-                        cRS++;
-                        break;
-                    case GREEN:
-                        cGS++;
-                        break;
-                    case BLUE:
-                        cBS++;
-                        break;
-                    case YELLOW: {
-                        cYS++;
-                        break;
-                    }
-                }
+                PlayerColor pc = ((StartingSpot) s).getColor();
+                startCount.put(pc, startCount.get(pc) + 1);
             }
         }
 
 
-        assertEquals(4, cYE);
-        assertEquals(4, cRE);
-        assertEquals(4, cGE);
-        assertEquals(4, cBE);
-
-        assertEquals(4, cYS);
-        assertEquals(4, cRS);
-        assertEquals(4, cGS);
-        assertEquals(4, cBS);
-
-
+        for (PlayerColor pc : PlayerColor.values()) {
+            assertEquals(4, (int)endCount.get(pc));
+            assertEquals(4, (int)startCount.get(pc));
+        }
     }
 
 
@@ -110,7 +83,7 @@ public class BoardTest {
     }
 
     @Test
-    public void testCheckSpot(){
+    public void testCheckSpot() {
         Board.resetBoard();
         board = Board.get();
 
@@ -127,7 +100,7 @@ public class BoardTest {
      * Incrementally adds new Gamepieces
      */
     @Test
-    public void testGetStartingSpot(){
+    public void testGetStartingSpot() {
 
         Board.resetBoard();
         board = Board.get();
@@ -138,17 +111,17 @@ public class BoardTest {
         sSpots.put(PlayerColor.YELLOW, 48);
         sSpots.put(PlayerColor.GREEN, 52);
 
-        for(PlayerColor pc : sSpots.keySet()) {
+        for (PlayerColor pc : sSpots.keySet()) {
             int ind = sSpots.get(pc);
 
-            for (int i = ind; i < ind+4; i++) {
+            for (int i = ind; i < ind + 4; i++) {
                 board.getBoard(i).nullGamePiece();
             }
 
             //expected, actual
             assertEquals(board.getBoard(ind), board.getStartingSpot(pc));
 
-            for (int i = ind; i < ind+4; i++) {
+            for (int i = ind; i < ind + 4; i++) {
                 assertEquals(board.getBoard(i), board.getStartingSpot(pc));
                 board.getBoard(i).setGamePiece(new GamePiece(pc));
             }
@@ -159,12 +132,11 @@ public class BoardTest {
     }
 
     @Test
-    public void testResetBoard(){
-        Board oldBoard = board;
+    public void testResetBoard() {
         Board.resetBoard();
         assertNotEquals(Board.get(), board);
 
-        for(Spot s: Board.getBoard()){
+        for (Spot s : Board.getBoard()) {
             assertEquals(null, s.getGamePiece());
         }
     }

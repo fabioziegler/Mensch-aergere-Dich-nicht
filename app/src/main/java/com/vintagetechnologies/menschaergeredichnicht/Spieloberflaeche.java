@@ -21,8 +21,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.vintagetechnologies.menschaergeredichnicht.impl.RealDice;
-import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
@@ -54,29 +54,25 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private GameLogic gameLogic;
     private GameSettings gameSettings;
 
-    private SensorManager SM;
-    private Sensor ShakeSensor;
-    private Sensor LightSensor;
+    private SensorManager sensorManager;
+    private Sensor shakeSensor;
+    private Sensor lightSensor;
 
     private static final int SHAKE_THRESHOLD = 1400;
     private long lastUpdate;
-    private float last_x;
-	private float last_y;
-	private float last_z;
+    private float lastX;
+	private float lastY;
+	private float lastZ;
 	private boolean shook = false;
 
     private TextView state;
-    private Cheat Schummeln;
+    private Cheat schummeln;
 
-    private Button btnFigurSelect;
-    public Button btnMoveFigur;
+    private Button btnMoveFigur;
 
     private ImageButton btnAufdecken;
     private ImageButton btnWuerfel;
     private ImageView imgViewDice;
-
-    // Dice
-    private Dice dice;
 
     private int[] diceImages;
 
@@ -89,7 +85,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private int screenHeight;
 
     // duration of the animation in ms
-    private final int ANIMATION_DURATION = 500;
+    private static final int ANIMATION_DURATION = 500;
 
     private MediaPlayer moveSound;
     private MediaPlayer diceSound;
@@ -104,6 +100,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         playDice();
         // ui elementes must be updated on main thread:
         runOnUiThread(new Runnable() {
+            @Override
             public void run() {
                 // Update UI elements
                 imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
@@ -117,9 +114,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         //Test if Cheated - Six or random
-        if (Schummeln.isPlayerCheating()) {
+        if (schummeln.isPlayerCheating()) {
             RealDice.get().setDiceNumber(DiceNumber.SIX);
-            Schummeln.setPlayerCheating(false);
+            schummeln.setPlayerCheating(false);
         } else {
             RealDice.get().roll();
         }
@@ -162,6 +159,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         // Würfel mit Animation ausblenden:
         runOnUiThread(new Runnable() {
+            @Override
             public void run() {
 
                 int[] locationOfBtnWuerfeln = new int[2];
@@ -217,7 +215,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 		if(ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
 			synchronized (RealDice.get()) {
-				System.out.println("notifying: " + RealDice.get());
 				RealDice.get().notify();
 			}
 		} else {	// client:
@@ -299,23 +296,21 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 			ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
 		}
 
-		//ActualGame.getInstance().setBoardView((BoardView) findViewById(R.id.spielFeld));
-
 
         state = (TextView) findViewById(R.id.textView_status);
 
-        Schummeln = ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln();
+        schummeln = ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln();
 
         // Sensor Manager erstellen
-        SM = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         // Licht Sensor erstellen
-        LightSensor = SM.getDefaultSensor(Sensor.TYPE_LIGHT);
-        SM.registerListener(this, LightSensor, SensorManager.SENSOR_DELAY_GAME);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_GAME);
 
         // Sensor für Bewegung
-        ShakeSensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        SM.registerListener(this, ShakeSensor, SensorManager.SENSOR_DELAY_GAME);
+        shakeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(this, shakeSensor, SensorManager.SENSOR_DELAY_GAME);
 
         // aktuell spielender Spieler wird des Schummelns verdächtigt
         btnAufdecken = (ImageButton) (findViewById(R.id.imageButton_aufdecken));
@@ -407,7 +402,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 playMove();
                 ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
                 bv.setHighlightedGamePiece(null);
-                //btnWuerfel.setEnabled(true);	// TODO: remove? (multiplayer)
 
                 RealDice.get();
 
@@ -445,8 +439,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        // initialize dice
-        dice = new Dice();
 
         // load dice images into array
         loadDiceImages();
@@ -600,7 +592,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         float y = event.values[1];
                         float z = event.values[2];
 
-                        float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
+                        float speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000;
 
                         if (speed > SHAKE_THRESHOLD) {
                             shook = true;
@@ -613,9 +605,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                             new Thread(myRunnable).start();
                         }
 
-                        last_x = x;
-                        last_y = y;
-                        last_z = z;
+                        lastX = x;
+                        lastY = y;
+                        lastZ = z;
                     }
                 }
             }
@@ -628,9 +620,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
                 float Lichtwert = event.values[0];
                 if (Lichtwert <= 2) {
-                    //state.setText("Schummeln: " + true);  //Test
-                    Schummeln.setPlayerCheating(true);
-                    Schummeln.informHost(true);
+                    //state.setText("schummeln: " + true);  //Test
+                    schummeln.setPlayerCheating(true);
+                    schummeln.informHost(true);
                 }
 
             }
@@ -680,4 +672,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     public void setRevealEnabled(boolean enabled){
         btnAufdecken.setEnabled(enabled);
     }
+
+    public Button getBtnMoveFigur() {
+        return btnMoveFigur;
+    }
 }
+

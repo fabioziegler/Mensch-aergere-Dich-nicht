@@ -17,6 +17,7 @@ public class GamePiece {
 
     /**
      * Sets the GamePieces PlayerColor and locates it on a StartingSpot
+     *
      * @param playerColor
      */
     public GamePiece(PlayerColor playerColor) {
@@ -24,13 +25,14 @@ public class GamePiece {
         this.returnToStart();
     }
 
-	/**
-	 * Empty constructor for kryo deserialization.
-	 */
-	public GamePiece(){}
+    /**
+     * Empty constructor for kryo deserialization.
+     */
+    public GamePiece() {
+        //maybe it's important
+    }
 
     /**
-     *
      * @return playerColor
      */
     public PlayerColor getPlayerColor() {
@@ -38,7 +40,6 @@ public class GamePiece {
     }
 
     /**
-     *
      * @param playerColor
      */
     public void setPlayerColor(PlayerColor playerColor) {
@@ -46,7 +47,6 @@ public class GamePiece {
     }
 
     /**
-     *
      * @return spot
      */
     public Spot getSpot() {
@@ -57,6 +57,7 @@ public class GamePiece {
     /**
      * Sets Spot on which the GamePiece is located.
      * This methods sets the Spots GamePiece to null and sets the new  Spots GamePiece to the current GamePiece.
+     *
      * @param spot
      */
     public void setSpot(Spot spot) {
@@ -81,32 +82,34 @@ public class GamePiece {
 
     /**
      * Sets the GamePieces Spot without syncing the changes with the Spots
+     *
      * @param spot
      */
-    public void forceSetSpot(Spot spot){
+    public void forceSetSpot(Spot spot) {
         this.spot = spot;
     }
 
 
     /**
      * Moves the GamePiece to a specific Spot.
+     *
      * @param targetSpot
      */
     public boolean moveTo(Spot targetSpot) {  //Voraussetzung: check returned not null
-        if(targetSpot != null){
-            if(targetSpot.getGamePiece() == null){
-               this.setSpot(targetSpot);
+        if (targetSpot != null) {
+            if (targetSpot.getGamePiece() == null) {
+                this.setSpot(targetSpot);
                 return true;
-            }else{
-                if(targetSpot.getGamePiece().getPlayerColor() == this.getPlayerColor()){
+            } else {
+                if (targetSpot.getGamePiece().getPlayerColor() == this.getPlayerColor()) {
                     return false;
-                }else{
+                } else {
                     targetSpot.getGamePiece().returnToStart();
                     this.setSpot(targetSpot);
                     return true;
                 }
             }
-        }else{
+        } else {
             return false;
         }
     }
@@ -114,7 +117,7 @@ public class GamePiece {
     /**
      * Returns the GamePiece to a StartingSpot
      */
-    public void returnToStart(){
+    public void returnToStart() {
         this.setSpot(Board.getStartingSpot(this.getPlayerColor()));
     }
 }

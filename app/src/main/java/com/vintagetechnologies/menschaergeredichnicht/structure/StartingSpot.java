@@ -30,7 +30,12 @@ public class StartingSpot extends Spot implements Colorful{
 
     }
 
-    public StartingSpot(){}
+    /**
+     *
+     */
+    public StartingSpot(){
+       //maybe it's important
+    }
 
     /**
      * Gets the Entrance to the board.

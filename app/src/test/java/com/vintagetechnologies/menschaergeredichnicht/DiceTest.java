@@ -1,7 +1,5 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import android.os.SystemClock;
-
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 
@@ -49,7 +47,7 @@ public class DiceTest {
 
         dice.emptyBlacklist();
 
-        boolean rolled [] = new boolean[DiceNumber.values().length];
+        boolean[] rolled = new boolean[DiceNumber.values().length];
 
         for (int i = 0; i < 1000; i++){
             dice.roll();
@@ -66,7 +64,7 @@ public class DiceTest {
      */
     @Test
     public void roll(){
-        boolean rolled [] = new boolean[DiceNumber.values().length];
+        boolean[] rolled = new boolean[DiceNumber.values().length];
 
         for (int i = 0; i < 1000; i++){
             dice.roll();
@@ -84,7 +82,7 @@ public class DiceTest {
      */
     @Test
     public void rollWithDistribution(){
-        int rolled [] = new int[DiceNumber.values().length];
+        int[] rolled = new int[DiceNumber.values().length];
 
         int n = 1000;
 
@@ -94,7 +92,6 @@ public class DiceTest {
         }
 
         for(int b : rolled){
-            System.out.println(b);
             boolean inRange = b < 1.1*n && b > 0.9*n;
             assertTrue(inRange);
         }

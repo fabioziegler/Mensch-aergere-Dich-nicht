@@ -2,8 +2,8 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
-import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
-import com.vintagetechnologies.menschaergeredichnicht.impl.DiceImpl;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.DiceImpl;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 

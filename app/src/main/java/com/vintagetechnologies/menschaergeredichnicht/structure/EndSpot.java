@@ -4,7 +4,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
  * Created by johannesholzl on 30.03.17.
  */
 
-public class EndSpot extends Spot implements Colorful{
+public class EndSpot extends Spot implements Colorful {
 
     private PlayerColor color;
     private EndSpot nextEndSpot;
@@ -12,7 +12,7 @@ public class EndSpot extends Spot implements Colorful{
 
     /**
      * Constructor of EndSpot
-     *
+     * <p>
      * x/y: super() method of Spot is called
      * color: EndSpot is Colorful
      * nextEndSpot: the EndSpot to move next. Is null on the last EndSpot
@@ -28,7 +28,12 @@ public class EndSpot extends Spot implements Colorful{
         this.nextEndSpot = nextEndSpot;
     }
 
-    public EndSpot(){}
+    /**
+     *
+     */
+    public EndSpot() {
+        //maybe it's important
+    }
 
     public PlayerColor getColor() {
         return color;

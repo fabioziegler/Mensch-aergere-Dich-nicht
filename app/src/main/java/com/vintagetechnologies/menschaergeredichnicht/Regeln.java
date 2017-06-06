@@ -2,15 +2,11 @@ package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.vintagetechnologies.menschaergeredichnicht.R;
-
-import java.io.File;
 
 /**
  * Created by Simon on 21.04.2017.
