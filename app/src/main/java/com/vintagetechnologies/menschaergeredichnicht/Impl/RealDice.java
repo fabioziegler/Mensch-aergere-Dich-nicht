@@ -1,8 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht.Impl;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.util.Log;
 import android.widget.ImageButton;
 
+import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
@@ -38,7 +41,8 @@ public class RealDice extends DiceImpl {
 
     public void waitForRoll() {
 
-        Spieloberflaeche s = (Spieloberflaeche) RealDice.diceButton.getContext();
+        //Spieloberflaeche s = (Spieloberflaeche) RealDice.diceButton.getContext();
+        Activity s = (Activity) diceButton.findViewById(R.id.imageButton_wuerfel).getContext();
 
         s.runOnUiThread(new Runnable() {
             @Override

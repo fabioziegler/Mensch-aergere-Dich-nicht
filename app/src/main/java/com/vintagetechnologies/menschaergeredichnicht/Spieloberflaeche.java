@@ -338,7 +338,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
         //DiceSound imitating dice roll.
-        diceSound = MediaPlayer.create(getApplicationContext(), R.raw.dice2);
+        //diceSound = MediaPlayer.create(getApplicationContext(), R.drawable.dice2);
 
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -392,7 +392,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 		*/
 
-        moveSound = MediaPlayer.create(getApplicationContext(), R.raw.click);
+//        moveSound = MediaPlayer.create(getApplicationContext(), R.drawable.dice2);
 
                // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
@@ -487,7 +487,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      */
     public void playMove(){
         if(gameSettings.isMusicEnabled()) {
-            moveSound.start();
+            //moveSound.start();
         }
     }
     /**
@@ -495,7 +495,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      */
     public void playDice(){
         if(gameSettings.isMusicEnabled()) {
-            diceSound.start();
+            //diceSound.start();
         }
     }
 
