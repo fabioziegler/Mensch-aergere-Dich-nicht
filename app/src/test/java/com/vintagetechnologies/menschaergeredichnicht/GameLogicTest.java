@@ -189,9 +189,8 @@ public class GameLogicTest {
 
         TestGame tg = new TestGame(){
             @Override
-            public void whomsTurn(Player p){
-                assertEquals(names[3], p.getName());
-                this.getGameLogic().setPlaying(false);
+            public void regularGameStarted(){
+                assertEquals(names[3], this.getGameLogic().getCurrentPlayer().getName());
             }
         };
         tg.setTd(new TestDice(){
@@ -202,6 +201,7 @@ public class GameLogicTest {
             }
         });
         tg.init(names[0],names[1],names[2],names[3]);
+        tg.getGameLogic().setPlaying(false);
         try {
             tg.play();
         } catch (IllegalAccessException e) {
