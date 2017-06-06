@@ -174,13 +174,7 @@ public final class Board {
         int steps = dn.getNumber();
         Spot targetSpot = piece.getSpot();
         for (int i = 0; i < steps; i++) {
-            if (targetSpot instanceof RegularSpot) {
-                targetSpot = checkRegularSpot(targetSpot, piece);
-            } else if (targetSpot instanceof EndSpot) {
-                targetSpot = checkEndSpot(targetSpot, piece);
-            } else if (targetSpot instanceof StartingSpot) {
-                targetSpot = ((StartingSpot) targetSpot).getEntrance();
-            }
+            targetSpot = checkSpotMatch(targetSpot, piece);
             if (targetSpot == null) {// Fehler
                 return null;
             }
@@ -194,7 +188,18 @@ public final class Board {
         return targetSpot;
     }
 
-    private static Spot checkEndSpot(Spot targetSpot, GamePiece piece) {
+    private static Spot checkSpotMatch(Spot targetSpot, GamePiece piece){
+        if (targetSpot instanceof RegularSpot) {
+            return checkRegularSpot(targetSpot, piece);
+        } else if (targetSpot instanceof EndSpot) {
+            return checkEndSpot(targetSpot);
+        } else if (targetSpot instanceof StartingSpot) {
+            return  ((StartingSpot) targetSpot).getEntrance();
+        }
+        return null;
+    }
+
+    private static Spot checkEndSpot(Spot targetSpot) {
         EndSpot es = (EndSpot) targetSpot;
         if (es.getNextEndSpot() != null && es.getNextEndSpot().getGamePiece() == null) {
             return es.getNextEndSpot(); //nächster Spot ist nächster freier EndSpot

@@ -29,6 +29,8 @@ public class NetworkingTest {
 	private WifiReceiver wifiReceiver;
 	private GameLogic gameLogic;
 
+	private static final String BESTPLAYER = "Fabio";
+
 	@Before
 	public void before() {
 		gameSettings = new GameSettings();
@@ -69,7 +71,7 @@ public class NetworkingTest {
 		assertEquals("At first the connection count must be zero", 0, deviceList.getCount());
 
 		// add two devices
-		Device device1 = new Device(1, "Fabio", true);
+		Device device1 = new Device(1, BESTPLAYER, true);
 		Device device2 = new Device(2, "Daniel", false);
 
 		deviceList.add(device1);
@@ -85,7 +87,7 @@ public class NetworkingTest {
 		assertEquals(device2, deviceList.getPlayer(2));
 
 		// get device by name
-		assertEquals(device1, deviceList.getPlayer("Fabio"));
+		assertEquals(device1, deviceList.getPlayer(BESTPLAYER));
 		assertEquals("Device with name 'Max' does not exist", null, deviceList.getPlayer("Max"));
 
 		// check if device is host
@@ -110,7 +112,7 @@ public class NetworkingTest {
 		assertNull(DataHolder.getInstance().retrieve("MYITEM"));
 
 		// save object
-		Device dev = new Device(1, "Fabio", false);
+		Device dev = new Device(1, BESTPLAYER, false);
 		DataHolder.getInstance().save("ITEM", dev);
 
 		// get saved item
@@ -126,12 +128,12 @@ public class NetworkingTest {
 			wifiReceiver.addReceiver(new WifiListener() {
 				@Override
 				public void hasWiFiConnectionEstablished() {
-
+					//to come
 				}
 
 				@Override
 				public void hasWiFiConnectionLost() {
-
+					//will be implemented
 				}
 			});
 

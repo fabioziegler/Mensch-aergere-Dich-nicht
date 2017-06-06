@@ -23,7 +23,7 @@ public class GameLogicTest {
 
     private static final int MAXCOUNT = 1000000;
 
-    private  String names[] = {"Alfred", "Bill", "Marilyn", "Tim"};
+    private  String[] names = {"Alfred", "Bill", "Marilyn", "Tim"};
 
     private int c = 0;
 

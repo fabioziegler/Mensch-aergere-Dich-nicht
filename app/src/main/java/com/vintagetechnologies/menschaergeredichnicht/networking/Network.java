@@ -30,6 +30,14 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class Network {
 
+	/* other constants*/
+	public static final String DATAHOLDER_GAMELOGIC = "GAMELOGIC";
+	public static final String DATAHOLDER_GAMESETTINGS = "GAMESETTINGS";
+
+	public static final int WRITE_BUFFER_SIZE = 1000 * 100;
+	public static final int OBJECT_BUFFER_SIZE = 1000 * 100;
+
+
 	public static final String MESSAGE_DELIMITER = ";";
 
 	/**
@@ -154,11 +162,6 @@ public class Network {
 	}
 
 
-	/* other constants*/
-	public static final String DATAHOLDER_GAMELOGIC = "GAMELOGIC";
-	public static final String DATAHOLDER_GAMESETTINGS = "GAMESETTINGS";
 
-	public static final int WRITE_BUFFER_SIZE = 1000 * 100;
-	public static final int OBJECT_BUFFER_SIZE = 1000 * 100;
 
 }

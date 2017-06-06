@@ -76,6 +76,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     private int[] diceImages;
 
+    private BoardView bv;
+
 
     // für Zufallszahlen
     private Random rand;
@@ -254,18 +256,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private void boardViewSetTouchListener(final BoardView bv) {
 
-        setContentView(R.layout.activity_spieloberflaeche);
-
-        gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
-
-        Board.resetBoard();
-        RealDice.reset();
-
-        final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
         bv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -292,11 +284,41 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 return true;
             }
         });
+    }
 
-        ActualGame.getInstance().setBoardView(bv);
+    private void btnMoveFigurSetOnClickListener() {
+        //!!ToDO: Fehlerbeheben: nach auswahl kann nur mit schütteln weiter gewürfelt werden..
+        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
 
+                //sound für setzen einer figur
+                playMove();
+                ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
+                bv.setHighlightedGamePiece(null);
 
-		/* Check if local or network game */
+                RealDice.get();
+
+                RealDice.setDiceButton(btnWuerfel);
+                imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
+
+                if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {    // host or local game:
+                    synchronized (ActualGame.getInstance()) {
+                        ActualGame.getInstance().notify();
+                    }
+                } else {    // client in mp game:
+
+                    ((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + RealDice.get().getDiceNumber().getNumber());
+                }
+
+            }
+        });
+
+    }
+
+    private void networkGameOnCreate(){
+        /* Check if local or network game */
         if (!ActualGame.getInstance().isLocalGame()) {    // network game:
 
             gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
@@ -314,6 +336,26 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         } else {    // local game:
             ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_spieloberflaeche);
+
+        gameSettings = (GameSettings) DataHolder.getInstance().retrieve(DATAHOLDER_GAMESETTINGS);
+
+        Board.resetBoard();
+        RealDice.reset();
+
+        bv = (BoardView) (findViewById(R.id.spielFeld));
+        boardViewSetTouchListener(bv);
+
+        ActualGame.getInstance().setBoardView(bv);
+
+
+        networkGameOnCreate();
 
 
         state = (TextView) findViewById(R.id.textView_status);
@@ -371,34 +413,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnMoveFigur.setEnabled(false);
         btnMoveFigur.setVisibility(View.INVISIBLE);
 
-        //!!ToDO: Fehlerbeheben: nach auswahl kann nur mit schütteln weiter gewürfelt werden..
-        btnMoveFigur.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
-
-                //sound für setzen einer figur
-                playMove();
-                ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
-                bv.setHighlightedGamePiece(null);
-
-                RealDice.get();
-
-                RealDice.setDiceButton(btnWuerfel);
-                imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
-
-                if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {    // host or local game:
-                    synchronized (ActualGame.getInstance()) {
-                        ActualGame.getInstance().notify();
-                    }
-                } else {    // client in mp game:
-
-                    ((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + RealDice.get().getDiceNumber().getNumber());
-                }
-
-            }
-        });
-
+        btnMoveFigurSetOnClickListener();
 
         // load dice images into array
         loadDiceImages();

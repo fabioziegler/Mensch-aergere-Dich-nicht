@@ -82,9 +82,7 @@ public class GameSynchronisation {
 	private static String encode(ActualGame game){
 		Gson gson = new Gson();
 
-		String json = gson.toJson(game);
-
-		return json;
+		return gson.toJson(game);
 	}
 
 
@@ -96,8 +94,6 @@ public class GameSynchronisation {
 	private static ActualGame decode(String fromJson){
 		Gson gson = new Gson();
 
-		ActualGame game = gson.fromJson(fromJson, ActualGame.class);
-
-		return game;
+		return gson.fromJson(fromJson, ActualGame.class);
 	}
 }

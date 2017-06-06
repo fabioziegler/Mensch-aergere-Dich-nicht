@@ -29,13 +29,6 @@ public class ThemeTest {
     public void testTheme() {
         AssetManager am = getInstrumentation().getContext().getAssets();
 
-        try {
-            String[] s = am.list("/");
-            String[] a = am.list("themes");
-        } catch (IOException e) {
-			Log.e("Test", "Fehler", e);
-		}
-
 
         Theme t = null;
         try {

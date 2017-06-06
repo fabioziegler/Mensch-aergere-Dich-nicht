@@ -18,14 +18,15 @@ public class Cheat {
 
     boolean playerCheating = false;
 
-    public Cheat (){}
+    public Cheat (){
+        //empty constructor
+    }
 
     //Dient nur dem Würfel auf 6 bei Schummeln
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
 
         //für Testen ausgelagert und direkt in Spieleroberfläche aufgerufen (ToDo Sinnvoll?)
-        //sendMessageToHost();
 
 		if(playerCheating)
 			informHost(c);

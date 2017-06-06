@@ -96,15 +96,10 @@ public class GameLogic {
         regularGame();
     }
 
-    private Pair<Boolean, Integer> playerMoveLoop(int a){
-
-        final Player cp = players[currentPlayer];
-        int attempts = a;
-
-        dice.waitForRoll();
-        GamePiece gp;
-
+    private boolean startingPos() {
         boolean moved = false;
+        final Player cp = players[currentPlayer];
+        GamePiece gp;
         if (dice.getDiceNumber() == DiceNumber.SIX && (gp = cp.getStartingPiece()) != null) {
 
             StartingSpot s = (StartingSpot) (gp.getSpot());
@@ -115,43 +110,64 @@ public class GameLogic {
                 moved = movePieceToEntrance(gp);
             }
         }
+        return moved;
+    }
+
+
+    private boolean move() {
+        final Player cp = players[currentPlayer];
+
+        boolean moved = false;
+        this.possibleToMove = new ArrayList<>();
+        for (GamePiece piece : cp.getPieces()) {
+            boolean free = Board.get().checkSpot(dice.getDiceNumber(), piece) != null;
+            boolean isStartingPiece = piece.getSpot() instanceof StartingSpot;
+
+            if (free && !isStartingPiece) {
+                if (Board.getEntrance(piece.getPlayerColor()) == piece.getSpot()) {
+                    possibleToMove = new ArrayList<>();
+                    this.possibleToMove.add(piece);
+                    break;
+                }
+                this.possibleToMove.add(piece);
+            }
+        }
+
+
+        if (!possibleToMove.isEmpty()) {
+
+            if (possibleToMove.size() > 1) {
+                game.waitForMovePiece();
+            } else {
+                this.selectedGamePiece = this.possibleToMove.get(0);
+            }
+
+
+            if (possibleToMove.contains(this.selectedGamePiece)) {
+                movePiece(this.selectedGamePiece);
+                moved = true;
+                selectedGamePiece = null;
+                possibleToMove = null;
+            }
+        }
+
+        return moved;
+
+    }
+
+    private Pair<Boolean, Integer> playerMoveLoop(int a) {
+
+        final Player cp = players[currentPlayer];
+        int attempts = a;
+
+        dice.waitForRoll();
+
+
+        boolean moved = startingPos();
+
 
         if (!cp.isAtStartingPosition() && !moved) {
-
-            this.possibleToMove = new ArrayList<>();
-            selectingLoop:
-            for (GamePiece piece : cp.getPieces()) {
-                boolean free = Board.get().checkSpot(dice.getDiceNumber(), piece) != null;
-                boolean isStartingPiece = piece.getSpot() instanceof StartingSpot;
-
-                if (free && !isStartingPiece) {
-                    if (Board.getEntrance(piece.getPlayerColor()) == piece.getSpot()) {
-                        possibleToMove = new ArrayList<>();
-                        this.possibleToMove.add(piece);
-                        break selectingLoop;
-                    }
-                    this.possibleToMove.add(piece);
-                }
-            }
-
-
-            if (possibleToMove.size() > 0) {
-
-                if (possibleToMove.size() > 1) {
-                    game.waitForMovePiece();
-                } else {
-                    this.selectedGamePiece = this.possibleToMove.get(0);
-                }
-
-
-                if (possibleToMove.contains(this.selectedGamePiece)) {
-                    movePiece(this.selectedGamePiece);
-                    moved = true;
-                    selectedGamePiece = null;
-                    possibleToMove = null;
-                }
-            }
-
+            move();
         }
 
         if (!moved) {
@@ -171,7 +187,7 @@ public class GameLogic {
         game.whomsTurn(cp);
 
         int attempts = 3;
-        boolean moved = false;
+        boolean moved;
 
         do {
             Pair<Boolean, Integer> pair = playerMoveLoop(attempts);
