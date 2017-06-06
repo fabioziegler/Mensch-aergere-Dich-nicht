@@ -93,6 +93,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     // duration of the animation in ms
     private final int ANIMATION_DURATION = 500;
 
+    private MediaPlayer moveSound;
+    private MediaPlayer diceSound;
+
 
     /**
      * wird aufgerufen wenn btnWuerfel betätigt wird
@@ -100,6 +103,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      */
     private void btnWuerfelClicked() {
 
+        playDice();
         // ui elementes must be updated on main thread:
         runOnUiThread(new Runnable() {
             public void run() {
@@ -332,14 +336,13 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         RealDice.setDiceButton(btnWuerfel);
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
+
         //DiceSound imitating dice roll.
-        final MediaPlayer diceSound = MediaPlayer.create(getApplicationContext(), R.raw.dice2);
+        diceSound = MediaPlayer.create(getApplicationContext(), R.raw.dice2);
 
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ToDo:Music enabled if Music is enabled
-                diceSound.start();
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
@@ -389,9 +392,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 		*/
 
-        final MediaPlayer moveSound = MediaPlayer.create(getApplicationContext(), R.raw.click);
+        moveSound = MediaPlayer.create(getApplicationContext(), R.raw.click);
 
-        // bestätigt Eingabe
+               // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
         btnMoveFigur.setEnabled(false);
         btnMoveFigur.setVisibility(View.INVISIBLE);
@@ -403,7 +406,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
 
                 //sound für setzen einer figur
-                moveSound.start();
+                playMove();
                 ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
                 bv.setHighlightedGamePiece(null);
                 //btnWuerfel.setEnabled(true);	// TODO: remove? (multiplayer)
@@ -477,6 +480,20 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 		}.start();
 	}
 
+
+	//ToDo: soundeffekte ausschalten wenn musik disabled
+    /**
+     * Soundeffekt wird aufgerufen wenn eine spielfigur bewegt wird.
+     */
+    public void playMove(){
+        moveSound.start();
+    }
+    /**
+     * Soundeffekt wird aufgerufen wenn der Würfel gewürfelt wird.
+     */
+    public void playDice(){
+        diceSound.start();
+    }
 
     private void loadDiceImages(){
 		diceImages = new int[6];
@@ -553,6 +570,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 .setNegativeButton("Nein", null)
                 .show();
     }
+
 
 
     boolean sensorOn = true;

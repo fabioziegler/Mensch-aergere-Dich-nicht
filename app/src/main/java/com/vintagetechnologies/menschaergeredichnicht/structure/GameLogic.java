@@ -39,6 +39,7 @@ public class GameLogic {
 
     private boolean playing = true;
 
+
     public void init(DiceImpl dice, Game game, String names []) {
         players = new Player[names.length];
 
@@ -250,19 +251,21 @@ public class GameLogic {
      * @param gp
      * @return
      */
-    //ToDO Sound einfügen final MediaPlayer moveSound = MediaPlayer.create(this.Spieloberflaeche, R.raw.dice2);
+
     private boolean movePiece(GamePiece gp) {
 
         Spot s = Board.checkSpot(dice.getDiceNumber(), gp);
 
         if (s != null) {
             gp.moveTo(s);
-            // TODO: 05.06.2017 moveSound.start();
+            ActualGame.getInstance().getGameactivity().playMove();
             return true;
         }
 
         return false;
     }
+
+
 
     /**
      * Moves the GamePiece by one step.
