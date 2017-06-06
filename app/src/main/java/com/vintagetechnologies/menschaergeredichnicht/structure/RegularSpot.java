@@ -20,7 +20,9 @@ public class RegularSpot extends Spot {
         this.nextSpot = nextSpot;
     }
 
-    public RegularSpot(){}
+    public RegularSpot(){
+        //maybe it's important
+    }
 
     /**
      * Returns the Spot to which the current Spot is pointing to.

@@ -17,8 +17,8 @@ import java.io.InputStreamReader;
  */
 public class GameSettings {
 
-	private final String TAG = "GameSettings";
-	private final String settingsFilename = "settings.txt";
+	private static final String TAG = "GameSettings";
+	private static final String SETTINGS_FILENAME = "settings.txt";
     private String playerName;
     private boolean musicEnabled;
     private boolean cheatingEnabled;
@@ -106,10 +106,10 @@ public class GameSettings {
         String json = new Gson().toJson(this);
 
         try {
-            outputStream = context.openFileOutput(settingsFilename, Context.MODE_PRIVATE);
+            outputStream = context.openFileOutput(SETTINGS_FILENAME, Context.MODE_PRIVATE);
             outputStream.write(json.getBytes());
         } catch (Exception e) {
-            Log.e(TAG, "Failed to save settings file.", e);	// instead of e.printStackTrace();
+            Log.e(TAG, "Failed to save settings file.", e);
 		}
     }
 
@@ -128,7 +128,7 @@ public class GameSettings {
         GameSettings gameSettings;
 
         try {
-            inputStream = context.openFileInput(settingsFilename);
+            inputStream = context.openFileInput(SETTINGS_FILENAME);
             streamReader = new InputStreamReader(inputStream);
             bufferedReader = new BufferedReader(streamReader);
             stringBuilder = new StringBuilder();
@@ -147,6 +147,7 @@ public class GameSettings {
             return true;
 
         } catch (FileNotFoundException e){
+            Log.e("GameSettings", "File not found.", e);
             return false;
         } catch (Exception e){
             Log.e(TAG, "Failed to load settings file.", e);

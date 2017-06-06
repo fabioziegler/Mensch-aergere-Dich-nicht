@@ -62,8 +62,7 @@ public abstract class GameLogic {
 		 *     For example: 4;SYNC;<game obj as json String>
 		 */
 		int tagLength = tag.length();
-		String encodedMessage = String.valueOf(tagLength) + Network.MESSAGE_DELIMITER + tag + Network.MESSAGE_DELIMITER + message;
-		return encodedMessage;
+		return String.valueOf(tagLength) + Network.MESSAGE_DELIMITER + tag + Network.MESSAGE_DELIMITER + message;
 	}
 
 	/**

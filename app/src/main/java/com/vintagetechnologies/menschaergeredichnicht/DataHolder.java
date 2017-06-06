@@ -16,7 +16,6 @@ public class DataHolder {
 
 	/* weak reference: GC collects an object if the last reference to it is in the weak reference map */
 
-    //private Map<String, WeakReference<Object>> data = new HashMap<>();
     private Map<String, Object> data = new HashMap<>();
 
     /**
@@ -32,7 +31,6 @@ public class DataHolder {
      * @param object The object to be saved
      */
     public void save(String id, Object object) {
-        //data.put(id, new WeakReference<>(object));
         data.put(id, object);
     }
 
@@ -42,14 +40,6 @@ public class DataHolder {
      * @return The object saved for that String or null if the object does not exist.
      */
     public Object retrieve(String id) {
-		/*
-        WeakReference<Object> objectWeakReference = data.get(id);
-
-		if(objectWeakReference != null)
-        	return objectWeakReference.get();
-		else
-			return null;
-		*/
 		return data.get(id);
     }
 

@@ -61,9 +61,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private static final int SHAKE_THRESHOLD = 1400;
     private long lastUpdate;
     private float lastX;
-	private float lastY;
-	private float lastZ;
-	private boolean shook = false;
+    private float lastY;
+    private float lastZ;
+    private boolean shook = false;
 
     private TextView state;
     private Cheat schummeln;
@@ -91,28 +91,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private MediaPlayer diceSound;
 
 
-    /**
-     * wird aufgerufen wenn btnWuerfel betätigt wird
-     * UI Updates finden auf dem Main Thread statt
-     */
-    private void btnWuerfelClicked() {
-
-        playDice();
-        // ui elementes must be updated on main thread:
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Update UI elements
-                imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
-                imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
-
-                imgViewDice.setVisibility(View.VISIBLE);
-                btnWuerfel.setImageResource(R.drawable.dice_undefined);
-                imgViewDice.setImageResource(R.drawable.dice_undefined);
-            }
-        });
-
-
+    private void checkSchummeln() {
         //Test if Cheated - Six or random
         if (schummeln.isPlayerCheating()) {
             RealDice.get().setDiceNumber(DiceNumber.SIX);
@@ -120,11 +99,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         } else {
             RealDice.get().roll();
         }
+    }
 
-        //Sets the Result
-        final int result = RealDice.get().getDiceNumber().getNumber() - 1;
-
-
+    private void animateDice() {
         // dice rolls for 2 seconds, and changes 5x a second it's number
 
         // "roll" animation
@@ -142,21 +119,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 SystemClock.sleep(50);
             }
         }
+    }
 
-
-        // setze Ergebnis des Würfelns
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Update UI elements
-                imgViewDice.setImageResource(diceImages[result]);
-            }
-        });
-
-
-        // zeige Ergebnis für 1 Sekunde
-        SystemClock.sleep(800);
-
+    private void endDiceAnimation(int r) {
+        final int result = r;
         // Würfel mit Animation ausblenden:
         runOnUiThread(new Runnable() {
             @Override
@@ -211,28 +177,81 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         .start();
             }
         });
+    }
 
 
-		if(ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
-			synchronized (RealDice.get()) {
-				RealDice.get().notify();
-			}
-		} else {	// client:
-			((GameLogicClient)gameLogic).sendToHost(RealDice.get().getDiceNumber());	// send diceNumber to host
-		}
+    private void btnWuerfelClickedUpdateUIElements() {
+        // ui elementes must be updated on main thread:
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Update UI elements
+                imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
+                imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
+
+                imgViewDice.setVisibility(View.VISIBLE);
+                btnWuerfel.setImageResource(R.drawable.dice_undefined);
+                imgViewDice.setImageResource(R.drawable.dice_undefined);
+            }
+        });
+
+    }
+
+    /**
+     * wird aufgerufen wenn btnWuerfel betätigt wird
+     * UI Updates finden auf dem Main Thread statt
+     */
+    private void btnWuerfelClicked() {
+
+        playDice();
+        btnWuerfelClickedUpdateUIElements();
+
+        checkSchummeln();
+
+        //Sets the Result
+        final int result = RealDice.get().getDiceNumber().getNumber() - 1;
+
+
+        animateDice();
+
+
+        // setze Ergebnis des Würfelns
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Update UI elements
+                imgViewDice.setImageResource(diceImages[result]);
+            }
+        });
+
+
+        // zeige Ergebnis für 1 Sekunde
+        SystemClock.sleep(800);
+
+        endDiceAnimation(result);
+
+
+        if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
+            synchronized (RealDice.get()) {
+                RealDice.get().notify();
+            }
+        } else {    // client:
+            ((GameLogicClient) gameLogic).sendToHost(RealDice.get().getDiceNumber());    // send diceNumber to host
+        }
 
         //jetzt kann durch erneutes schütteln wieder ein Würfeln ausgelöst werden.
         shook = false;
     }
 
 
-	/**
-	 * Called when a client
-	 * @param diceNumber
-	 */
-	public void remoteDiceClicked(DiceNumber diceNumber){
-		RealDice.get().setDiceNumber(diceNumber);
-	}
+    /**
+     * Called when a client
+     *
+     * @param diceNumber
+     */
+    public void remoteDiceClicked(DiceNumber diceNumber) {
+        RealDice.get().setDiceNumber(diceNumber);
+    }
 
 
     @Override
@@ -246,55 +265,55 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         Board.resetBoard();
         RealDice.reset();
 
-		final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
-		bv.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
+        final BoardView bv = (BoardView) (findViewById(R.id.spielFeld));
+        bv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
 
-				if (ActualGame.getInstance().getGameLogic().getPossibleToMove() != null && event.getAction() == MotionEvent.ACTION_UP) {
+                if (ActualGame.getInstance().getGameLogic().getPossibleToMove() != null && event.getAction() == MotionEvent.ACTION_UP) {
 
-					float xx = event.getX();
-					float yy = event.getY();
+                    float xx = event.getX();
+                    float yy = event.getY();
 
-					for (GamePiece gp : ActualGame.getInstance().getGameLogic().getPossibleToMove()) {
+                    for (GamePiece gp : ActualGame.getInstance().getGameLogic().getPossibleToMove()) {
 
-						double x = xx - (2 * gp.getSpot().getX() + 1) * (bv.getSpotRadius() + bv.getAbstand());
-						double y = yy - (2 * gp.getSpot().getY() + 1) * (bv.getSpotRadius() + bv.getAbstand());
+                        double x = xx - (2 * gp.getSpot().getX() + 1) * (bv.getSpotRadius() + bv.getAbstand());
+                        double y = yy - (2 * gp.getSpot().getY() + 1) * (bv.getSpotRadius() + bv.getAbstand());
 
-						if (Math.sqrt(x * x + y * y) < 100) {
-							bv.setHighlightedGamePiece(gp);
-							bv.invalidate();
-						}
-					}
+                        if (Math.sqrt(x * x + y * y) < 100) {
+                            bv.setHighlightedGamePiece(gp);
+                            bv.invalidate();
+                        }
+                    }
 
-					Log.i("BoardView", event.getAction() + ": (" + event.getX() + " / " + event.getY() + " )");
+                    Log.i("BoardView", event.getAction() + ": (" + event.getX() + " / " + event.getY() + " )");
 
-				}
-				return true;
-			}
-		});
+                }
+                return true;
+            }
+        });
 
         ActualGame.getInstance().setBoardView(bv);
 
 
 		/* Check if local or network game */
-		if(!ActualGame.getInstance().isLocalGame()){	// network game:
+        if (!ActualGame.getInstance().isLocalGame()) {    // network game:
 
-			gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
-			gameLogic.setActivity(this);
+            gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
+            gameLogic.setActivity(this);
 
-			ActualGame.getInstance().init(gameLogic.getDevices().getPlayerNames());
+            ActualGame.getInstance().init(gameLogic.getDevices().getPlayerNames());
 
-			if(gameLogic.isHost()) {
-				gameLogic.generateUniqueIds();
-				GameSynchronisation.synchronize();    // sync for the first time (e.g. after player were setup)
-			} else {
-				gameLogic.generateUniqueIds();
-			}
+            if (gameLogic.isHost()) {
+                gameLogic.generateUniqueIds();
+                GameSynchronisation.synchronize();    // sync for the first time (e.g. after player were setup)
+            } else {
+                gameLogic.generateUniqueIds();
+            }
 
-		} else {	// local game:
-			ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
-		}
+        } else {    // local game:
+            ActualGame.getInstance().init("Hans", "Peter", "Dieter", "Anneliese");
+        }
 
 
         state = (TextView) findViewById(R.id.textView_status);
@@ -347,47 +366,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-
-        // zwischen zu bewegenden Figuren wählen
-		/*
-        btnFigurSelect = (Button) (findViewById(R.id.Select_Figur));
-        btnFigurSelect.setEnabled(false);
-        btnFigurSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-				gameLogic = (GameLogic) DataHolder.getInstance().retrieve(DATAHOLDER_GAMELOGIC);
-
-                // Zu setzende Figur auswählen
-                ArrayList<GamePiece> possibleGamePieces = ActualGame.getInstance().getGameLogic().getPossibleToMove();
-
-                if (bv.getHighlightedGamePiece() == null) {
-                    bv.setHighlightedGamePiece(possibleGamePieces.get(0));
-                    bv.invalidate();
-
-					if(!ActualGame.getInstance().isLocalGame() && !gameLogic.isHost()){	// am I client in mp game?
-						((GameLogicClient)gameLogic).sendToHost(possibleGamePieces.get(0));
-					}
-
-                } else {
-
-                    GamePiece gp = bv.getHighlightedGamePiece();
-                    int i = possibleGamePieces.indexOf(gp);
-                    i = (i + 1) % possibleGamePieces.size();
-                    bv.setHighlightedGamePiece(possibleGamePieces.get(i));
-                    bv.invalidate();
-
-					if(!ActualGame.getInstance().isLocalGame() && !gameLogic.isHost()){	// am I client in mp game?
-						((GameLogicClient)gameLogic).sendToHost(possibleGamePieces.get(i));
-					}
-                }
-            }
-        });
-		*/
-
-//        moveSound = MediaPlayer.create(getApplicationContext(), R.drawable.dice2);
-
-               // bestätigt Eingabe
+        // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));
         btnMoveFigur.setEnabled(false);
         btnMoveFigur.setVisibility(View.INVISIBLE);
@@ -408,33 +387,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 RealDice.setDiceButton(btnWuerfel);
                 imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
-				if(ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {	// host or local game:
-					synchronized (ActualGame.getInstance()) {
-						ActualGame.getInstance().notify();
-					}
-				} else {	// client in mp game:
+                if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {    // host or local game:
+                    synchronized (ActualGame.getInstance()) {
+                        ActualGame.getInstance().notify();
+                    }
+                } else {    // client in mp game:
 
-					((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + RealDice.get().getDiceNumber().getNumber());
-
-					/*
-					Thread clientPlayThread = ActualGame.getInstance().getGameLogic().getClientPlayThread();
-
-					// move piece manually instead using the regularGame() routine, which is only called on the host device
-
-					synchronized (clientPlayThread) {
-						// notify own client thread
-						clientPlayThread.notify();
-					}
-
-					ActualGame.getInstance().getGameLogic()._movePiece();
-
-					Player me = ActualGame.getInstance().getGameLogic().getPlayerByName(gameSettings.getPlayerName());
-					((GameLogicClient)gameLogic).sendToHost(me);
-					((GameLogicClient)gameLogic).sendToHost(RealDice.get().getDiceNumber());
-
-					ActualGame.getInstance().refreshView();
-					*/
-				}
+                    ((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + RealDice.get().getDiceNumber().getNumber());
+                }
 
             }
         });
@@ -448,64 +408,66 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         // get screen size
         getScreenDimensions();
 
-		// prevent phone from entering sleep mode
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        // prevent phone from entering sleep mode
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-		// start playing
-		if(ActualGame.getInstance().isLocalGame() || gameLogic.isHost())
-			startPlayThread();
+        // start playing
+        if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost())
+            startPlayThread();
     }
 
 
-    private void startPlayThread(){
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					ActualGame.getInstance().play();
-				} catch (IllegalAccessException e) {
-					Log.e("Spieloberflaeche", "Error in game initialize", e);
-				}
-			}
-		}.start();
-	}
+    private void startPlayThread() {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    ActualGame.getInstance().play();
+                } catch (IllegalAccessException e) {
+                    Log.e("Spieloberflaeche", "Error in game initialize", e);
+                }
+            }
+        }.start();
+    }
 
 
-	//ToDo: soundeffekte ausschalten wenn musik disabled
+    //ToDo: soundeffekte ausschalten wenn musik disabled
+
     /**
      * Soundeffekt wird aufgerufen wenn eine spielfigur bewegt wird.
      */
-    public void playMove(){
-        if(gameSettings.isMusicEnabled()) {
+    public void playMove() {
+        if (gameSettings.isMusicEnabled()) {
             //moveSound.start();
         }
     }
+
     /**
      * Soundeffekt wird aufgerufen wenn der Würfel gewürfelt wird.
      */
-    public void playDice(){
-        if(gameSettings.isMusicEnabled()) {
+    public void playDice() {
+        if (gameSettings.isMusicEnabled()) {
             //diceSound.start();
         }
     }
 
-    private void loadDiceImages(){
-		diceImages = new int[6];
+    private void loadDiceImages() {
+        diceImages = new int[6];
 
-		diceImages[0] = R.drawable.dice1;
-		diceImages[1] = R.drawable.dice2;
-		diceImages[2] = R.drawable.dice3;
-		diceImages[3] = R.drawable.dice4;
-		diceImages[4] = R.drawable.dice5;
-		diceImages[5] = R.drawable.dice6;
-	}
+        diceImages[0] = R.drawable.dice1;
+        diceImages[1] = R.drawable.dice2;
+        diceImages[2] = R.drawable.dice3;
+        diceImages[3] = R.drawable.dice4;
+        diceImages[4] = R.drawable.dice5;
+        diceImages[5] = R.drawable.dice6;
+    }
 
 
     private void btnAufdeckenClicked() {
 
         if (gameLogic.isHost()) {
 
-			// TODO: implement
+            // TODO: implement
 
         } else {
 
@@ -541,10 +503,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
-	/**
-	 * Called when the user presses the back button.
-	 */
-	public void onBackPressed() {
+    /**
+     * Called when the user presses the back button.
+     */
+    public void onBackPressed() {
         new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("Geh nicht!! :-(")
@@ -552,12 +514,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-						if(ActualGame.getInstance().isLocalGame()){
-							startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
-							finish();
-						} else {
-							gameLogic.leaveGame();
-						}
+                        if (ActualGame.getInstance().isLocalGame()) {
+                            startActivity(new Intent(Spieloberflaeche.this, Hauptmenue.class));
+                            finish();
+                        } else {
+                            gameLogic.leaveGame();
+                        }
                     }
 
                 })
@@ -566,8 +528,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
-
     boolean sensorOn = true;
+
     /**
      * The Sensor reactions for shaking the Dice and for Cheating
      */
@@ -648,28 +610,31 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     public void setStatus(String status) {
         state.setText(status);
 
-		if(ActualGame.getInstance().isLocalGame())
-			return;
+        if (ActualGame.getInstance().isLocalGame())
+            return;
 
-		if(gameLogic.isHost()) {	// is anyway always host?
-			GameLogicHost gameLogicHost = (GameLogicHost) gameLogic;
-			gameLogicHost.sendToAllClientDevices(TAG_STATUS_MESSAGE + MESSAGE_DELIMITER + status);
-			GameSynchronisation.nextRound();
-		}
+        if (gameLogic.isHost()) {    // is anyway always host?
+            GameLogicHost gameLogicHost = (GameLogicHost) gameLogic;
+            gameLogicHost.sendToAllClientDevices(TAG_STATUS_MESSAGE + MESSAGE_DELIMITER + status);
+            GameSynchronisation.nextRound();
+        }
     }
 
     /**
      * Getting updated with the change auf the player status to currentPlayer.
+     *
      * @param enabled
      */
     //Sensors are only used when player == currentPlayer
     public void setSensorOn(boolean enabled) {
         sensorOn = enabled;
     }
-    public void setDiceEnabled(boolean enabled){
-		btnWuerfel.setEnabled(enabled);
-	}
-    public void setRevealEnabled(boolean enabled){
+
+    public void setDiceEnabled(boolean enabled) {
+        btnWuerfel.setEnabled(enabled);
+    }
+
+    public void setRevealEnabled(boolean enabled) {
         btnAufdecken.setEnabled(enabled);
     }
 
