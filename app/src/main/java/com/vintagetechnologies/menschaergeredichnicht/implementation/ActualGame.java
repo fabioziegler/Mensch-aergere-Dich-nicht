@@ -47,7 +47,7 @@ public class ActualGame extends Game {
 
     private Spieloberflaeche gameactivity;
 
-	// if the game is played locally, disabled by default
+    // if the game is played locally, disabled by default
     private boolean isLocalGame = false;
 
 
@@ -57,6 +57,7 @@ public class ActualGame extends Game {
 
     /**
      * Returns actualGame Instance
+     *
      * @return
      */
     public static ActualGame getInstance() {
@@ -75,27 +76,26 @@ public class ActualGame extends Game {
     public static void refreshPlayer(Player player) {
         // TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
 
-		if(!((com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC)).hasGameStarted())
-			return;
+        if (!((com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC)).hasGameStarted())
+            return;
 
-		if(!getInstance().isInitialized())
-			return;
+        if (!getInstance().isInitialized())
+            return;
 
-		String name = player.getName();
-		Player[] players = getInstance().getGameLogic().getPlayers();
+        String name = player.getName();
+        Player[] players = getInstance().getGameLogic().getPlayers();
 
-		for (int i = 0; i < players.length; i++) {
-			Player oldPlayer = players[i];
-			if(oldPlayer.getName().equals(name)){
-				players[i] = player;
-				break;
-			}
-		}
+        for (int i = 0; i < players.length; i++) {
+            Player oldPlayer = players[i];
+            if (oldPlayer.getName().equals(name)) {
+                players[i] = player;
+                break;
+            }
+        }
 
-		// refresh board
-		getInstance().getBoardView().postInvalidate();
-	}
-
+        // refresh board
+        getInstance().getBoardView().postInvalidate();
+    }
 
 
     /**
@@ -122,14 +122,14 @@ public class ActualGame extends Game {
     }
 
 
-    private void setPlayerNames(){
+    private void setPlayerNames() {
         GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS);
 
         Theme theme = null;
         try {
-            if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC){
+            if (gameSettings.getBoardDesign() == GameSettings.BoardDesign.CLASSIC) {
                 theme = new Theme(gameactivity.getAssets().open("themes/classic.json"));
-            }else if(gameSettings.getBoardDesign() == GameSettings.BoardDesign.VINTAGE){
+            } else if (gameSettings.getBoardDesign() == GameSettings.BoardDesign.VINTAGE) {
                 theme = new Theme(gameactivity.getAssets().open("themes/vintage.json"));
             }
 
@@ -146,22 +146,21 @@ public class ActualGame extends Game {
         tfs.put(PlayerColor.BLUE, R.id.textView_spielerBlau);
         tfs.put(PlayerColor.YELLOW, R.id.textView_spielerGelb);
 
-        finalGameactivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        finalGameactivity.runOnUiThread(() -> {
 
-                for(PlayerColor pc : tfs.keySet()){
-                    ((TextView) finalGameactivity.findViewById(tfs.get(pc))).setVisibility(View.INVISIBLE);
-                }
 
-                for (Player p : gameLogic.getPlayers()) {
-                    int id = tfs.get(p.getColor());
-                    TextView tv = (TextView) finalGameactivity.findViewById(id);
-                    tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
-                    tv.setText(p.getName());
+            for (PlayerColor pc : tfs.keySet()) {
+                ((TextView) finalGameactivity.findViewById(tfs.get(pc))).setVisibility(View.INVISIBLE);
+            }
 
-                    tv.setVisibility(View.VISIBLE);
-                }
+            for (Player p : gameLogic.getPlayers()) {
+                int id = tfs.get(p.getColor());
+                TextView tv = (TextView) finalGameactivity.findViewById(id);
+                tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
+                tv.setText(p.getName());
+
+                tv.setVisibility(View.VISIBLE);
+
             }
         });
     }
@@ -195,99 +194,96 @@ public class ActualGame extends Game {
     public void whomsTurn(Player p) {
         printInfo(p.getName() + " ist dran!");
 
-		GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
+        GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
 
-		if(!p.getName().equals(gameSettings.getPlayerName())){
-			// enable buttons
-			final ImageButton btnWuerfel = (ImageButton) (gameactivity.findViewById(R.id.imageButton_wuerfel));
+        if (!p.getName().equals(gameSettings.getPlayerName())) {
+            // enable buttons
+            final ImageButton btnWuerfel = (ImageButton) (gameactivity.findViewById(R.id.imageButton_wuerfel));
 
-			gameactivity.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					bv.invalidate();
-					btnWuerfel.setEnabled(false);
-				}
-			});
-		}
+            gameactivity.runOnUiThread(() -> {
+
+                bv.invalidate();
+                btnWuerfel.setEnabled(false);
+
+            });
+        }
     }
 
     @Override
     public void waitForMovePiece() {
 
-		com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, com.vintagetechnologies.menschaergeredichnicht.GameLogic.class);
-		GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
+        com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, com.vintagetechnologies.menschaergeredichnicht.GameLogic.class);
+        GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
 
-		// check if we are in multiplayer game and it's a client's turn - then inform the client that he should choose which game piece to move.
-		if(!isLocalGame() && gl.isHost() && !getGameLogic().getCurrentPlayer().getName().equals(gameSettings.getPlayerName())){
+        // check if we are in multiplayer game and it's a client's turn - then inform the client that he should choose which game piece to move.
+        if (!isLocalGame() && gl.isHost() && !getGameLogic().getCurrentPlayer().getName().equals(gameSettings.getPlayerName())) {
 
-			GameLogicHost gameLogicHost = (GameLogicHost) gl;
+            GameLogicHost gameLogicHost = (GameLogicHost) gl;
 
-			gameLogicHost.sendMessageToClient(getGameLogic().getCurrentPlayer().getName(), Network.TAG_WAIT_FOR_MOVE);
+            gameLogicHost.sendMessageToClient(getGameLogic().getCurrentPlayer().getName(), Network.TAG_WAIT_FOR_MOVE);
 
-			_waitForMove();
+            _waitForMove();
 
-			return;
-		}
+            return;
+        }
 
         this.bv.setHighlightedGamePiece(this.gameLogic.getPossibleToMove().get(0));
 
 
-		// enable buttons
+        // enable buttons
         final Button btnMoveFigur = (Button) (gameactivity.findViewById(R.id.Move_Figur));
 
-        gameactivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                bv.invalidate();
-                btnMoveFigur.setEnabled(true);
-                btnMoveFigur.setVisibility(View.VISIBLE);
-            }
+        gameactivity.runOnUiThread(() -> {
+
+            bv.invalidate();
+            btnMoveFigur.setEnabled(true);
+            btnMoveFigur.setVisibility(View.VISIBLE);
+
         });
 
         _waitForMove();
 
-		// send result to host?
-		if(!isLocalGame() && !gl.isHost()){	// send Player (with Gamepieces) to host
-			getGameLogic()._movePiece();
-		}
+        // send result to host?
+        if (!isLocalGame() && !gl.isHost()) {    // send Player (with Gamepieces) to host
+            getGameLogic()._movePiece();
+        }
 
         // disable buttons
-        gameactivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnMoveFigur.setEnabled(false);
-            }
+        gameactivity.runOnUiThread(() -> {
+
+            btnMoveFigur.setEnabled(false);
+
         });
     }
 
 
-	/**
-	 * Let thread wait.
-	 */
-	private void _waitForMove(){
+    /**
+     * Let thread wait.
+     */
+    private void _waitForMove() {
 
-		com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, com.vintagetechnologies.menschaergeredichnicht.GameLogic.class);
+        com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, com.vintagetechnologies.menschaergeredichnicht.GameLogic.class);
 
-		if(isLocalGame() || gl.isHost()) {
-			synchronized (this) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
-					Thread.currentThread().interrupt();
-				}
-			}
-		} else {
+        if (isLocalGame() || gl.isHost()) {
+            synchronized (this) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } else {
 
-			Thread clientPlayThread = getGameLogic().getClientPlayThread();
-			synchronized (clientPlayThread){
-				try {
-					clientPlayThread.wait();
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
-		}
+            Thread clientPlayThread = getGameLogic().getClientPlayThread();
+            synchronized (clientPlayThread) {
+                try {
+                    clientPlayThread.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
 
     }
 
@@ -303,19 +299,18 @@ public class ActualGame extends Game {
     public void refreshView() {
         bv.postInvalidate();
 
-        if (!isLocalGame){	// needed here?
-			com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
-            if(gl.isHost())
-            	GameSynchronisation.synchronize();
+        if (!isLocalGame) {    // needed here?
+            com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
+            if (gl.isHost())
+                GameSynchronisation.synchronize();
         }
     }
 
     private void printInfo(final String info) {
-        gameactivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                gameactivity.setStatus(info);
-            }
+        gameactivity.runOnUiThread(() -> {
+
+            gameactivity.setStatus(info);
+
         });
     }
 
@@ -396,14 +391,14 @@ public class ActualGame extends Game {
         this.gameLogic = gameLogic;
     }
 
-	/**
-	 * Reset game instance.
-	 */
-	public static void reset(){
-		actualGameInstance = new ActualGame();
-	}
+    /**
+     * Reset game instance.
+     */
+    public static void reset() {
+        actualGameInstance = new ActualGame();
+    }
 
-	public boolean isInitialized(){
-		return initialized;
-	}
+    public boolean isInitialized() {
+        return initialized;
+    }
 }

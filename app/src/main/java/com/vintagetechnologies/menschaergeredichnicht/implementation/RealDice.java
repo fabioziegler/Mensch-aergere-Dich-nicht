@@ -32,29 +32,24 @@ public class RealDice extends DiceImpl {
     }
 
 
-    public static void reset(){
+    public static void reset() {
         realDice = new RealDice();
     }
-
-
-
 
 
     public void waitForRoll() {
 
         Activity s = (Activity) diceButton.findViewById(R.id.imageButton_wuerfel).getContext();
 
-        s.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RealDice.diceButton.setClickable(true);
-                RealDice.diceButton.setAlpha(1f);
-            }
+        s.runOnUiThread(() -> {
+            RealDice.diceButton.setClickable(true);
+            RealDice.diceButton.setAlpha(1f);
+
         });
 
         synchronized (realDice) {
 
-            Log.i("Dice", "waiting: "+ realDice);
+            Log.i("Dice", "waiting: " + realDice);
 
             try {
                 realDice.wait();
@@ -65,17 +60,15 @@ public class RealDice extends DiceImpl {
 
         }
 
-        s.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RealDice.diceButton.setClickable(false);
-                RealDice.diceButton.setAlpha(0.5f);
+        s.runOnUiThread(() -> {
+            RealDice.diceButton.setClickable(false);
+            RealDice.diceButton.setAlpha(0.5f);
 
-            }
+
         });
     }
 
-    public static void setDiceButton(ImageButton db){
+    public static void setDiceButton(ImageButton db) {
         diceButton = db;
     }
 }

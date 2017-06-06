@@ -111,11 +111,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             for (int j = 0; j < 6; j++) {   // 1 second (5 changes)
                 final int randomIndex = rand.nextInt(6);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        imgViewDice.setImageResource(diceImages[randomIndex]);
-                    }
+                runOnUiThread(() -> {
+                    imgViewDice.setImageResource(diceImages[randomIndex]);
+
                 });
 
                 SystemClock.sleep(50);
@@ -126,75 +124,71 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private void endDiceAnimation(int r) {
         final int result = r;
         // Würfel mit Animation ausblenden:
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        runOnUiThread(() -> {
 
-                int[] locationOfBtnWuerfeln = new int[2];
-                btnWuerfel.getLocationOnScreen(locationOfBtnWuerfeln);
-                int toX = locationOfBtnWuerfeln[0]; // x
-                int toY = locationOfBtnWuerfeln[1]; // y
+            int[] locationOfBtnWuerfeln = new int[2];
+            btnWuerfel.getLocationOnScreen(locationOfBtnWuerfeln);
+            int toX = locationOfBtnWuerfeln[0]; // x
+            int toY = locationOfBtnWuerfeln[1]; // y
 
-                final float scaleX = (float) btnWuerfel.getWidth() / (float) imgViewDice.getWidth();
-                final float scaleY = (float) btnWuerfel.getHeight() / (float) imgViewDice.getHeight();
+            final float scaleX = (float) btnWuerfel.getWidth() / (float) imgViewDice.getWidth();
+            final float scaleY = (float) btnWuerfel.getHeight() / (float) imgViewDice.getHeight();
 
-                imgViewDice.animate()
-                        .x(toX - imgViewDice.getWidth() * scaleX)
-                        .y(toY - imgViewDice.getHeight() * scaleY)
-                        .setDuration(ANIMATION_DURATION)
-                        .scaleX(scaleX * 0.0f)
-                        .scaleY(scaleY * 0.0f)
-                        .alpha(0.8f)
-                        .setListener(new Animator.AnimatorListener() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
+            imgViewDice.animate()
+                    .x(toX - imgViewDice.getWidth() * scaleX)
+                    .y(toY - imgViewDice.getHeight() * scaleY)
+                    .setDuration(ANIMATION_DURATION)
+                    .scaleX(scaleX * 0.0f)
+                    .scaleY(scaleY * 0.0f)
+                    .alpha(0.8f)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
 
-                                // reset image size and location & enable dice button
-                                imgViewDice.setScaleX(1f);
-                                imgViewDice.setScaleY(1f);
+                            // reset image size and location & enable dice button
+                            imgViewDice.setScaleX(1f);
+                            imgViewDice.setScaleY(1f);
 
-                                imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
-                                imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
+                            imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
+                            imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
 
-                                imgViewDice.setAlpha(1f);
-                                imgViewDice.setVisibility(View.INVISIBLE);
+                            imgViewDice.setAlpha(1f);
+                            imgViewDice.setVisibility(View.INVISIBLE);
 
-                                btnWuerfel.setImageResource(diceImages[result]);
+                            btnWuerfel.setImageResource(diceImages[result]);
 
-                                btnWuerfel.setEnabled(true);
-                            }
+                            btnWuerfel.setEnabled(true);
+                        }
 
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                            }
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                        }
 
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-                            }
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                        }
 
-                            @Override
-                            public void onAnimationRepeat(Animator animation) {
-                            }
-                        })
-                        .start();
-            }
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                        }
+                    })
+                    .start();
+
         });
     }
 
 
     private void btnWuerfelClickedUpdateUIElements() {
         // ui elementes must be updated on main thread:
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Update UI elements
-                imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
-                imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
+        runOnUiThread(() -> {
+            // Update UI elements
+            imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
+            imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
 
-                imgViewDice.setVisibility(View.VISIBLE);
-                btnWuerfel.setImageResource(R.drawable.dice_undefined);
-                imgViewDice.setImageResource(R.drawable.dice_undefined);
-            }
+            imgViewDice.setVisibility(View.VISIBLE);
+            btnWuerfel.setImageResource(R.drawable.dice_undefined);
+            imgViewDice.setImageResource(R.drawable.dice_undefined);
+
         });
 
     }
@@ -218,12 +212,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         // setze Ergebnis des Würfelns
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Update UI elements
-                imgViewDice.setImageResource(diceImages[result]);
-            }
+        runOnUiThread(() -> {
+            // Update UI elements
+            imgViewDice.setImageResource(diceImages[result]);
+
         });
 
 
@@ -317,7 +309,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     }
 
-    private void networkGameOnCreate(){
+    private void networkGameOnCreate() {
         /* Check if local or network game */
         if (!ActualGame.getInstance().isLocalGame()) {    // network game:
 
@@ -397,14 +389,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Runnable myRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        btnWuerfelClicked();
 
-                    }
-                };
-                new Thread(myRunnable).start();
+                new Thread(() -> btnWuerfelClicked()).start();
             }
         });
 
@@ -573,13 +559,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
                         if (speed > SHAKE_THRESHOLD) {
                             shook = true;
-                            Runnable myRunnable = new Runnable() {
-                                @Override
-                                public void run() {
-                                    btnWuerfelClicked();
-                                }
-                            };
-                            new Thread(myRunnable).start();
+
+                            new Thread(() -> btnWuerfelClicked()).start();
                         }
 
                         lastX = x;

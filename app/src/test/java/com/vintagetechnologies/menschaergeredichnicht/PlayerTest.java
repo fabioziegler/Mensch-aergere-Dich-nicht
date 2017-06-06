@@ -26,6 +26,7 @@ public class PlayerTest {
     @Before
     public void before() {
         board = Board.get();
+
         new Thread(){
 			@Override
             public void run(){
