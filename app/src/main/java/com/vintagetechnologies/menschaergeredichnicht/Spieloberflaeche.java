@@ -486,13 +486,17 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      * Soundeffekt wird aufgerufen wenn eine spielfigur bewegt wird.
      */
     public void playMove(){
-        moveSound.start();
+        if(gameSettings.isMusicEnabled()) {
+            moveSound.start();
+        }
     }
     /**
      * Soundeffekt wird aufgerufen wenn der Würfel gewürfelt wird.
      */
     public void playDice(){
-        diceSound.start();
+        if(gameSettings.isMusicEnabled()) {
+            diceSound.start();
+        }
     }
 
     private void loadDiceImages(){
