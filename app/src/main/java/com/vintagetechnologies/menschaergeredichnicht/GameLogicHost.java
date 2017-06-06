@@ -8,8 +8,8 @@ import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Device;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServer;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.NetworkListener;

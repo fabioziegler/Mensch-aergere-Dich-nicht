@@ -1,6 +1,5 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -13,9 +12,6 @@ public class Dice {
     protected DiceNumber diceNumber;
 
     public void roll() {
-        //if(ActualGame.getInstance().getGameLogic().getCurrentPlayer().getSchummeln().isPlayerCheating()){
-          //  this.diceNumber = DiceNumber.SIX;
-        //}else {
             do {
                 int length = DiceNumber.values().length;
 
@@ -23,7 +19,6 @@ public class Dice {
 
                 this.diceNumber = DiceNumber.values()[n];
             } while (blackList.contains(this.diceNumber));
-        //}
     }
 
     public DiceNumber getDiceNumber() {

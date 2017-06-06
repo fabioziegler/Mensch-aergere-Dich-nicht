@@ -1,4 +1,4 @@
-package com.vintagetechnologies.menschaergeredichnicht.Impl;
+package com.vintagetechnologies.menschaergeredichnicht.impl;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;

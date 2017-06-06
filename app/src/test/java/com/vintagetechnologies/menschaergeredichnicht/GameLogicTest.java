@@ -1,21 +1,12 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import android.os.Bundle;
-import android.util.Log;
-
-import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.impl.DiceImpl;
 import com.vintagetechnologies.menschaergeredichnicht.structure.*;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic;
-import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;

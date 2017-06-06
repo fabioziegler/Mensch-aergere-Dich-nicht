@@ -1,6 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;

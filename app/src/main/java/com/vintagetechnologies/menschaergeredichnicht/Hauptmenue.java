@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyClientActivity;
 import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.MyServerActivity;

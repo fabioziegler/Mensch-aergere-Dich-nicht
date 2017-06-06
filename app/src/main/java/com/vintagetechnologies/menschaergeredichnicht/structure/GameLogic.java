@@ -1,20 +1,13 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
-import android.media.MediaPlayer;
-import android.util.Log;
-
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.DiceImpl;
-import com.vintagetechnologies.menschaergeredichnicht.R;
-import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
+import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.impl.DiceImpl;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.ArrayList;
-
-import javax.xml.parsers.SAXParser;
 
 /**
  * Created by johannesholzl on 06.05.17.

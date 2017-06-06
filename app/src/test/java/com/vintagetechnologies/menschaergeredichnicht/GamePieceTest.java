@@ -1,6 +1,5 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import com.vintagetechnologies.menschaergeredichnicht.dummies.DummyDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
@@ -29,12 +28,6 @@ public class GamePieceTest {
     @Before
     public void before() {
         board = Board.get();
-        new Thread(){
-            @Override
-            public void run(){
-                DummyDice.get();
-            }
-        }.start();
 
     }
 

@@ -1,27 +1,21 @@
 package com.vintagetechnologies.menschaergeredichnicht.view;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
-import com.vintagetechnologies.menschaergeredichnicht.R;
+import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.impl.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;

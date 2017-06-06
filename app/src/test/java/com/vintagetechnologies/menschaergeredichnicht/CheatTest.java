@@ -1,17 +1,11 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
-import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
-import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import dalvik.annotation.TestTarget;
 
 import static org.junit.Assert.assertEquals;
 

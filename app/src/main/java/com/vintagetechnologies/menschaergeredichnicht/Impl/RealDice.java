@@ -1,13 +1,10 @@
-package com.vintagetechnologies.menschaergeredichnicht.Impl;
+package com.vintagetechnologies.menschaergeredichnicht.impl;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.util.Log;
 import android.widget.ImageButton;
 
 import com.vintagetechnologies.menschaergeredichnicht.R;
-import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +17,10 @@ public class RealDice extends DiceImpl {
 
     private static RealDice realDice;
     private static ImageButton diceButton;
+
+
+    private RealDice() {
+    }
 
 
     public static RealDice get() {
@@ -36,12 +37,11 @@ public class RealDice extends DiceImpl {
     }
 
 
-    private RealDice() {
-    }
+
+
 
     public void waitForRoll() {
 
-        //Spieloberflaeche s = (Spieloberflaeche) RealDice.diceButton.getContext();
         Activity s = (Activity) diceButton.findViewById(R.id.imageButton_wuerfel).getContext();
 
         s.runOnUiThread(new Runnable() {
@@ -54,8 +54,6 @@ public class RealDice extends DiceImpl {
 
         synchronized (realDice) {
 
-            //realDice.notify();
-
             Log.i("Dice", "waiting: "+ realDice);
 
             try {
@@ -64,9 +62,6 @@ public class RealDice extends DiceImpl {
                 Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
                 Thread.currentThread().interrupt();
             }
-
-            System.out.println("done waiting");
-            //diceButton.setEnabled(false);
 
         }
 

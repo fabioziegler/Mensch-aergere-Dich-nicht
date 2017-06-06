@@ -1,4 +1,4 @@
-package com.vintagetechnologies.menschaergeredichnicht.Impl;
+package com.vintagetechnologies.menschaergeredichnicht.impl;
 
 import android.util.Log;
 import android.view.View;
@@ -7,7 +7,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
-import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.R;
@@ -19,12 +18,14 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.Game;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+import com.vintagetechnologies.menschaergeredichnicht.structure.PlayerColor;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Theme;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,6 +62,9 @@ public class ActualGame extends Game {
         return actualGameInstance;
     }
 
+    private ActualGame() {
+        this.gameLogic = new GameLogic();
+    }
 
     /**
      * Called when a client received a new up to date game object from the host.
@@ -91,9 +95,7 @@ public class ActualGame extends Game {
 		getInstance().getBoardView().postInvalidate();
 	}
 
-    private ActualGame() {
-        this.gameLogic = new GameLogic();
-    }
+
 
     /**
      * Inits the ActualGame Object, as it is a Singleton.
@@ -103,6 +105,7 @@ public class ActualGame extends Game {
     public void init(String... names) {
 
         new Thread() {
+            @Override
             public void run() {
                 RealDice.get();
             }
@@ -112,6 +115,13 @@ public class ActualGame extends Game {
 
         gameactivity = (Spieloberflaeche) bv.getContext();
 
+        this.setPlayerNames();
+
+        initialized = true;
+    }
+
+
+    private void setPlayerNames(){
         GameSettings gameSettings = (GameSettings) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS);
 
         Theme theme = null;
@@ -123,65 +133,36 @@ public class ActualGame extends Game {
             }
 
         } catch (IOException e) {
-			Log.e("Actual Game init", "Fehler", e);
+            Log.e("Actual Game init", "Fehler", e);
         }
 
-        final Spieloberflaeche gameactivity = (Spieloberflaeche) bv.getContext();
+        final Spieloberflaeche finalGameactivity = (Spieloberflaeche) bv.getContext();
         final Theme finalTheme = theme;
 
-        gameactivity.runOnUiThread(new Runnable() {
+        final HashMap<PlayerColor, Integer> tfs = new HashMap<>();
+        tfs.put(PlayerColor.RED, R.id.textView_spielerRot);
+        tfs.put(PlayerColor.GREEN, R.id.textView_spielerGruen);
+        tfs.put(PlayerColor.BLUE, R.id.textView_spielerBlau);
+        tfs.put(PlayerColor.YELLOW, R.id.textView_spielerGelb);
+
+        finalGameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
-				boolean red = false, green = false, blue = false, yellow = false;
-
-                for (Player p : gameLogic.getPlayers()) {
-
-                    TextView tv = null;
-                    switch (p.getColor()) {
-                        case RED: {
-                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerRot));
-							red = true;
-                            break;
-                        }
-                        case GREEN: {
-                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGruen));
-							green = true;
-                            break;
-                        }
-                        case BLUE: {
-                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerBlau));
-							blue = true;
-                            break;
-                        }
-                        case YELLOW: {
-                            tv = ((TextView) gameactivity.findViewById(R.id.textView_spielerGelb));
-							yellow = true;
-                            break;
-                        }
-                    }
-
-                    tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
-                    tv.setText(p.getName());
+                for(PlayerColor pc : tfs.keySet()){
+                    ((TextView) finalGameactivity.findViewById(tfs.get(pc))).setVisibility(View.INVISIBLE);
                 }
 
-                // hide not used fields
-                if(!red)
-					((TextView) gameactivity.findViewById(R.id.textView_spielerRot)).setVisibility(View.INVISIBLE);
+                for (Player p : gameLogic.getPlayers()) {
+                    int id = tfs.get(p.getColor());
+                    TextView tv = ((TextView) finalGameactivity.findViewById(id));
+                    tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
+                    tv.setText(p.getName());
 
-                if(!green)
-					((TextView) gameactivity.findViewById(R.id.textView_spielerGruen)).setVisibility(View.INVISIBLE);
-
-                if(!blue)
-					((TextView) gameactivity.findViewById(R.id.textView_spielerBlau)).setVisibility(View.INVISIBLE);
-
-                if(!yellow)
-					((TextView) gameactivity.findViewById(R.id.textView_spielerGelb)).setVisibility(View.INVISIBLE);
-
+                    tv.setVisibility(View.VISIBLE);
+                }
             }
         });
-
-        initialized = true;
     }
 
 
@@ -251,7 +232,6 @@ public class ActualGame extends Game {
 
 
 		// enable buttons
-        //final Button btnFigurSelect = (Button) (gameactivity.findViewById(R.id.Select_Figur));
         final Button btnMoveFigur = (Button) (gameactivity.findViewById(R.id.Move_Figur));
 
         gameactivity.runOnUiThread(new Runnable() {
@@ -268,16 +248,12 @@ public class ActualGame extends Game {
 		// send result to host?
 		if(!isLocalGame() && !gl.isHost()){	// send Player (with Gamepieces) to host
 			getGameLogic()._movePiece();
-			//GameLogicClient gameLogicClient = (GameLogicClient) gl;
-			//Player me = getGameLogic().getPlayerByName(gameSettings.getPlayerName());
-			//gameLogicClient.sendToHost(me);
 		}
 
         // disable buttons
         gameactivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //btnFigurSelect.setEnabled(false);
                 btnMoveFigur.setEnabled(false);
             }
         });
@@ -312,15 +288,6 @@ public class ActualGame extends Game {
 			}
 		}
 
-      /*
-        gameactivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnMoveFigur.setEnabled(false);
-                btnMoveFigur.setVisibility(View.INVISIBLE);
-            }
-        });
-	*/
     }
 
     public void setLocalGame(boolean isLocalGame) {
@@ -336,8 +303,8 @@ public class ActualGame extends Game {
         bv.postInvalidate();
 
         if (!isLocalGame){	// needed here?
-			com.vintagetechnologies.menschaergeredichnicht.GameLogic gameLogic = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
-            if(gameLogic.isHost())
+			com.vintagetechnologies.menschaergeredichnicht.GameLogic gl = (com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
+            if(gl.isHost())
             	GameSynchronisation.synchronize();
         }
     }

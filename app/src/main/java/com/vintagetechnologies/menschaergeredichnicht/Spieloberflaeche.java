@@ -21,13 +21,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.vintagetechnologies.menschaergeredichnicht.Impl.RealDice;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.impl.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import android.hardware.Sensor;
@@ -40,7 +39,6 @@ import android.widget.Toast;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 

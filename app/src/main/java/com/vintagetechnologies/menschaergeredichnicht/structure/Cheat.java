@@ -3,8 +3,7 @@ package com.vintagetechnologies.menschaergeredichnicht.structure;
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.GameLogicClient;
-import com.vintagetechnologies.menschaergeredichnicht.GameLogicHost;
-import com.vintagetechnologies.menschaergeredichnicht.Impl.ActualGame;
+import com.vintagetechnologies.menschaergeredichnicht.impl.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
