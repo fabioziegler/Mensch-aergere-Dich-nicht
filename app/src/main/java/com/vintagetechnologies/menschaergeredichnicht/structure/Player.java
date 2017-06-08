@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
-import android.util.Pair;
+
+import android.support.v4.util.Pair;
 
 /**
  * Created by johannesholzl on 05.04.17.
@@ -141,15 +142,14 @@ public class Player {
 
     private Pair<GamePiece, Integer> getPieceFromBoard(GamePiece gp, int ind) {
         int index = ind;
-        GamePiece gpr;
+        GamePiece gpr = gp;
         for (int i = 0; i < Board.getBoard().length; i++) {
             if (Board.getBoard(i) == gp.getSpot() && index < i) {
                 index = i;
                 gpr = gp;
-                return new Pair<>(gpr, index);
             }
         }
-        return null;
+        return new Pair<>(gpr, index);
     }
 
     public void setUniqueId(int id) {
