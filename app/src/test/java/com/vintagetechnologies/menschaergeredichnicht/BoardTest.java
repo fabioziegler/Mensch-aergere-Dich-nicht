@@ -185,5 +185,28 @@ public class BoardTest {
         assertEquals(null, Board.checkSpot(DiceNumber.FIVE, gp));
     }
 
+    /**
+     * testet ob man die eigene Figur schlagen kann(nicht erlaubt).
+     */
+    @Test
+    public void testEigenenSpielerSchlagen(){
+        Board.resetBoard();
+        GamePiece gp = new GamePiece(PlayerColor.RED);
+        gp.setSpot(Board.getBoard(21));
+        GamePiece gp2 = new GamePiece(PlayerColor.RED);
+        gp2.setSpot(Board.getBoard(20));
+        assertEquals(null, Board.checkSpot(DiceNumber.ONE, gp));
+    }
 
+    /**
+     * testet das herausfahren mittels CheckSpot
+     */
+    @Test
+    public void testCheckSpotEntrance(){
+        Board.resetBoard();
+        GamePiece gp = new GamePiece(PlayerColor.RED);
+        gp.setSpot(Board.getBoard(1));
+        assertEquals(Board.getBoard(12), Board.checkSpot(DiceNumber.ONE, gp));
+
+    }
 }
