@@ -141,4 +141,49 @@ public class BoardTest {
         }
     }
 
+    /**
+     * testet ob die getEntrance-Methode die richtigen Startfelder zurück gibt.
+     */
+    @Test
+    public void testEntrance(){
+        Board.resetBoard();
+        assertEquals(Board.getBoard(12), Board.getEntrance(PlayerColor.RED));
+        assertEquals(Board.getBoard(42), Board.getEntrance(PlayerColor.BLUE));
+        assertEquals(Board.getBoard(32), Board.getEntrance(PlayerColor.GREEN));
+        assertEquals(Board.getBoard(22), Board.getEntrance(PlayerColor.YELLOW));
+    }
+
+    /**
+     * testet ob das Verhalten beim Setzen in Zielfelder korrekt ist.
+     */
+    @Test
+    public void testCheckEndSpot(){
+        Board.resetBoard();
+        GamePiece gp = new GamePiece(PlayerColor.RED);
+        gp.setSpot(Board.getBoard(13));
+        assertEquals(Board.getBoard(59), Board.checkSpot(DiceNumber.ONE, gp));
+        assertEquals(Board.getBoard(58), Board.checkSpot(DiceNumber.TWO, gp));
+        assertEquals(Board.getBoard(57), Board.checkSpot(DiceNumber.THREE, gp));
+        assertEquals(Board.getBoard(56), Board.checkSpot(DiceNumber.FOUR, gp));
+        assertEquals(null, Board.checkSpot(DiceNumber.FIVE, gp));
+    }
+
+    /**
+     * testet ob eine Figur in den Zielfeldern über eine andere hüpft (ist im Ziel nicht erlaubt).
+     */
+    @Test
+    public void testJumpInEndSpot(){
+        Board.resetBoard();
+        GamePiece gp = new GamePiece(PlayerColor.RED);
+        gp.setSpot(Board.getBoard(13));
+        GamePiece gp2 = new GamePiece(PlayerColor.RED);
+        gp2.setSpot(Board.getBoard(58));
+        assertEquals(Board.getBoard(59), Board.checkSpot(DiceNumber.ONE, gp));
+        assertEquals(null, Board.checkSpot(DiceNumber.TWO, gp));
+        assertEquals(null, Board.checkSpot(DiceNumber.THREE, gp));
+        assertEquals(null, Board.checkSpot(DiceNumber.FOUR, gp));
+        assertEquals(null, Board.checkSpot(DiceNumber.FIVE, gp));
+    }
+
+
 }
