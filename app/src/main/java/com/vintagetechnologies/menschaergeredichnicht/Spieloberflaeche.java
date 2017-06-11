@@ -383,7 +383,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
         //DiceSound imitating dice roll.
-        diceSound = MediaPlayer.create(getApplicationContext(), R.raw.roll1);
+        diceSound = MediaPlayer.create(getApplicationContext(), R.raw.dice2);
 
 
         btnWuerfel.setOnClickListener(new View.OnClickListener() {
@@ -395,7 +395,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         });
 
         //MoveSound is played when a player moves
-        moveSound = MediaPlayer.create(getApplicationContext(), R.raw.tap1);
+        moveSound = MediaPlayer.create(getApplicationContext(), R.raw.click);
 
         // bestätigt Eingabe
         btnMoveFigur = (Button) (findViewById(R.id.Move_Figur));

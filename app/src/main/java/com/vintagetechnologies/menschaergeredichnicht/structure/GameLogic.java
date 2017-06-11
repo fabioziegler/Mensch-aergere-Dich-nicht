@@ -272,6 +272,7 @@ public class GameLogic {
 
         if (s != null) {
             gp.moveTo(s);
+            //Sound for moving a player is played
             ActualGame.getInstance().getGameactivity().playMove();
             return true;
         }
