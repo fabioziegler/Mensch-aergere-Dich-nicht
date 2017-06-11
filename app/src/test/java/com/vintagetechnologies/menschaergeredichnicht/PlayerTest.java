@@ -75,6 +75,7 @@ public class PlayerTest {
      */
     @Test
     public void testIsAtStartingPosition() {
+        Board.resetBoard();
         Player p = new Player(PlayerColor.BLUE, "Rainer");
         assertTrue(p.isAtStartingPosition());
         p.getPieces()[0].setSpot(Board.getBoard(20));
