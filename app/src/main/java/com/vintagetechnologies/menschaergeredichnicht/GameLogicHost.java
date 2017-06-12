@@ -196,7 +196,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 	 */
 	@Override
 	protected void parseMessage(Connection connection, Object object){
-		// TODO: extend for other types of message (e.g. aufdecken, ...)
 
 		Device clientDevice = getDevices().getDevice(connection);
 
@@ -264,9 +263,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
 				boolean isCheating = currentPlayer.getSchummeln().isPlayerCheating();
 
-				// send to others if player has cheated, just to display informations
-				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
-
 				currentPlayer.setHasToSkip(isCheating);
 				currentPlayer.getSchummeln().setPlayerCheating(false);
 
@@ -275,11 +271,25 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				Player playerWhoRevealed = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
 				playerWhoRevealed.setHasToSkip(!isCheating);
 
+				//Display the information. Only for Host..
+				String message = "";
+				if (isCheating){
+					message = currentPlayer.getName() + " hat geschummelt und muss aussetzen!";
+				}else{
+					message = revealerName + " hat gecheated & muss aussetzen!";
+				}
+				Toast.makeText(getActivity().getApplicationContext(), message , Toast.LENGTH_LONG).show();
+
+				// send to others if player has cheated, just to display informations
+				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
+
 				GameSynchronisation.synchronize();
 
-				// send toast
+				// send toast _ not needed: Is done in send to all Client devices
+				/*
 				String message = currentPlayer.getName() + " hat gecheated & muss aussetzen!";
 				GameSynchronisation.sendToast(message);
+				*/
 
 			} else if(TAG_MOVE_PIECE.equals(tag)) {
 

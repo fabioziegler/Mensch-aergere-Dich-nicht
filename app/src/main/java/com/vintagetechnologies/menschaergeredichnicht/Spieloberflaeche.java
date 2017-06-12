@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardViewOnClickListener;
@@ -43,6 +44,7 @@ import com.vintagetechnologies.menschaergeredichnicht.view.BoardViewOnClickListe
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
+import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_STATUS_MESSAGE;
 
@@ -443,9 +445,15 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     private void btnAufdeckenClicked() {
 
-        if (gameLogic.isHost()) {
+       if (gameLogic.isHost()) {
 
-            // TODO: implement
+            // TODO: implement, if needed?!
+           /*
+           GameLogicHost gameLogicHost = (GameLogicHost) gameLogic;
+           //Zugriff auf GameLogicHost?! Um gleiche methode wie in else aufzurufen?! Funktioniert das??
+           gameLogicHost.parseMessage(//ConnectionHost?!//,TAG_REVEAL);
+           */
+
 
         } else {
 

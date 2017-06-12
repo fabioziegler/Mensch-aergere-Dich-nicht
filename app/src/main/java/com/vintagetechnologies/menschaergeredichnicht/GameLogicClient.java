@@ -175,6 +175,8 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 				currentPlayer.getSchummeln().setPlayerCheating(false); //Damit der Würfel weiß, dass noch nicht geschummelt wurde.
 				currentPlayer.getSchummeln().informHost(false); //Damit der Host auch weiß, dass (noch) nicht geschummelt wurde.
 
+				//ToDo: Wo und Wann finden diese Einstellungen für den Host statt??
+
 				if(currentPlayerName != null && currentPlayerName.equals(getGameSettings().getPlayerName())){
 					activity.setDiceEnabled(true); //Würfeln
 					activity.setRevealEnabled(false);  //Aufdecken
