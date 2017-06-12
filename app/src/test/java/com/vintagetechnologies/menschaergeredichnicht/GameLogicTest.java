@@ -12,6 +12,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 
 /**
@@ -23,20 +24,19 @@ public class GameLogicTest {
 
     private static final int MAXCOUNT = 1000000;
 
-    private  String[] names = {"Alfred", "Bill", "Marilyn", "Tim"};
+    private String[] names = {"Alfred", "Bill", "Marilyn", "Tim"};
 
     private int c = 0;
 
     private boolean r = false;
 
-
-    private class TestGame extends Game{
+    private class TestGame extends Game {
 
         private GameLogic gameLogic;
 
         private TestDice td = new TestDice();
 
-        public TestGame(){
+        public TestGame() {
             this.gameLogic = new GameLogic();
         }
 
@@ -59,7 +59,7 @@ public class GameLogicTest {
         @Override
         public void whomsTurn(Player p) {
             c++;
-            if(c == MAXCOUNT){
+            if (c == MAXCOUNT) {
                 this.getGameLogic().setPlaying(false);
             }
 
@@ -70,6 +70,7 @@ public class GameLogicTest {
 
         @Override
         public void waitForMovePiece() {
+            //es wird immer mit dem 0-ten Piece gefahren
             this.gameLogic.selectGamePiece(this.gameLogic.getPossibleToMove().get(0));
         }
 
@@ -99,7 +100,7 @@ public class GameLogicTest {
 
     private class TestDice extends DiceImpl {
 
-        public TestDice(){
+        public TestDice() {
             this.diceNumber = DiceNumber.ONE;
         }
 
@@ -110,18 +111,18 @@ public class GameLogicTest {
     }
 
     @Before
-    public void beforeTest(){
+    public void beforeTest() {
         Board.get();
     }
 
     @Test
-    public void testInit(){
+    public void testInit() {
         Board.resetBoard();
 
         TestGame tg = new TestGame();
-        tg.init(names[0],names[1],names[2],names[3]);
+        tg.init(names[0], names[1], names[2], names[3]);
 
-        for(int i = 0; i < tg.getGameLogic().getPlayers().length; i++){
+        for (int i = 0; i < tg.getGameLogic().getPlayers().length; i++) {
             Player p = tg.getGameLogic().getPlayers()[i];
             assertEquals(names[i], p.getName());
         }
@@ -134,13 +135,13 @@ public class GameLogicTest {
     }
 
     @Test
-    public void testGetPlayerByName(){
+    public void testGetPlayerByName() {
         Board.resetBoard();
 
         TestGame tg = new TestGame();
-        tg.init(names[0],names[1],names[2],names[3]);
+        tg.init(names[0], names[1], names[2], names[3]);
 
-        for(int i = 0; i<4; i++){
+        for (int i = 0; i < 4; i++) {
             assertEquals(tg.getGameLogic().getPlayers()[i], tg.getGameLogic().getPlayerByName(names[i]));
         }
     }
@@ -150,25 +151,24 @@ public class GameLogicTest {
      */
 
     @Test
-    public void testEinwuerfeln(){
+    public void testEinwuerfeln() {
         Board.resetBoard();
 
 
-
-        TestGame tg = new TestGame(){
+        TestGame tg = new TestGame() {
             @Override
-            public void regularGameStarted(){
+            public void regularGameStarted() {
                 assertEquals(names[3], this.getGameLogic().getCurrentPlayer().getName());
             }
         };
-        tg.setTd(new TestDice(){
+        tg.setTd(new TestDice() {
             @Override
             public void waitForRoll() {
-                int dice  = (this.diceNumber.getNumber() )% DiceNumber.values().length;
-                this.diceNumber =  DiceNumber.values()[dice];
+                int dice = (this.diceNumber.getNumber()) % DiceNumber.values().length;
+                this.diceNumber = DiceNumber.values()[dice];
             }
         });
-        tg.init(names[0],names[1],names[2],names[3]);
+        tg.init(names[0], names[1], names[2], names[3]);
         tg.getGameLogic().setPlaying(false);
         try {
             tg.play();
@@ -178,5 +178,114 @@ public class GameLogicTest {
 
     }
 
+    @Test
+    public void testGameLoop() {
+        Board.resetBoard();
+
+        final int[] c = {0};
+        final int max = 40;
+
+        TestGame tg = new TestGame() {
+
+            @Override
+            public void regularGameStarted() {
+
+            }
+
+            @Override
+            public void whomsTurn(Player currentplayer) {
+
+                if (c[0] < 4) { // erste Runde, würfeln von 6 nicht möglich (3x, zählender Würfel ist bereits auf 6)
+                    this.getTd().setDiceNumber(DiceNumber.SIX);
+                    assertTrue(currentplayer.isAtStartingPosition());
+                } else {
+                    this.getTd().setDiceNumber(DiceNumber.ONE);
+                }
+                assertEquals(names[c[0] % 4], currentplayer.getName());
+
+                if (c[0] > max) {
+                    fail();
+                } else {
+                    if (c[0] == max) {
+                        this.getGameLogic().setPlaying(false);
+                    }
+                    c[0] += 1;
+                }
+            }
+
+            @Override
+            public void refreshView() {
+                if (c[0] > 4) {
+                    assertFalse(this.getGameLogic().getCurrentPlayer().isAtStartingPosition());
+                }
+            }
+        };
+
+
+        tg.setTd(new TestDice() {
+            @Override
+            public void waitForRoll() {
+                int dice = (this.diceNumber.getNumber() + DiceNumber.values().length - 2) % DiceNumber.values().length;
+                this.diceNumber = DiceNumber.values()[dice];
+            }
+        });
+
+        tg.init(names[0], names[1], names[2], names[3]);
+        try {
+            tg.play();
+        } catch (IllegalAccessException e) {
+            Log.e("Test GameLoop", "Fehler", e);
+        }
+
+
+    }
+
+
+    @Test
+    public void testHinausfahren() {
+        Board.resetBoard();
+
+
+        TestGame tg = new TestGame() {
+
+            private int c = 0;
+
+            @Override
+            public void whomsTurn(Player p) {
+                this.getTd().setDiceNumber(DiceNumber.ONE);
+                this.getGameLogic().setPlaying(false);
+            }
+
+            @Override
+            public void refreshView() {
+                if (c == 0) {
+                    assertEquals(Board.getBoard(12).getGamePiece().getPlayerColor(), PlayerColor.RED); //Roter Spieler ist am Startfeld
+                } else if (c == 1) {
+                    assertEquals(Board.getBoard(7).getGamePiece().getPlayerColor(), PlayerColor.RED); //Roter Spieler fährt um 5 weiter
+                }
+
+                c+=1;
+            }
+        };
+
+        tg.setTd(new TestDice() {
+
+
+            @Override
+            public void waitForRoll() {
+                int dice = (this.diceNumber.getNumber() + DiceNumber.values().length - 2) % DiceNumber.values().length;
+                this.diceNumber = DiceNumber.values()[dice];
+            }
+        });
+
+        tg.getTd().setDiceNumber(DiceNumber.ONE);
+
+        tg.init(names[0], names[1], names[2], names[3]);
+        try {
+            tg.play();
+        } catch (IllegalAccessException e) {
+            Log.e("Test GameLoop", "Fehler", e);
+        }
+    }
 
 }
