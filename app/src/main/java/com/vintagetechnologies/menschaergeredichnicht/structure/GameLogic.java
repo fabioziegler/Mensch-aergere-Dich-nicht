@@ -1,6 +1,7 @@
 package com.vintagetechnologies.menschaergeredichnicht.structure;
 
-import android.util.Pair;
+
+import android.support.v4.util.Pair;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
@@ -176,7 +177,9 @@ public class GameLogic {
 
         game.refreshView();
 
-        return new Pair<>(moved, attempts);
+        Pair<Boolean, Integer> p = new Pair<>(moved, attempts);
+
+        return p;
 
     }
 
@@ -272,8 +275,10 @@ public class GameLogic {
 
         if (s != null) {
             gp.moveTo(s);
-            //Sound for moving a player is played
-            ActualGame.getInstance().getGameactivity().playMove();
+
+            if(this.game instanceof  ActualGame) {
+                ActualGame.getInstance().getGameactivity().playMove();
+            }
             return true;
         }
 

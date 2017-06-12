@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -25,7 +24,6 @@ import com.vintagetechnologies.menschaergeredichnicht.implementation.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.implementation.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
-import com.vintagetechnologies.menschaergeredichnicht.structure.Dice;
 
 import java.util.Random;
 
@@ -38,9 +36,9 @@ import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
-import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
+import com.vintagetechnologies.menschaergeredichnicht.view.BoardViewOnClickListener;
 
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
@@ -103,6 +101,15 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    @FunctionalInterface
+    public interface GuiThreadRunner {
+        public void run(int i);
+    }
+
+    private void e(int i, GuiThreadRunner gtr) {
+        gtr.run(i);
+    }
+
     private void animateDice() {
         // dice rolls for 2 seconds, and changes 5x a second it's number
 
@@ -111,70 +118,66 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             for (int j = 0; j < 6; j++) {   // 1 second (5 changes)
                 final int randomIndex = rand.nextInt(6);
 
-                runOnUiThread(() -> {
-                    imgViewDice.setImageResource(diceImages[randomIndex]);
-
-                });
+                runOnUiThread(() -> e(diceImages[randomIndex], imgViewDice::setImageResource));
 
                 SystemClock.sleep(50);
             }
         }
     }
 
+
+    // Würfel mit Animation ausblenden:
+
     private void endDiceAnimation(int r) {
         final int result = r;
-        // Würfel mit Animation ausblenden:
-        runOnUiThread(() -> {
 
-            int[] locationOfBtnWuerfeln = new int[2];
-            btnWuerfel.getLocationOnScreen(locationOfBtnWuerfeln);
-            int toX = locationOfBtnWuerfeln[0]; // x
-            int toY = locationOfBtnWuerfeln[1]; // y
+        int[] locationOfBtnWuerfeln = new int[2];
+        btnWuerfel.getLocationOnScreen(locationOfBtnWuerfeln);
+        int toX = locationOfBtnWuerfeln[0]; // x
+        int toY = locationOfBtnWuerfeln[1]; // y
 
-            final float scaleX = (float) btnWuerfel.getWidth() / (float) imgViewDice.getWidth();
-            final float scaleY = (float) btnWuerfel.getHeight() / (float) imgViewDice.getHeight();
+        final float scaleX = (float) btnWuerfel.getWidth() / (float) imgViewDice.getWidth();
+        final float scaleY = (float) btnWuerfel.getHeight() / (float) imgViewDice.getHeight();
 
-            imgViewDice.animate()
-                    .x(toX - imgViewDice.getWidth() * scaleX)
-                    .y(toY - imgViewDice.getHeight() * scaleY)
-                    .setDuration(ANIMATION_DURATION)
-                    .scaleX(scaleX * 0.0f)
-                    .scaleY(scaleY * 0.0f)
-                    .alpha(0.8f)
-                    .setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
+        imgViewDice.animate()
+                .x(toX - imgViewDice.getWidth() * scaleX)
+                .y(toY - imgViewDice.getHeight() * scaleY)
+                .setDuration(ANIMATION_DURATION)
+                .scaleX(scaleX * 0.0f)
+                .scaleY(scaleY * 0.0f)
+                .alpha(0.8f)
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
 
-                            // reset image size and location & enable dice button
-                            imgViewDice.setScaleX(1f);
-                            imgViewDice.setScaleY(1f);
+                        // reset image size and location & enable dice button
+                        imgViewDice.setScaleX(1f);
+                        imgViewDice.setScaleY(1f);
 
-                            imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
-                            imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
+                        imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
+                        imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
 
-                            imgViewDice.setAlpha(1f);
-                            imgViewDice.setVisibility(View.INVISIBLE);
+                        imgViewDice.setAlpha(1f);
+                        imgViewDice.setVisibility(View.INVISIBLE);
 
-                            btnWuerfel.setImageResource(diceImages[result]);
+                        btnWuerfel.setImageResource(diceImages[result]);
 
-                            btnWuerfel.setEnabled(true);
-                        }
+                        btnWuerfel.setEnabled(true);
+                    }
 
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                        }
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
 
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                        }
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
 
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-                        }
-                    })
-                    .start();
-
-        });
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                })
+                .start();
     }
 
 
@@ -212,18 +215,16 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
         // setze Ergebnis des Würfelns
-        runOnUiThread(() -> {
-            // Update UI elements
-            imgViewDice.setImageResource(diceImages[result]);
+        // Update UI elements
+        runOnUiThread(() -> e(diceImages[result], imgViewDice::setImageResource));
 
-        });
+
 
 
         // zeige Ergebnis für 1 Sekunde
         SystemClock.sleep(800);
 
-        endDiceAnimation(result);
-
+        runOnUiThread(() -> e(result, this::endDiceAnimation));
 
         if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
             synchronized (RealDice.get()) {
@@ -249,33 +250,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 
     private void boardViewSetTouchListener(final BoardView bv) {
-
-        bv.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (ActualGame.getInstance().getGameLogic().getPossibleToMove() != null && event.getAction() == MotionEvent.ACTION_UP) {
-
-                    float xx = event.getX();
-                    float yy = event.getY();
-
-                    for (GamePiece gp : ActualGame.getInstance().getGameLogic().getPossibleToMove()) {
-
-                        double x = xx - (2 * gp.getSpot().getX() + 1) * (bv.getSpotRadius() + bv.getAbstand());
-                        double y = yy - (2 * gp.getSpot().getY() + 1) * (bv.getSpotRadius() + bv.getAbstand());
-
-                        if (Math.sqrt(x * x + y * y) < 100) {
-                            bv.setHighlightedGamePiece(gp);
-                            bv.invalidate();
-                        }
-                    }
-
-                    Log.i("BoardView", event.getAction() + ": (" + event.getX() + " / " + event.getY() + " )");
-
-                }
-                return true;
-            }
-        });
+        bv.setOnTouchListener(new BoardViewOnClickListener());
     }
 
     private void btnMoveFigurSetOnClickListener() {

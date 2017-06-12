@@ -44,7 +44,7 @@ public class ThemeTest {
         try {
             t = new Theme(am.open("themes/classic.json"));
         } catch (IOException e) {
-			Log.e("Test", "Fehler", e);
+			Log.e("Test", "FehlerTestClassic", e);
         }
 
         if(t == null) {
@@ -64,7 +64,7 @@ public class ThemeTest {
         try {
             t = new Theme(am.open("themes/vintage.json"));
         } catch (IOException e) {
-            Log.e("Test", "Fehler", e);
+            Log.e("Test", "FehlerTestVintage", e);
         }
 
         assertNotNull(t);
@@ -81,7 +81,7 @@ public class ThemeTest {
         try {
             t = new Theme(am.open("themes/retro.json"));
         } catch (IOException e) {
-            Log.e("Test", "Fehler", e);
+            Log.e("Test", "FehlerTestFail", e);
         }
 
         assertNull(t);
