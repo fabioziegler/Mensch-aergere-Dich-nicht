@@ -274,7 +274,7 @@ public class ActualGame extends Game {
         } else {
 
             Thread clientPlayThread = getGameLogic().getClientPlayThread();
-            synchronized (/*this*/clientPlayThread) {
+            synchronized (this) {
                 try {
                     clientPlayThread.wait();
                 } catch (InterruptedException e) {
