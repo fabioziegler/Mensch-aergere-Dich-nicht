@@ -276,7 +276,8 @@ public class ActualGame extends Game {
             Thread clientPlayThread = getGameLogic().getClientPlayThread();
             synchronized (this) {
                 try {
-                    clientPlayThread.wait();
+                    //clientPlayThread.wait();
+					wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -305,11 +306,9 @@ public class ActualGame extends Game {
     }
 
     private void printInfo(final String info) {
-        gameactivity.runOnUiThread(() -> {
-
-            gameactivity.setStatus(info);
-
-        });
+        gameactivity.runOnUiThread(() ->
+            gameactivity.setStatus(info)
+        );
     }
 
 
