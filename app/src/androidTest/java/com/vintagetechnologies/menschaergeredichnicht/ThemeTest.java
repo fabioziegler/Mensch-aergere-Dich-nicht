@@ -69,8 +69,10 @@ public class ThemeTest {
 
         assertNotNull(t);
 
-        assertEquals((int) Color.rgb(255, 0, 0), (int) t.getColor("RED"));
-        assertEquals("vintage_holz02", t.getAttribute("BackgroundImage"));
+		if(t != null) {
+			assertEquals((int) Color.rgb(255, 0, 0), (int) t.getColor("RED"));
+			assertEquals("vintage_holz02", t.getAttribute("BackgroundImage"));
+		}
 
     }
 

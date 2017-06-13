@@ -249,11 +249,9 @@ public class ActualGame extends Game {
         }
 
         // disable buttons
-        gameactivity.runOnUiThread(() -> {
-
-            btnMoveFigur.setEnabled(false);
-
-        });
+        gameactivity.runOnUiThread(() ->
+				btnMoveFigur.setEnabled(false)
+		);
     }
 
 
@@ -276,7 +274,7 @@ public class ActualGame extends Game {
         } else {
 
             Thread clientPlayThread = getGameLogic().getClientPlayThread();
-            synchronized (clientPlayThread) {
+            synchronized (/*this*/clientPlayThread) {
                 try {
                     clientPlayThread.wait();
                 } catch (InterruptedException e) {
