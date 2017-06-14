@@ -490,11 +490,11 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         if (gameLogic.isHost()) {
 
             // TODO: implement, if needed?!
-           /*
-           GameLogicHost gameLogicHost = (GameLogicHost) gameLogic;
+
+           //GameLogicHost gameLogicHost = (GameLogicHost) gameLogic;
            //Zugriff auf GameLogicHost?! Um gleiche methode wie in else aufzurufen?! Funktioniert das??
-           gameLogicHost.parseMessage(//ConnectionHost?!//,TAG_REVEAL);
-           */
+           //gameLogicHost.parseMessage(gameLogicHost.server.getConnections(), Network.TAG_REVEAL);
+
 
 
         } else {

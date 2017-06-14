@@ -79,7 +79,7 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 	@Override
 	public void onConnected(Connection connection) {
-		// send name to client
+		// send host name to client
 		sendMessageToClient(connection.getID(), TAG_PLAYER_NAME + MESSAGE_DELIMITER + gameSettings.getPlayerName());
 
 		// add device
@@ -93,11 +93,12 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		if(!hasGameStarted())
 			return;
 
+		// fix!
 		try {
 			Toast.makeText(	getActivity().getApplicationContext(), getDevices().getDevice(connection).getName() +
 					getActivity().getString(R.string.msgPlayerJustLeftTheGame), Toast.LENGTH_LONG).show();
 		}catch (NullPointerException e){
-			e.printStackTrace();
+			Log.e("GameLogicHost", "Fehler", e);
 		}
 
 
@@ -260,7 +261,11 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 			String[] data = ((String) object).split(MESSAGE_DELIMITER);
 			String tag = data[0];
-			String value = data[1];
+			String value = null;
+
+			if(data.length > 1){
+				value = data[1];
+			}
 
 			if(TAG_PLAYER_NAME.equals(tag)){
 

@@ -125,11 +125,9 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
             String tag = data[0];
             String value = null;
 
-            try {
-                value = data[1];
-            } catch (Exception e) {
-                Log.e(TAG, "Error", e);
-            }
+			if(data.length > 1){
+				value = data[1];
+			}
 
             if (TAG_PLAYER_NAME.equals(tag)) {    // when receiving the name of the host
 
