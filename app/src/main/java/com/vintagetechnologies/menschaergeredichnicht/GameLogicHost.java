@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -16,6 +17,7 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.Network
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
+import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.List;
@@ -91,8 +93,13 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 		if(!hasGameStarted())
 			return;
 
-		Toast.makeText(	getActivity().getApplicationContext(), getDevices().getDevice(connection).getName() +
-						getActivity().getString(R.string.msgPlayerJustLeftTheGame), Toast.LENGTH_LONG).show();
+		try {
+			Toast.makeText(	getActivity().getApplicationContext(), getDevices().getDevice(connection).getName() +
+					getActivity().getString(R.string.msgPlayerJustLeftTheGame), Toast.LENGTH_LONG).show();
+		}catch (NullPointerException e){
+			e.printStackTrace();
+		}
+
 
 		getDevices().remove(connection);
 
@@ -212,17 +219,42 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 		} else if(object instanceof DiceNumber) {
 
+			final Spieloberflaeche activity = (Spieloberflaeche) getActivity();
+			final int dn = ((DiceNumber) object).getNumber() -1;
+			activity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					ImageButton btnWuerfel = (ImageButton) activity.findViewById(R.id.imageButton_wuerfel);
+					btnWuerfel.setImageResource(activity.getDiceImage(dn));
+				}
+			});
+
 			// client hat gewuerfelt
 			synchronized (RealDice.get()) {
 				RealDice.get().setDiceNumber((DiceNumber) object);
 				RealDice.get().notify();
 			}
 
+			GameSynchronisation.send(object);
+
 		} else if(object instanceof GamePiece){
 
 			GamePiece gamePiece = (GamePiece) object;
-			ActualGame.getInstance().getBoardView().setHighlightedGamePiece(gamePiece);
-			ActualGame.getInstance().getBoardView().invalidate();
+			Spot gs = gamePiece.getSpot();
+
+			for(GamePiece gp : ActualGame.getInstance().getGameLogic().getCurrentPlayer().getPieces()){
+				Spot s = gp.getSpot();
+				if(s.getX() == gs.getX() && s.getY() == gs.getY()){
+					ActualGame.getInstance().getGameLogic().selectGamePiece(gp);
+				}
+			}
+
+
+
+
+			synchronized (ActualGame.getInstance()) {
+				ActualGame.getInstance().notify();
+			}
 
 		} else if(object instanceof String) {	// string message
 
@@ -293,18 +325,23 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 			} else if(TAG_MOVE_PIECE.equals(tag)) {
 
-				int number = Integer.parseInt(value);
+//				int number = Integer.parseInt(value);
+//
+//				synchronized (RealDice.get()) {
+//					RealDice.get().getDiceNumber().diceNum(number);
+//					RealDice.get().notify();
+//				}
+//
+//				Button btnMoveFigur = ((Spieloberflaeche) getActivity()).getBtnMoveFigur();
+//				btnMoveFigur.callOnClick();
+//
+//				ActualGame.getInstance().getBoardView().invalidate();
 
-				synchronized (RealDice.get()) {
-					RealDice.get().getDiceNumber().diceNum(number);
-					RealDice.get().notify();
+				//TODO ActualGame.getInstance().getGameLogic().selectGamePiece();
+
+				synchronized (ActualGame.getInstance()) {
+					ActualGame.getInstance().notify();
 				}
-
-				Button btnMoveFigur = ((Spieloberflaeche) getActivity()).getBtnMoveFigur();
-				btnMoveFigur.callOnClick();
-
-				ActualGame.getInstance().getBoardView().invalidate();
-
 			}
 
 

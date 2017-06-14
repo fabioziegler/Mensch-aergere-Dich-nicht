@@ -120,7 +120,13 @@ public class MyServerActivity extends AppCompatActivity implements NetworkListen
 	public void onDisconnected(final Connection connection) {
 
 		// remove player from list
-		String playerName = gameLogic.getDevices().getDevice(connection).getName();
+		String playerName = "";
+		try {
+			playerName = gameLogic.getDevices().getDevice(connection).getName();
+		}catch (NullPointerException e){
+			e.printStackTrace();
+		}
+
 
 		for (int i = 0; i < playerNames.size(); i++) {
 			if(playerNames.get(i).equals(playerName)){

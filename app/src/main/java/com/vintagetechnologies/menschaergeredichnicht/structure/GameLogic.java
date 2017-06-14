@@ -75,7 +75,8 @@ public class GameLogic {
 
         for (int p = 0; p < players.length; p++) {
 
-            //
+            currentPlayer = p;
+
             game.beginningAction(players[p]);
 
             dice.waitForRoll();
@@ -168,7 +169,7 @@ public class GameLogic {
 
 
         if (!cp.isAtStartingPosition() && !moved) {
-            move();
+            moved = move();
         }
 
         if (!moved) {
@@ -250,14 +251,12 @@ public class GameLogic {
     }
 
 
-    public void _movePiece() {
-        this.selectedGamePiece = this.possibleToMove.get(0);
-
+    public void resetSelected() {
         if (possibleToMove.contains(this.selectedGamePiece)) {
-            movePiece(this.selectedGamePiece);
             selectedGamePiece = null;
             possibleToMove = null;
         }
+
     }
 
 

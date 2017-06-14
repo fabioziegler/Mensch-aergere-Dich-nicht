@@ -4,7 +4,13 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.ImageButton;
 
+import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
+import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.R;
+import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
+import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,33 +45,60 @@ public class RealDice extends DiceImpl {
 
     public void waitForRoll() {
 
-        Activity s = (Activity) diceButton.findViewById(R.id.imageButton_wuerfel).getContext();
+        GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
 
-        s.runOnUiThread(() -> {
-            RealDice.diceButton.setClickable(true);
-            RealDice.diceButton.setAlpha(1f);
+        if (!ActualGame.getInstance().isLocalGame() && DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, GameLogic.class).isHost() && !ActualGame.getInstance().getGameLogic().getCurrentPlayer().getName().equals(gameSettings.getPlayerName())) {
+            GameSynchronisation.send(Network.TAG_WAIT_FOR_ROLL + Network.MESSAGE_DELIMITER + ActualGame.getInstance().getGameLogic().getCurrentPlayer().getName());
 
-        });
+            synchronized (realDice) {
 
-        synchronized (realDice) {
+                Log.i("Dice", "waiting: " + realDice);
 
-            Log.i("Dice", "waiting: " + realDice);
+                try {
+                    realDice.wait();
+                } catch (InterruptedException e) {
+                    Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
+                    Thread.currentThread().interrupt();
+                }
 
-            try {
-                realDice.wait();
-            } catch (InterruptedException e) {
-                Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
-                Thread.currentThread().interrupt();
+            }
+        } else {
+
+
+            final Spieloberflaeche s = (Spieloberflaeche) diceButton.findViewById(R.id.imageButton_wuerfel).getContext();
+
+            s.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    s.setDiceEnabled(true);
+                }
+            });
+
+            synchronized (realDice) {
+
+                Log.i("Dice", "waiting: " + realDice);
+
+                try {
+                    realDice.wait();
+                } catch (InterruptedException e) {
+                    Logger.getLogger(RealDice.class.getName()).log(Level.INFO, "Exception while waiting!", e);
+                    Thread.currentThread().interrupt();
+                }
+
             }
 
+
+            s.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    s.setDiceEnabled(false);
+                }
+            });
+
+            if(!ActualGame.getInstance().isLocalGame()){
+                GameSynchronisation.send(realDice.getDiceNumber());
+            }
         }
-
-        s.runOnUiThread(() -> {
-            RealDice.diceButton.setClickable(false);
-            RealDice.diceButton.setAlpha(0.5f);
-
-
-        });
     }
 
     public static void setDiceButton(ImageButton db) {

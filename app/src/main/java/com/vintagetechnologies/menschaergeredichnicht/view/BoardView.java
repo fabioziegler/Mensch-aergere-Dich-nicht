@@ -13,9 +13,11 @@ import android.util.Log;
 import android.view.View;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
+import com.vintagetechnologies.menschaergeredichnicht.GameLogic;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.implementation.ActualGame;
 import com.vintagetechnologies.menschaergeredichnicht.implementation.RealDice;
+import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
 import com.vintagetechnologies.menschaergeredichnicht.structure.EndSpot;
@@ -155,6 +157,18 @@ public class BoardView extends View {
 
         }
 
+        GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
+
+
+        if (!ActualGame.getInstance().isLocalGame() && DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, GameLogic.class).isHost() && !ActualGame.getInstance().getGameLogic().getCurrentPlayer().getName().equals(gameSettings.getPlayerName())) {
+
+        }else{
+            drawSelected(canvas);
+        }
+
+    }
+
+    private void drawSelected(Canvas canvas) {
         paint.setStrokeWidth(10);
 
         if (ActualGame.getInstance().getGameLogic().getPossibleToMove() != null) {
@@ -240,8 +254,6 @@ public class BoardView extends View {
         }
 
         paint.setStrokeWidth(2);
-
-
     }
 
 

@@ -52,10 +52,12 @@ public class MyClient {
 
         Log.i(TAG, "Received message! Msg: " + object + ". From player ID: " + connection.getID());
 
-        callingActivity.runOnUiThread(() -> {
-            for (int i = 0; i < listeners.size(); i++)
-                listeners.get(i).onReceived(connection, object);
-
+        callingActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < listeners.size(); i++)
+                    listeners.get(i).onReceived(connection, object);
+            }
         });
     }
 
@@ -68,10 +70,12 @@ public class MyClient {
     public void onConnected(final Connection connection) {
         Log.i(TAG, "Connected to server.");
 
-        callingActivity.runOnUiThread(() -> {
-            for (int i = 0; i < listeners.size(); i++)
-                listeners.get(i).onConnected(connection);
-
+        callingActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < listeners.size(); i++)
+                    listeners.get(i).onConnected(connection);
+            }
         });
     }
 
@@ -82,11 +86,14 @@ public class MyClient {
      * @param connection
      */
     public void onDisconnected(final Connection connection) {
-        callingActivity.runOnUiThread(() -> {
-            for (int i = 0; i < listeners.size(); i++)
-                listeners.get(i).onDisconnected(connection);
-
-        });
+        callingActivity.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < listeners.size(); i++)
+                            listeners.get(i).onDisconnected(connection);
+                    }
+                });
     }
 
 
@@ -133,35 +140,37 @@ public class MyClient {
      */
     public void discoverHost() {
 
-        Thread thread = new Thread(() -> {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                final int discoverTimeout = 1000 * 20;    // def: 5s
+                InetAddress hostAddress;
 
-            final int discoverTimeout = 1000 * 20;    // def: 5s
-            InetAddress hostAddress;
+                do {
+                    hostAddress = client.discoverHost(54777, discoverTimeout);
 
-            do {
-                hostAddress = client.discoverHost(54777, discoverTimeout);
+                    // sleep 0.5s
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, "Thread exception.", e);
+                        Thread.currentThread().interrupt();
+                    }
 
-                // sleep 0.5s
+                } while (hostAddress == null);
+
+                // connect to host
                 try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "Thread exception.", e);
-                    Thread.currentThread().interrupt();
+                    Log.i(TAG, "Connecting to server at " + hostAddress);
+                    final int connectionTimeout = 1000 * 10;    // def: 5s
+                    client.connect(connectionTimeout, hostAddress, 54555, 54777);
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to connect to server or timeout.", e);
                 }
-
-            } while (hostAddress == null);
-
-            // connect to host
-            try {
-                Log.i(TAG, "Connecting to server at " + hostAddress);
-                final int connectionTimeout = 1000 * 10;    // def: 5s
-                client.connect(connectionTimeout, hostAddress, 54555, 54777);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to connect to server or timeout.", e);
             }
 
 
-        });
+        };
 
         thread.setName("Host Discovery");
         thread.start();

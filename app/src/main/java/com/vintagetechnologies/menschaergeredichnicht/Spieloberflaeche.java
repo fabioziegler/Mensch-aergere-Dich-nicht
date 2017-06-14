@@ -36,11 +36,13 @@ import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
+import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardViewOnClickListener;
 
+import static android.R.attr.animation;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
@@ -103,14 +105,14 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         }
     }
 
-    @FunctionalInterface
+    /*@FunctionalInterface
     public interface GuiThreadRunner {
         public void run(int i);
-    }
+    }*/
 
-    private void e(int i, GuiThreadRunner gtr) {
-        gtr.run(i);
-    }
+//    private void e(int i, GuiThreadRunner gtr) {
+//        gtr.run(i);
+//    }
 
     private void animateDice() {
         // dice rolls for 2 seconds, and changes 5x a second it's number
@@ -120,7 +122,13 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             for (int j = 0; j < 6; j++) {   // 1 second (5 changes)
                 final int randomIndex = rand.nextInt(6);
 
-                runOnUiThread(() -> e(diceImages[randomIndex], imgViewDice::setImageResource));
+                //runOnUiThread(() -> e(diceImages[randomIndex], imgViewDice::setImageResource));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imgViewDice.setImageResource(diceImages[randomIndex]);
+                    }
+                });
 
                 SystemClock.sleep(50);
             }
@@ -165,7 +173,16 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         btnWuerfel.setImageResource(diceImages[result]);
 
                         btnWuerfel.setEnabled(true);
+
+                        //if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
+                        synchronized (RealDice.get()) {
+                            RealDice.get().notify();
+                        }
+                        //} else {    // client:
+                        //((GameLogicClient) gameLogic).sendToHost(RealDice.get().getDiceNumber());    // send diceNumber to host
+                        //
                     }
+
 
                     @Override
                     public void onAnimationStart(Animator animation) {
@@ -178,22 +195,24 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     @Override
                     public void onAnimationRepeat(Animator animation) {
                     }
-                })
-                .start();
+
+                }).start();
+
     }
 
 
     private void btnWuerfelClickedUpdateUIElements() {
         // ui elementes must be updated on main thread:
-        runOnUiThread(() -> {
-            // Update UI elements
-            imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
-            imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                imgViewDice.setX(screenWidth / 2f - (imgViewDice.getWidth() / 2));
+                imgViewDice.setY(screenHeight / 2f - (imgViewDice.getHeight() / 2));
 
-            imgViewDice.setVisibility(View.VISIBLE);
-            btnWuerfel.setImageResource(R.drawable.dice_undefined);
-            imgViewDice.setImageResource(R.drawable.dice_undefined);
-
+                imgViewDice.setVisibility(View.VISIBLE);
+                btnWuerfel.setImageResource(R.drawable.dice_undefined);
+                imgViewDice.setImageResource(R.drawable.dice_undefined);
+            }
         });
 
     }
@@ -204,12 +223,20 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      */
     private void btnWuerfelClicked() {
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setDiceEnabled(false);
+            }
+        });
+
+
         playDice();
         btnWuerfelClickedUpdateUIElements();
 
         checkSchummeln();
 
-        //Sets the Result
+//Sets the Result
         final int result = RealDice.get().getDiceNumber().getNumber() - 1;
 
 
@@ -218,23 +245,25 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         // setze Ergebnis des Würfelns
         // Update UI elements
-        runOnUiThread(() -> e(diceImages[result], imgViewDice::setImageResource));
-
-
+        //runOnUiThread(() -> e(diceImages[result], imgViewDice::setImageResource));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                imgViewDice.setImageResource(diceImages[result]);
+            }
+        });
 
 
         // zeige Ergebnis für 1 Sekunde
         SystemClock.sleep(800);
 
-        runOnUiThread(() -> e(result, this::endDiceAnimation));
-
-        if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
-            synchronized (RealDice.get()) {
-                RealDice.get().notify();
+        //runOnUiThread(() -> e(result, this::endDiceAnimation));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                endDiceAnimation(result);
             }
-        } else {    // client:
-            ((GameLogicClient) gameLogic).sendToHost(RealDice.get().getDiceNumber());    // send diceNumber to host
-        }
+        });
 
         //jetzt kann durch erneutes schütteln wieder ein Würfeln ausgelöst werden.
         shook = false;
@@ -260,11 +289,20 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnMoveFigur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // toDO: Ausgewählte Figur um gewürfelte Augenzahl weitersetzen
 
                 //sound für setzen einer figur
                 playMove();
                 ActualGame.getInstance().getGameLogic().selectGamePiece(bv.getHighlightedGamePiece());
+
+                if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {    // host or local game:
+
+                } else {    // client in mp game:
+
+                    //((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + bv.getHighlightedGamePiece());
+                    ((GameLogicClient) gameLogic).sendToHost(bv.getHighlightedGamePiece());
+
+                }
+
                 bv.setHighlightedGamePiece(null);
 
                 RealDice.get();
@@ -272,13 +310,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 RealDice.setDiceButton(btnWuerfel);
                 imgViewDice = (ImageView) (findViewById(R.id.imgViewDice));
 
-                if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {    // host or local game:
-                    synchronized (ActualGame.getInstance()) {
-                        ActualGame.getInstance().notify();
-                    }
-                } else {    // client in mp game:
 
-                    ((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + RealDice.get().getDiceNumber().getNumber());
+
+
+
+                synchronized (ActualGame.getInstance()) {
+                    ActualGame.getInstance().notify();
                 }
 
             }
@@ -353,6 +390,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
         btnWuerfel = (ImageButton) (findViewById(R.id.imageButton_wuerfel));
         btnWuerfel.setEnabled(true);
+        setDiceEnabled(true);
 
         RealDice.get();
 
@@ -367,7 +405,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             @Override
             public void onClick(View v) {
 
-                new Thread(() -> btnWuerfelClicked()).start();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        btnWuerfelClicked();
+                    }
+                }.start();
             }
         });
 
@@ -412,7 +455,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
-
     /**
      * Soundeffekt wird aufgerufen wenn eine spielfigur bewegt wird.
      */
@@ -445,7 +487,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     private void btnAufdeckenClicked() {
 
-       if (gameLogic.isHost()) {
+        if (gameLogic.isHost()) {
 
             // TODO: implement, if needed?!
            /*
@@ -545,7 +587,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         if (speed > SHAKE_THRESHOLD) {
                             shook = true;
 
-                            new Thread(() -> btnWuerfelClicked()).start();
+                            new Thread(){
+                                @Override
+                                public void run() {
+                                    btnWuerfelClicked();
+                                }
+                            }.start();
                         }
 
                         lastX = x;
@@ -606,13 +653,18 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      *
      * @param enabled
      */
-    //Sensors are only used when player == currentPlayer
+//Sensors are only used when player == currentPlayer
     public void setSensorOn(boolean enabled) {
         sensorOn = enabled;
     }
 
     public void setDiceEnabled(boolean enabled) {
-        btnWuerfel.setEnabled(enabled);
+        btnWuerfel.setEnabled(true);
+        btnWuerfel.setClickable(enabled);
+        btnWuerfel.setAlpha(enabled ? 1f : 0.5f);
+
+        //btnWuerfel.setClickable(true);
+        //btnWuerfel.setAlpha(1f);
     }
 
     public void setRevealEnabled(boolean enabled) {
@@ -621,6 +673,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     public Button getBtnMoveFigur() {
         return btnMoveFigur;
+    }
+
+    public int getDiceImage(int n){
+        return this.diceImages[n];
     }
 }
 

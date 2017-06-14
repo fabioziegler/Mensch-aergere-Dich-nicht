@@ -106,6 +106,11 @@ public class Network {
 	 */
 	public static final String TAG_MOVE_PIECE = "move_piece";
 
+	/**
+	 *
+	 */
+	public static final String TAG_WAIT_FOR_ROLL = "wait_for_roll";
+
 
 	/**
 	 * Register classes that will be send.

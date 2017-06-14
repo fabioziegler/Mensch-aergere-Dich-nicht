@@ -50,10 +50,12 @@ public class MyServer {
 
         Log.i(TAG, "Received message! Msg: " + object + ". From player ID: " + connection.getID());
 
-        callingActivity.runOnUiThread(() -> {
-            for (int i = 0; i < listeners.size(); i++)
-                listeners.get(i).onReceived(connection, object);
-
+        callingActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < listeners.size(); i++)
+                    listeners.get(i).onReceived(connection, object);
+            }
         });
     }
 
@@ -66,10 +68,12 @@ public class MyServer {
     public void onConnected(final Connection connection) {
 
         Log.i(TAG, "Connected to client: " + connection.getRemoteAddressTCP().getAddress());
-        callingActivity.runOnUiThread(() -> {
-            for (int i = 0; i < listeners.size(); i++)
-                listeners.get(i).onConnected(connection);
-
+        callingActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < listeners.size(); i++)
+                    listeners.get(i).onConnected(connection);
+            }
         });
     }
 
@@ -80,10 +84,12 @@ public class MyServer {
      * @param connection
      */
     public void onDisconnected(final Connection connection) {
-        callingActivity.runOnUiThread(() -> {
-            for (int i = 0; i < listeners.size(); i++)
-                listeners.get(i).onDisconnected(connection);
-
+        callingActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < listeners.size(); i++)
+                    listeners.get(i).onDisconnected(connection);
+            }
         });
     }
 

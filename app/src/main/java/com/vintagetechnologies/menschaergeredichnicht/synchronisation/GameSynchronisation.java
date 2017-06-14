@@ -59,7 +59,7 @@ public class GameSynchronisation {
      * Sendet Gamedaten.
      * @param message
      */
-    private static void send(Object message){
+    public static void send(Object message){
 
 		// TODO: nacheinander nur die Klassen schicken die geändet wurden! Danach z.B. Signal schicken "neue Runde beginnt" oder so...
 		// TODO: Methode in dieser Klasse die, die empfangenen Klassen ausliest und die Game Klasse entsprechend aktualisiert.

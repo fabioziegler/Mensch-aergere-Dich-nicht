@@ -3,7 +3,6 @@ package com.vintagetechnologies.menschaergeredichnicht.implementation;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.vintagetechnologies.menschaergeredichnicht.DataHolder;
@@ -146,23 +145,28 @@ public class ActualGame extends Game {
         tfs.put(PlayerColor.BLUE, R.id.textView_spielerBlau);
         tfs.put(PlayerColor.YELLOW, R.id.textView_spielerGelb);
 
-        finalGameactivity.runOnUiThread(() -> {
+        finalGameactivity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                for (PlayerColor pc : tfs.keySet()) {
+                                                    ((TextView) finalGameactivity.findViewById(tfs.get(pc))).setVisibility(View.INVISIBLE);
+                                                }
+
+                                                for (Player p : gameLogic.getPlayers()) {
+                                                    int id = tfs.get(p.getColor());
+                                                    TextView tv = (TextView) finalGameactivity.findViewById(id);
+                                                    tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
+                                                    tv.setText(p.getName());
+
+                                                    tv.setVisibility(View.VISIBLE);
+
+                                                }
+
+                                            }
+                                        }
 
 
-            for (PlayerColor pc : tfs.keySet()) {
-                ((TextView) finalGameactivity.findViewById(tfs.get(pc))).setVisibility(View.INVISIBLE);
-            }
-
-            for (Player p : gameLogic.getPlayers()) {
-                int id = tfs.get(p.getColor());
-                TextView tv = (TextView) finalGameactivity.findViewById(id);
-                tv.setTextColor(finalTheme.getColor(p.getColor().toString()));
-                tv.setText(p.getName());
-
-                tv.setVisibility(View.VISIBLE);
-
-            }
-        });
+        );
     }
 
 
@@ -196,17 +200,18 @@ public class ActualGame extends Game {
 
         GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
 
-        if (!p.getName().equals(gameSettings.getPlayerName())) {
+        /*if (!p.getName().equals(gameSettings.getPlayerName())) {
             // enable buttons
             final ImageButton btnWuerfel = (ImageButton) (gameactivity.findViewById(R.id.imageButton_wuerfel));
 
-            gameactivity.runOnUiThread(() -> {
-
-                bv.invalidate();
-                btnWuerfel.setEnabled(false);
-
+            gameactivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bv.invalidate();
+                    btnWuerfel.setEnabled(false);
+                }
             });
-        }
+        }*/
     }
 
     @Override
@@ -233,25 +238,35 @@ public class ActualGame extends Game {
         // enable buttons
         final Button btnMoveFigur = (Button) (gameactivity.findViewById(R.id.Move_Figur));
 
-        gameactivity.runOnUiThread(() -> {
+        gameLogic.selectGamePiece(gameLogic.getPossibleToMove().get(0));
 
-            bv.invalidate();
-            btnMoveFigur.setEnabled(true);
-            btnMoveFigur.setVisibility(View.VISIBLE);
 
+        gameactivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bv.invalidate();
+                btnMoveFigur.setEnabled(true);
+                btnMoveFigur.setVisibility(View.VISIBLE);
+            }
         });
 
         _waitForMove();
 
         // send result to host?
         if (!isLocalGame() && !gl.isHost()) {    // send Player (with Gamepieces) to host
-            getGameLogic()._movePiece();
+            gameLogic.resetSelected();
         }
 
         // disable buttons
-        gameactivity.runOnUiThread(() ->
-				btnMoveFigur.setEnabled(false)
-		);
+        gameactivity.runOnUiThread(new Runnable() {
+                                       @Override
+                                       public void run() {
+                                           btnMoveFigur.setEnabled(false);
+                                           btnMoveFigur.setVisibility(View.INVISIBLE);
+                                       }
+                                   }
+
+        );
     }
 
 
@@ -277,7 +292,7 @@ public class ActualGame extends Game {
             synchronized (this) {
                 try {
                     //clientPlayThread.wait();
-					wait();
+                    wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -306,8 +321,13 @@ public class ActualGame extends Game {
     }
 
     private void printInfo(final String info) {
-        gameactivity.runOnUiThread(() ->
-            gameactivity.setStatus(info)
+        gameactivity.runOnUiThread(new Runnable() {
+                                       @Override
+                                       public void run() {
+                                           gameactivity.setStatus(info);
+                                       }
+                                   }
+
         );
     }
 
