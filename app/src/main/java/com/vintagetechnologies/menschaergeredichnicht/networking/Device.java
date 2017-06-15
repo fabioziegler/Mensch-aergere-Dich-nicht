@@ -18,6 +18,7 @@ public class Device {
         this.id = id;
         this.name = name;
         this.isHost = isHost;
+		this.connectionId = id;
     }
 
 	public Device(int id, boolean isHost){
