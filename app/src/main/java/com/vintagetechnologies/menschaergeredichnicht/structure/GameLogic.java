@@ -27,7 +27,7 @@ public class GameLogic {
     private GamePiece selectedGamePiece;
     private ArrayList<GamePiece> possibleToMove;
 
-    //init methode already called?
+    // init method already called?
     private boolean initialized = false;
 
     private Game game;
@@ -71,8 +71,6 @@ public class GameLogic {
         int bestPlayer = -1;
         int bestNumber = 0;
 
-        // TODO: adjust for multiplayer
-
         for (int p = 0; p < players.length; p++) {
 
             currentPlayer = p;
@@ -97,6 +95,7 @@ public class GameLogic {
         game.regularGameStarted();
         regularGame();
     }
+
 
     private boolean startingPos() {
         boolean moved = false;
@@ -178,9 +177,9 @@ public class GameLogic {
 
         game.refreshView();
 
-        Pair<Boolean, Integer> p = new Pair<>(moved, attempts);
+        Pair<Boolean, Integer> pair = new Pair<>(moved, attempts);
 
-        return p;
+        return pair;
 
     }
 
@@ -362,4 +361,5 @@ public class GameLogic {
     public void setClientPlayThread(Thread clientPlayThread) {
         this.clientPlayThread = clientPlayThread;
     }
+
 }

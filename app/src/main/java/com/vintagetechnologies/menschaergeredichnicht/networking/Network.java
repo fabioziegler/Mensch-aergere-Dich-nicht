@@ -56,7 +56,7 @@ public class Network {
 	/**
 	 * If a client wants to reveal if a player cheated.
 	 */
-	public static final String TAG_REVEAL = "reveal" + MESSAGE_DELIMITER;
+	public static final String TAG_REVEAL = "reveal";
 
 
 	/**
@@ -106,9 +106,7 @@ public class Network {
 	 */
 	public static final String TAG_MOVE_PIECE = "move_piece";
 
-	/**
-	 *
-	 */
+
 	public static final String TAG_WAIT_FOR_ROLL = "wait_for_roll";
 
 
@@ -150,7 +148,6 @@ public class Network {
 		kryo.register(StartingSpot.class);
 		kryo.register(RegularSpot.class);
 		kryo.register(EndSpot.class);
-
 	}
 
 
@@ -165,8 +162,5 @@ public class Network {
 		//return (info != null && info.isConnectedOrConnecting());
 		return info != null && info.isConnected();
 	}
-
-
-
 
 }

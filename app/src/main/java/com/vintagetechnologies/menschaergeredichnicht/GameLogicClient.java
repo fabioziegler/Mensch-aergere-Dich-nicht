@@ -133,29 +133,6 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
                 hostDevice.setName(value);
 
-            } else if (TAG_PLAYER_HAS_CHEATED.equals(tag)) {
-                //wird vom Host empfangen wenn Spieler aufdeckt?!
-                boolean hasCheated = Boolean.parseBoolean(value);
-                Context context = getActivity().getApplicationContext();
-
-
-                if (hasCheated) {
-                    Toast.makeText(context, "Das Schummeln wurde enttarnt, Schummler stetzt nächste Runde aus", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(context, "Es wurde falsch verdächtigt, verdacht äußernder setzt nächste Runde aus", Toast.LENGTH_LONG).show();
-                }
-
-
-                // TODO: not needed: (delete)
-
-				/*
-                // if the remote player cheated
-				boolean hasCheated = Boolean.valueOf(value);
-
-				if(hasCheated){
-					Toast.makeText(getActivity().getApplicationContext(), , Toast.LENGTH_LONG).show();
-				}
-				*/
             } else if (TAG_TOAST.equals(tag)) {    // show a toast
 
                 String message = value;
@@ -183,21 +160,18 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
 
                 Spieloberflaeche activity = (Spieloberflaeche) getActivity();
 
-                // network id of the players who's turn it is.
+                // name of the players who's turn it is.
                 String currentPlayerName = value;
 
-                //Currentplayer startet bei "null" als nicht Cheater.
                 Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
                 currentPlayer.getSchummeln().setPlayerCheating(false); //Damit der Würfel weiß, dass noch nicht geschummelt wurde.
-                currentPlayer.getSchummeln().informHost(false); //Damit der Host auch weiß, dass (noch) nicht geschummelt wurde.
                 currentPlayer.getSchummeln().setCheated(false);//Damit man weiß, dass wärend des zuges noch nicht geschummelt wurde.
 
-                //ToDo: Wo und Wann finden diese Einstellungen für den Host statt??
-
+				// enable/disable controls for "Würfeln, Aufdecken, Schummeln"
                 if (currentPlayerName != null && currentPlayerName.equals(getGameSettings().getPlayerName())) {
-                    activity.setDiceEnabled(true); //Würfeln
-                    activity.setRevealEnabled(false);  //Aufdecken
-                    activity.setSensorOn(true); //Schummeln und Würfeln durch Schütteln
+                    activity.setDiceEnabled(true);
+                    activity.setRevealEnabled(false);
+                    activity.setSensorOn(true);
                 } else {
                     activity.setDiceEnabled(false);
                     activity.setRevealEnabled(true);

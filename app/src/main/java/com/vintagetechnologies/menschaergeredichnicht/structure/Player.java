@@ -10,16 +10,16 @@ import android.support.v4.util.Pair;
 public class Player {
 
 
-    //The players GamePieces
+    // The players GamePieces
     private GamePiece[] pieces;
 
-    //The Players Color
+    // The Players Color
     private PlayerColor color;
 
-    //The shown name
+    // The shown name
     private String name;
 
-    //Saves if Player Cheated
+    // Saves if Player Cheated
     private Cheat schummeln;
 
     // An id which associates the player with the corresponding network connection
@@ -27,7 +27,7 @@ public class Player {
 
     private int uniqueId;
 
-    // if the player has to skip in the next round TODO: implement logic
+    // if the player has to skip in the next round
     private boolean hasToSkip;
 
     /**
@@ -93,15 +93,6 @@ public class Player {
     }
 
     /**
-     * Setter
-     *
-     * @param pieces
-     */
-    public void setPieces(GamePiece[] pieces) {
-        this.pieces = pieces;
-    }
-
-    /**
      * Returns true when the player doesn't have any pieces out of his/her house / start.
      *
      * @return
@@ -162,17 +153,5 @@ public class Player {
 
     public void setHasToSkip(boolean hasToSkip) {
         this.hasToSkip = hasToSkip;
-    }
-
-    public int getUniqueId() {
-        return uniqueId;
-    }
-
-    public int getNetworkId() {
-        return networkId;
-    }
-
-    public void setNetworkId(int networkId) {
-        this.networkId = networkId;
     }
 }

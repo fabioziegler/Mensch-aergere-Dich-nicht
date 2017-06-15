@@ -36,17 +36,14 @@ import android.widget.Toast;
 
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
-import com.vintagetechnologies.menschaergeredichnicht.structure.GamePiece;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardViewOnClickListener;
 
-import static android.R.attr.animation;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
-import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_PLAYER_HAS_CHEATED;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_REVEAL;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.TAG_STATUS_MESSAGE;
 
@@ -66,6 +63,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     private float lastY;
     private float lastZ;
     private boolean shook = false;
+
+	private boolean sensorOn = true;
 
     private TextView state;
     private Cheat schummeln;
@@ -90,31 +89,33 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     // duration of the animation in ms
     private static final int ANIMATION_DURATION = 500;
+    private static final int DICE_VISIBLE_DURATION = 800;
 
     private MediaPlayer moveSound;
     private MediaPlayer diceSound;
 
 
-    private void checkSchummeln() {
-        //Test if Cheated - Six or random
+	/**
+	 * Manipulates the dice (get a six) if user is cheating.
+	 */
+    private void manipulateDiceIfCheating() {
+
+        // Test if Cheated - Six or random
         if (schummeln.isPlayerCheating()) {
             RealDice.get().setDiceNumber(DiceNumber.SIX);
             schummeln.setPlayerCheating(false);
         } else {
             RealDice.get().roll();
         }
+
+		schummeln.informHost();
     }
 
-    /*@FunctionalInterface
-    public interface GuiThreadRunner {
-        public void run(int i);
-    }*/
 
-//    private void e(int i, GuiThreadRunner gtr) {
-//        gtr.run(i);
-//    }
-
-    private void animateDice() {
+	/**
+	 * Shows an animated dice on the screen.
+	 */
+	private void animateDice() {
         // dice rolls for 2 seconds, and changes 5x a second it's number
 
         // "roll" animation
@@ -230,53 +231,38 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             }
         });
 
-
         playDice();
         btnWuerfelClickedUpdateUIElements();
 
-        checkSchummeln();
+		// does user cheat?
+        manipulateDiceIfCheating();
 
-//Sets the Result
-        final int result = RealDice.get().getDiceNumber().getNumber() - 1;
-
+        final int indexOfDiceImage = RealDice.get().getDiceNumber().getNumber() - 1;
 
         animateDice();
 
-
-        // setze Ergebnis des Würfelns
-        // Update UI elements
-        //runOnUiThread(() -> e(diceImages[result], imgViewDice::setImageResource));
+        // set final dice image according to what was diced (update UI on special UI Thread)
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                imgViewDice.setImageResource(diceImages[result]);
+                imgViewDice.setImageResource(diceImages[indexOfDiceImage]);
             }
         });
-
+		//runOnUiThread(() -> e(diceImages[result], imgViewDice::setImageResource));
 
         // zeige Ergebnis für 1 Sekunde
-        SystemClock.sleep(800);
+        SystemClock.sleep(DICE_VISIBLE_DURATION);
 
         //runOnUiThread(() -> e(result, this::endDiceAnimation));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                endDiceAnimation(result);
+                endDiceAnimation(indexOfDiceImage);
             }
         });
 
-        //jetzt kann durch erneutes schütteln wieder ein Würfeln ausgelöst werden.
+        // damit kann durch erneutes schütteln wieder gewürfelt werden.
         shook = false;
-    }
-
-
-    /**
-     * Called when a client
-     *
-     * @param diceNumber
-     */
-    public void remoteDiceClicked(DiceNumber diceNumber) {
-        RealDice.get().setDiceNumber(diceNumber);
     }
 
 
@@ -487,20 +473,53 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     private void btnAufdeckenClicked() {
 
-        if (gameLogic.isHost()) {
+		if(ActualGame.getInstance().isLocalGame()){
+			// TODO: 15.06.17 implement
+			return;
+		}
 
-            // TODO: implement/ Fix !
+		if(gameLogic.isHost()) {
 
-           GameLogicHost gameLogicHost = (GameLogicHost) gameLogic;
-           //Zugriff auf GameLogicHost?! Um gleiche methode wie in else aufzurufen?! Funktioniert das??
-           //gameLogicHost.parseMessage(gameLogicHost.server.getConnections(), Network.TAG_REVEAL);
+			GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
 
-        } else {
+			Player possibleCheater = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
+			Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(gameSettings.getPlayerName());
 
-            GameLogicClient gameLogicClient = (GameLogicClient) gameLogic;
-            gameLogicClient.sendToHost(TAG_REVEAL);
-        }
+			reveal(possibleCheater, revealer);
+
+		} else {	// client:
+			GameLogicClient gameLogicClient = (GameLogicClient) gameLogic;
+			gameLogicClient.sendToHost(TAG_REVEAL + MESSAGE_DELIMITER);
+		}
     }
+
+
+	/**
+	 * Reveals if a user cheated.
+	 * @param possibleCheater The player accused of cheating.
+	 * @param revealer The player who suspects cheating of the current player.
+	 */
+	public void reveal(Player possibleCheater, Player revealer){
+
+		// because all data about players is synchronized here,
+		// we can just access the "cheated" property for any player:
+		boolean hasCurrentPlayerCheated = possibleCheater.getSchummeln().hasCheated();
+
+		possibleCheater.setHasToSkip(hasCurrentPlayerCheated);
+
+		String message;
+		String nameOfCurrentPlayer = possibleCheater.getName();
+		String nameOfRevealer = revealer.getName();
+
+		if(hasCurrentPlayerCheated)
+			message = "Schummeln enttarnt! " + nameOfCurrentPlayer + " setzt nächste Runde aus.";
+		else
+			message = nameOfRevealer + " hat falsch verdächtigt, und setzt nächste Runde aus!";
+
+		GameSynchronisation.synchronize();
+
+		GameSynchronisation.sendToast(message);
+	}
 
 
     /**
@@ -554,22 +573,20 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     }
 
 
-    boolean sensorOn = true;
-
     /**
      * The Sensor reactions for shaking the Dice and for Cheating
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        //If Player == Currentplayer sensor is true and you can shake and cheat.
+
+        // If Player is Currentplayer sensor is true and you can shake and cheat.
         if (sensorOn) {
 
-            /**
-             * SchüttelSensor: löst Würfeln aus. Nur einmal dann wird shook auf false gesetzt. (nach dem Würfeln wieder auf true)
-             */
+            // SchüttelSensor: löst Würfeln aus. Nur einmal dann wird shook auf false gesetzt. (nach dem Würfeln wieder auf true)
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 //Shook wird nach dem würfeln wieder auf false gesetzt. bzw wenn dich der Spieler status ändert geändert.
                 if (!shook) {
+
                     long curTime = System.currentTimeMillis();
                     // only allow one update every 100ms.
                     if ((curTime - lastUpdate) > 100) {
@@ -585,12 +602,13 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                         if (speed > SHAKE_THRESHOLD) {
                             shook = true;
 
-                            new Thread(){
-                                @Override
-                                public void run() {
-                                    btnWuerfelClicked();
-                                }
-                            }.start();
+							// imitate click on dice button
+                            runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									btnWuerfelClicked();
+								}
+							});
                         }
 
                         lastX = x;
@@ -606,14 +624,12 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
              * wenn schummel funktion ab Dunkel sich einschaltet. Annahme Dunkel ab 1000.
              */
             if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
-                float Lichtwert = event.values[0];
-                if (Lichtwert <= 2) {
-                    //state.setText("schummeln: " + true);  //Test
+                float lichtwert = event.values[0];
+
+                if (lichtwert <= 2) {
                     schummeln.setPlayerCheating(true);
-                    schummeln.informHost(true);
                     schummeln.setCheated(true); //Für das Aufdecken
                 }
-
             }
 
         }
@@ -649,10 +665,9 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     /**
      * Getting updated with the change auf the player status to currentPlayer.
-     *
+     * Sensors are only used when player == currentPlayer
      * @param enabled
      */
-//Sensors are only used when player == currentPlayer
     public void setSensorOn(boolean enabled) {
         sensorOn = enabled;
     }
@@ -668,10 +683,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
     public void setRevealEnabled(boolean enabled) {
         btnAufdecken.setEnabled(enabled);
-    }
-
-    public Button getBtnMoveFigur() {
-        return btnMoveFigur;
+		btnAufdecken.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
     }
 
     public int getDiceImage(int n){

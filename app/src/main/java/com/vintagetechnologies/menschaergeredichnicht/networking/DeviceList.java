@@ -98,14 +98,13 @@ public class DeviceList {
 
     /**
      * Get device by ID.
-     * @param playerID A player name.
+     * @param connectionId A player name.
      * @return The device associated with the player ID or null if there is no such device.
      */
-    public Device getPlayer(int playerID){
+    public Device getPlayer(int connectionId){
         for (int i = 0; i < devices.size(); i++) {
-            if(playerID == devices.get(i).getId()){
+            if(connectionId == devices.get(i).getConnectionId())
                 return devices.get(i);
-            }
         }
 
         return null;

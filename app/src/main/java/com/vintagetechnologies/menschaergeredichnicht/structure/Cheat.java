@@ -17,19 +17,20 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 
 public class Cheat {
 
-    //Für den Würfel pro schummeln
+    // Für den Würfel pro schummeln
     boolean playerCheating = false;
-    //Pro Runde für aufdecken
+
+    // Pro Spielzug. Pro Runde für aufdecken
     boolean cheated = false;
 
     public Cheat (){
-        //empty constructor
     }
 
     //Dient nur dem Würfel auf 6 bei Schummeln
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
     }
+
     /**
      * Für WÜRFEL; stellt fest ob lokaler Player gecheatet hat
      * @return
@@ -50,19 +51,24 @@ public class Cheat {
         return cheated;
     }
 
-    //wird seperat aufgerufen in Spieleroberfläche wenn geschummelt wird und vom Host wenn neue Runde um wieder auf false zu setzen.
-    //-> Dient nur der Schummeln-Aufdecken funktion.
-    public void informHost(boolean c){
+	/**
+	 * wird seperat aufgerufen in Spieleroberfläche wenn geschummelt wird und vom Host wenn neue Runde um wieder auf false zu setzen.
+	 * -> Dient nur der Schummeln-Aufdecken funktion.
+	 */
+	public void informHost(){
 
 		if(ActualGame.getInstance().isLocalGame())
+			return;
+
+		if(!cheated)
 			return;
 
         // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
         boolean isHost = gameLogic.isHost();
 
-        if (!isHost){
-			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(c));
+        if (!isHost){	// is client
+			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(cheated));
         }
     }
 

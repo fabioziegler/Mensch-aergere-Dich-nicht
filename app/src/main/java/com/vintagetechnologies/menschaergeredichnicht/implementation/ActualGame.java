@@ -73,7 +73,6 @@ public class ActualGame extends Game {
      * @param player The new player object received by the host.
      */
     public static void refreshPlayer(Player player) {
-        // TODO: 28.04.17 Instead of overriding, manually set only needed attributes? Which are needed?
 
         if (!((com.vintagetechnologies.menschaergeredichnicht.GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC)).hasGameStarted())
             return;

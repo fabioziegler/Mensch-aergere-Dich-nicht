@@ -250,9 +250,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 				}
 			}
 
-
-
-
 			synchronized (ActualGame.getInstance()) {
 				ActualGame.getInstance().notify();
 			}
@@ -285,6 +282,15 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 			} else if(TAG_REVEAL.equals(tag)){	// a player clicked "aufdecken"
 
+
+				Spieloberflaeche spieloberflaeche = (Spieloberflaeche) getActivity();
+
+				Player possibleCheater = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
+				Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(clientDevice.getName());
+
+				spieloberflaeche.reveal(possibleCheater, revealer);
+
+				/*
 				// check if current player has cheated!
 				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
 				boolean isCheating = currentPlayer.getSchummeln().hasCheated();
@@ -312,26 +318,9 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
                 //needed?
 				GameSynchronisation.synchronize();
-
-				// send toast _ not needed: Is done in send to all Client devices
-				/*
-				String message = currentPlayer.getName() + " hat gecheated & muss aussetzen!";
-				GameSynchronisation.sendToast(message);
 				*/
 
 			} else if(TAG_MOVE_PIECE.equals(tag)) {
-
-//				int number = Integer.parseInt(value);
-//
-//				synchronized (RealDice.get()) {
-//					RealDice.get().getDiceNumber().diceNum(number);
-//					RealDice.get().notify();
-//				}
-//
-//				Button btnMoveFigur = ((Spieloberflaeche) getActivity()).getBtnMoveFigur();
-//				btnMoveFigur.callOnClick();
-//
-//				ActualGame.getInstance().getBoardView().invalidate();
 
 				//TODO ActualGame.getInstance().getGameLogic().selectGamePiece();
 

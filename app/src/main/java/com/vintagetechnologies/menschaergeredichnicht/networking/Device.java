@@ -12,6 +12,8 @@ public class Device {
     private String name;
     private boolean isHost;
 
+	private int connectionId;
+
     public Device(int id, String name, boolean isHost){
         this.id = id;
         this.name = name;
@@ -22,6 +24,7 @@ public class Device {
 		this.id = id;
 		this.name = "name not set";
 		this.isHost = isHost;
+		this.connectionId = id;
 	}
 
 	public Device(String name, boolean isHost){
@@ -29,15 +32,6 @@ public class Device {
 		this.isHost = isHost;
 	}
 
-	/**
-	 * Add a new client player.
-	 * @param name
-	 */
-	public Device(String name){
-		this.id = -1;
-		this.name = name;
-		this.isHost = false;
-	}
 
 	/**
 	 * Get the network ID.
@@ -66,4 +60,12 @@ public class Device {
     public void setHost(boolean host) {
         isHost = host;
     }
+
+	public int getConnectionId() {
+		return connectionId;
+	}
+
+	public void setConnectionId(int connectionId) {
+		this.connectionId = connectionId;
+	}
 }
