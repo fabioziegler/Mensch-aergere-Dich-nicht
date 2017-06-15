@@ -17,7 +17,10 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 
 public class Cheat {
 
+    //Für den Würfel pro schummeln
     boolean playerCheating = false;
+    //Pro Runde für aufdecken
+    boolean cheated = false;
 
     public Cheat (){
         //empty constructor
@@ -35,6 +38,14 @@ public class Cheat {
 		*/
     }
 
+    public void setCheated(boolean cheated) {
+        this.cheated = cheated;
+    }
+
+    public boolean hasCheated() {
+        return cheated;
+    }
+
     //wird seperat aufgerufen in Spieleroberfläche wenn geschummelt wird und vom Host wenn neue Runde um wieder auf false zu setzen.
     //-> Dient nur der Schummeln-Aufdecken funktion.
     public void informHost(boolean c){
@@ -48,9 +59,6 @@ public class Cheat {
 
         if (!isHost){
 			((GameLogicClient) gameLogic).sendToHost(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(c));
-        }else{
-            //Wird vom Host über set Playercheating übernommen; Problem nur dass so bald das Würfeln vorbei
-            // ist der Cheating auf false gesetzt wird, und er somit nicht mehr aufgedeckt werden kann..:/
         }
     }
 

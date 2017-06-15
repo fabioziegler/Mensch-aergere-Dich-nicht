@@ -613,6 +613,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     //state.setText("schummeln: " + true);  //Test
                     schummeln.setPlayerCheating(true);
                     schummeln.informHost(true);
+                    schummeln.setCheated(true); //Für das Aufdecken
                 }
 
             }

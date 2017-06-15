@@ -277,19 +277,8 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				boolean hasCheated = Boolean.parseBoolean(value);	// is always true at that stage..
 
-				if(hasCheated){
-					// display who has to skip
-
-					/*
-					Toast.makeText(getActivity().getApplicationContext(),
-							playerName + " hat geschummelt und muss aussetzen!",
-							Toast.LENGTH_LONG).show();
-					*/
-				}
-
-				// TODO: implement, is implemented?
-				// set player cheating/or not
-				ActualGame.getInstance().getGameLogic().getPlayerByName(clientDevice.getName()).getSchummeln().setPlayerCheating(hasCheated);
+				// speicher wenn spieler in Schummelt um später aufgedeckt werden zu können.
+				ActualGame.getInstance().getGameLogic().getPlayerByName(clientDevice.getName()).getSchummeln().setCheated(hasCheated);
 
 				// send status update to others
 				GameSynchronisation.synchronize();
@@ -298,28 +287,30 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				// check if current player has cheated!
 				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
-				boolean isCheating = currentPlayer.getSchummeln().isPlayerCheating();
-
-				currentPlayer.setHasToSkip(isCheating);
-				currentPlayer.getSchummeln().setPlayerCheating(false);
+				boolean isCheating = currentPlayer.getSchummeln().hasCheated();
 
 				// player who clicked "aufdecken"
 				String revealerName = getDevices().getDevice(connection).getName();
 				Player playerWhoRevealed = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
-				playerWhoRevealed.setHasToSkip(!isCheating);
 
 				//Display the information. Only for Host..
 				String message = "";
+
 				if (isCheating){
+                    currentPlayer.setHasToSkip(true);
+                    currentPlayer.getSchummeln().setPlayerCheating(false);
 					message = currentPlayer.getName() + " hat geschummelt und muss aussetzen!";
 				}else{
+                    playerWhoRevealed.setHasToSkip(true);
 					message = revealerName + " hat gecheated & muss aussetzen!";
 				}
 				Toast.makeText(getActivity().getApplicationContext(), message , Toast.LENGTH_LONG).show();
 
 				// send to others if player has cheated, just to display informations
-				sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
+				//sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
+                GameSynchronisation.sendToast(message);
 
+                //needed?
 				GameSynchronisation.synchronize();
 
 				// send toast _ not needed: Is done in send to all Client devices
