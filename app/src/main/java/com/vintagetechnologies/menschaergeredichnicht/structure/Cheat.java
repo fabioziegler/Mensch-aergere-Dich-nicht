@@ -29,14 +29,18 @@ public class Cheat {
     //Dient nur dem Würfel auf 6 bei Schummeln
     public void setPlayerCheating(boolean c){
         this.playerCheating = c;
-
-        //Fällt weg damit bei der Status schummeln wärend des ganzen Zuges erhalten bleibt.
-        //Für den Würfel wird die Methode nämlich schon früher aufgerufen und auf false gesetzt.
-        /*
-		if(playerCheating)
-			informHost(c);
-		*/
     }
+    /**
+     * Für WÜRFEL; stellt fest ob lokaler Player gecheatet hat
+     * @return
+     */
+    public boolean isPlayerCheating() { return playerCheating; }
+
+
+    /**
+     * Für das Aufdecken... stellt fest ob wärend des gesamten zuges geschummelt wurde.
+     * @param cheated
+     */
 
     public void setCheated(boolean cheated) {
         this.cheated = cheated;
@@ -62,9 +66,5 @@ public class Cheat {
         }
     }
 
-    /**
-     * Für WÜRFEL; stellt fest ob lokaler Player gecheatet hat
-     * @return
-     */
-    public boolean isPlayerCheating() { return playerCheating; }
+
 }
