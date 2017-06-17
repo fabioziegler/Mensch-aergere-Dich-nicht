@@ -161,7 +161,7 @@ public class BoardView extends View {
 
 
         if (!ActualGame.getInstance().isLocalGame() && DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC, GameLogic.class).isHost() && !ActualGame.getInstance().getGameLogic().getCurrentPlayer().getName().equals(gameSettings.getPlayerName())) {
-
+            //network game && clients turn
         }else{
             drawSelected(canvas);
         }

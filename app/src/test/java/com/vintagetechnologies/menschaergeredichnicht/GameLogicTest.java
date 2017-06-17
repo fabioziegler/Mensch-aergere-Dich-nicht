@@ -182,40 +182,34 @@ public class GameLogicTest {
     public void testGameLoop() {
         Board.resetBoard();
 
-        final int[] c = {0};
+        final int[] d = {0};
         final int max = 40;
 
         TestGame tg = new TestGame() {
-
-            @Override
-            public void regularGameStarted() {
-
-            }
-
             @Override
             public void whomsTurn(Player currentplayer) {
 
-                if (c[0] < 4) { // erste Runde, würfeln von 6 nicht möglich (3x, zählender Würfel ist bereits auf 6)
+                if (d[0] < 4) { // erste Runde, würfeln von 6 nicht möglich (3x, zählender Würfel ist bereits auf 6)
                     this.getTd().setDiceNumber(DiceNumber.SIX);
                     assertTrue(currentplayer.isAtStartingPosition());
                 } else {
                     this.getTd().setDiceNumber(DiceNumber.ONE);
                 }
-                assertEquals(names[c[0] % 4], currentplayer.getName());
+                assertEquals(names[d[0] % 4], currentplayer.getName());
 
-                if (c[0] > max) {
+                if (d[0] > max) {
                     fail();
                 } else {
-                    if (c[0] == max) {
+                    if (d[0] == max) {
                         this.getGameLogic().setPlaying(false);
                     }
-                    c[0] += 1;
+                    d[0] += 1;
                 }
             }
 
             @Override
             public void refreshView() {
-                if (c[0] > 4) {
+                if (d[0] > 4) {
                     assertFalse(this.getGameLogic().getCurrentPlayer().isAtStartingPosition());
                 }
             }
@@ -247,7 +241,6 @@ public class GameLogicTest {
 
 
         TestGame tg = new TestGame() {
-
             private int c = 0;
 
             @Override
@@ -263,7 +256,6 @@ public class GameLogicTest {
                 } else if (c == 1) {
                     assertEquals(Board.getBoard(7).getGamePiece().getPlayerColor(), PlayerColor.RED); //Roter Spieler fährt um 5 weiter
                 }
-
                 c+=1;
             }
         };

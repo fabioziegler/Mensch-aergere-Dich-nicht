@@ -177,9 +177,7 @@ public class GameLogic {
 
         game.refreshView();
 
-        Pair<Boolean, Integer> pair = new Pair<>(moved, attempts);
-
-        return pair;
+        return new Pair<>(moved, attempts);
 
     }
 

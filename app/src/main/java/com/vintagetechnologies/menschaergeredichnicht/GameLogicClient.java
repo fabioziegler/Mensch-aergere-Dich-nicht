@@ -1,7 +1,6 @@
 package com.vintagetechnologies.menschaergeredichnicht;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -93,8 +92,6 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
     @Override
     protected void parseMessage(Connection connection, Object object) {
 
-        //if(!hasGameStarted()) return;
-
         if (object instanceof Player) {    // client received game update
 
             Player player = (Player) object;
@@ -183,13 +180,8 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        // wait for move piece
                         ActualGame.getInstance().getGameLogic()._findPossibleToMove();
                         ActualGame.getInstance().waitForMovePiece();
-
-                        // send changed to host
-                        //Player me = ActualGame.getInstance().getGameLogic().getPlayerByName(getGameSettings().getPlayerName());
-                        //sendToHost(me);
                     }
                 }, "PlayThread");
                 ActualGame.getInstance().getGameLogic().setClientPlayThread(thread);
@@ -199,13 +191,6 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
                 GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
 
                 if(gameSettings.getPlayerName().equals(value)){
-                    final Spieloberflaeche activity = (Spieloberflaeche) getActivity();
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ImageButton btnWuerfel = (ImageButton) activity.findViewById(R.id.imageButton_wuerfel);
-                        }
-                    });
                     new Thread(){
                         @Override
                         public void run() {

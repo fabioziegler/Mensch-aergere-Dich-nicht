@@ -196,21 +196,6 @@ public class ActualGame extends Game {
     @Override
     public void whomsTurn(Player p) {
         printInfo(p.getName() + " ist dran!");
-
-        GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
-
-        /*if (!p.getName().equals(gameSettings.getPlayerName())) {
-            // enable buttons
-            final ImageButton btnWuerfel = (ImageButton) (gameactivity.findViewById(R.id.imageButton_wuerfel));
-
-            gameactivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    bv.invalidate();
-                    btnWuerfel.setEnabled(false);
-                }
-            });
-        }*/
     }
 
     @Override
@@ -286,11 +271,8 @@ public class ActualGame extends Game {
                 }
             }
         } else {
-
-            Thread clientPlayThread = getGameLogic().getClientPlayThread();
             synchronized (this) {
                 try {
-                    //clientPlayThread.wait();
                     wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

@@ -123,7 +123,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             for (int j = 0; j < 6; j++) {   // 1 second (5 changes)
                 final int randomIndex = rand.nextInt(6);
 
-                //runOnUiThread(() -> e(diceImages[randomIndex], imgViewDice::setImageResource));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -175,26 +174,25 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
                         btnWuerfel.setEnabled(true);
 
-                        //if (ActualGame.getInstance().isLocalGame() || gameLogic.isHost()) {
                         synchronized (RealDice.get()) {
                             RealDice.get().notify();
                         }
-                        //} else {    // client:
-                        //((GameLogicClient) gameLogic).sendToHost(RealDice.get().getDiceNumber());    // send diceNumber to host
-                        //
                     }
 
 
                     @Override
                     public void onAnimationStart(Animator animation) {
+                        //empty
                     }
 
                     @Override
                     public void onAnimationCancel(Animator animation) {
+                        //empty
                     }
 
                     @Override
                     public void onAnimationRepeat(Animator animation) {
+                        //empty
                     }
 
                 }).start();
@@ -248,12 +246,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 imgViewDice.setImageResource(diceImages[indexOfDiceImage]);
             }
         });
-		//runOnUiThread(() -> e(diceImages[result], imgViewDice::setImageResource));
 
         // zeige Ergebnis für 1 Sekunde
         SystemClock.sleep(DICE_VISIBLE_DURATION);
 
-        //runOnUiThread(() -> e(result, this::endDiceAnimation));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -284,7 +280,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
                 } else {    // client in mp game:
 
-                    //((GameLogicClient) gameLogic).sendToHost(Network.TAG_MOVE_PIECE + Network.MESSAGE_DELIMITER + bv.getHighlightedGamePiece());
                     ((GameLogicClient) gameLogic).sendToHost(bv.getHighlightedGamePiece());
 
                 }
@@ -480,10 +475,10 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
 		if(gameLogic.isHost()) {
 
-			GameSettings gameSettings = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
+			GameSettings gameSet = DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMESETTINGS, GameSettings.class);
 
 			Player possibleCheater = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
-			Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(gameSettings.getPlayerName());
+			Player revealer = ActualGame.getInstance().getGameLogic().getPlayerByName(gameSet.getPlayerName());
 
 			reveal(possibleCheater, revealer);
 
@@ -590,7 +585,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                     long curTime = System.currentTimeMillis();
                     // only allow one update every 100ms.
                     if ((curTime - lastUpdate) > 100) {
-                        long diffTime = (curTime - lastUpdate);
+                        long diffTime = curTime - lastUpdate;
                         lastUpdate = curTime;
 
                         float x = event.values[0];
@@ -640,7 +635,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
     public void onStart() {
         super.onStart();
 
-        Toast.makeText(getApplicationContext(), (gameSettings.isCheatingEnabled() ? R.string.schummelnEin : R.string.schummelnAus), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), gameSettings.isCheatingEnabled() ? R.string.schummelnEin : R.string.schummelnAus, Toast.LENGTH_LONG).show();
     }
 
 
@@ -676,9 +671,6 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnWuerfel.setEnabled(true);
         btnWuerfel.setClickable(enabled);
         btnWuerfel.setAlpha(enabled ? 1f : 0.5f);
-
-        //btnWuerfel.setClickable(true);
-        //btnWuerfel.setAlpha(1f);
     }
 
     public void setRevealEnabled(boolean enabled) {

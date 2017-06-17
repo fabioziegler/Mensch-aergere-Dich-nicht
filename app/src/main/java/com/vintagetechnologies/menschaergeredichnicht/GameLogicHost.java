@@ -3,7 +3,6 @@ package com.vintagetechnologies.menschaergeredichnicht;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -40,7 +39,7 @@ import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.
 public class GameLogicHost extends GameLogic implements NetworkListener {
 
 
-	private final String TAG = GameLogic.class.getSimpleName();
+	private static final String TAG = GameLogic.class.getSimpleName();
 
 	private MyServer myServer;
 
@@ -290,43 +289,6 @@ public class GameLogicHost extends GameLogic implements NetworkListener {
 
 				spieloberflaeche.reveal(possibleCheater, revealer);
 
-				/*
-				// check if current player has cheated!
-				Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
-				boolean isCheating = currentPlayer.getSchummeln().hasCheated();
-
-				// player who clicked "aufdecken"
-				String revealerName = getDevices().getDevice(connection).getName();
-				Player playerWhoRevealed = ActualGame.getInstance().getGameLogic().getPlayerByName(revealerName);
-
-				//Display the information. Only for Host..
-				String message = "";
-
-				if (isCheating){
-                    currentPlayer.setHasToSkip(true);
-                    currentPlayer.getSchummeln().setPlayerCheating(false);
-					message = currentPlayer.getName() + " hat geschummelt und muss aussetzen!";
-				}else{
-                    playerWhoRevealed.setHasToSkip(true);
-					message = revealerName + " hat gecheated & muss aussetzen!";
-				}
-				Toast.makeText(getActivity().getApplicationContext(), message , Toast.LENGTH_LONG).show();
-
-				// send to others if player has cheated, just to display informations
-				//sendToAllClientDevices(TAG_PLAYER_HAS_CHEATED + MESSAGE_DELIMITER + String.valueOf(isCheating));
-                GameSynchronisation.sendToast(message);
-
-                //needed?
-				GameSynchronisation.synchronize();
-				*/
-
-			} else if(TAG_MOVE_PIECE.equals(tag)) {
-
-				//TODO ActualGame.getInstance().getGameLogic().selectGamePiece();
-
-				synchronized (ActualGame.getInstance()) {
-					ActualGame.getInstance().notify();
-				}
 			}
 
 

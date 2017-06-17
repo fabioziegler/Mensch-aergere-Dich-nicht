@@ -1,6 +1,5 @@
 package com.vintagetechnologies.menschaergeredichnicht.synchronisation;
 
-import android.text.Html;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
