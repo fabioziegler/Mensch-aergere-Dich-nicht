@@ -18,6 +18,8 @@ import com.vintagetechnologies.menschaergeredichnicht.networking.kryonet.Network
 import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Player;
 
+import java.util.Set;
+
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMELOGIC;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.DATAHOLDER_GAMESETTINGS;
 import static com.vintagetechnologies.menschaergeredichnicht.networking.Network.MESSAGE_DELIMITER;
@@ -97,6 +99,10 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
             Player player = (Player) object;
 
             ActualGame.refreshPlayer(player);
+
+        } else if (object instanceof RealDice){
+
+            RealDice.setRealDice((RealDice) object);
 
         } else if (object instanceof GameSettings) {
 

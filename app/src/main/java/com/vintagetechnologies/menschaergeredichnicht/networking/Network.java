@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
+import com.vintagetechnologies.menschaergeredichnicht.implementation.RealDice;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Board;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Cheat;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Colorful;
@@ -21,6 +22,8 @@ import com.vintagetechnologies.menschaergeredichnicht.structure.RegularSpot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.Spot;
 import com.vintagetechnologies.menschaergeredichnicht.structure.StartingSpot;
 import com.vintagetechnologies.menschaergeredichnicht.view.BoardView;
+
+import java.util.HashSet;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
@@ -120,7 +123,9 @@ public class Network {
 		kryo.setReferences(true);
 
 		kryo.register(String.class);
+
 		kryo.register(GameSettings.class);
+		kryo.register(HashSet.class);
 		kryo.register(GameSettings.BoardDesign.class);
 
 		// for Game
@@ -143,6 +148,7 @@ public class Network {
 		kryo.register(DiceNumber.class);
 		kryo.register(GamePiece.class);
 		kryo.register(Colorful.class);
+		kryo.register(RealDice.class);
 
 		kryo.register(Spot[].class);
 		kryo.register(StartingSpot.class);

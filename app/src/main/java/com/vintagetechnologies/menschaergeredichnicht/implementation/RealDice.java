@@ -10,6 +10,7 @@ import com.vintagetechnologies.menschaergeredichnicht.GameSettings;
 import com.vintagetechnologies.menschaergeredichnicht.R;
 import com.vintagetechnologies.menschaergeredichnicht.Spieloberflaeche;
 import com.vintagetechnologies.menschaergeredichnicht.networking.Network;
+import com.vintagetechnologies.menschaergeredichnicht.structure.DiceNumber;
 import com.vintagetechnologies.menschaergeredichnicht.synchronisation.GameSynchronisation;
 
 import java.util.logging.Level;
@@ -42,6 +43,24 @@ public class RealDice extends DiceImpl {
         realDice = new RealDice();
     }
 
+
+    @Override
+    public void emptyBlacklist() {
+        super.emptyBlacklist();
+
+        if (!ActualGame.getInstance().isLocalGame()) { //has to be host
+            GameSynchronisation.send(RealDice.get());
+        }
+    }
+
+    @Override
+    public void addToBlacklist(DiceNumber diceNumber) {
+        super.addToBlacklist(diceNumber);
+
+        if (!ActualGame.getInstance().isLocalGame()) { //has to be host
+            GameSynchronisation.send(RealDice.get());
+        }
+    }
 
     public void waitForRoll() {
 
@@ -95,7 +114,7 @@ public class RealDice extends DiceImpl {
                 }
             });
 
-            if(!ActualGame.getInstance().isLocalGame()){
+            if (!ActualGame.getInstance().isLocalGame()) {
                 GameSynchronisation.send(realDice.getDiceNumber());
             }
         }
@@ -103,5 +122,9 @@ public class RealDice extends DiceImpl {
 
     public static void setDiceButton(ImageButton db) {
         diceButton = db;
+    }
+
+    public static void setRealDice(RealDice rd) {
+        realDice = rd;
     }
 }
