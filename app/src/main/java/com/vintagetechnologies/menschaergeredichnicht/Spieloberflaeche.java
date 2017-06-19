@@ -500,19 +500,20 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 		// we can just access the "cheated" property for any player:
 		boolean hasCurrentPlayerCheated = possibleCheater.getSchummeln().hasCheated();
 
-		possibleCheater.setHasToSkip(hasCurrentPlayerCheated);
-
 		String message;
 		String nameOfCurrentPlayer = possibleCheater.getName();
 		String nameOfRevealer = revealer.getName();
 
-		if(hasCurrentPlayerCheated)
-			message = "Schummeln enttarnt! " + nameOfCurrentPlayer + " setzt nächste Runde aus.";
-		else
-			message = nameOfRevealer + " hat falsch verdächtigt, und setzt nächste Runde aus!";
+		if(hasCurrentPlayerCheated) {
+            message = "Schummeln enttarnt! " + nameOfCurrentPlayer + " setzt nächste Runde aus.";
+            possibleCheater.setHasToSkip(true);
+        }
+		else {
+            message = nameOfRevealer + " hat falsch verdächtigt, und setzt nächste Runde aus!";
+            revealer.setHasToSkip(true);
+        }
 
 		GameSynchronisation.synchronize();
-
 		GameSynchronisation.sendToast(message);
 	}
 
