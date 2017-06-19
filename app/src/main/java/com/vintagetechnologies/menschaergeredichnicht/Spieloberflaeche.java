@@ -631,6 +631,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                 if (lichtwert <= 10) {
                     schummeln.setPlayerCheating(true);
                     schummeln.setCheated(true); //Für das Aufdecken
+                    schummeln.informHost();
                 }
             }
 

@@ -169,6 +169,7 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
                 Player currentPlayer = ActualGame.getInstance().getGameLogic().getCurrentPlayer();
                 currentPlayer.getSchummeln().setPlayerCheating(false); //Damit der Würfel weiß, dass noch nicht geschummelt wurde.
                 currentPlayer.getSchummeln().setCheated(false);//Damit man weiß, dass wärend des zuges noch nicht geschummelt wurde.
+                currentPlayer.getSchummeln().informHost();
 
 				// enable/disable controls for "Würfeln, Aufdecken, Schummeln"
                 if (currentPlayerName != null && currentPlayerName.equals(getGameSettings().getPlayerName())) {
