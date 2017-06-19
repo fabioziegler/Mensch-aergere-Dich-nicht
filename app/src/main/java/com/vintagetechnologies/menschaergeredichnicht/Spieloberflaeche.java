@@ -627,7 +627,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
             if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
                 float lichtwert = event.values[0];
 
-                if (lichtwert <= 2) {
+                if (lichtwert <= 10) {
                     schummeln.setPlayerCheating(true);
                     schummeln.setCheated(true); //Für das Aufdecken
                 }
