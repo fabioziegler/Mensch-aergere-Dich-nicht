@@ -60,8 +60,9 @@ public class Cheat {
 		if(ActualGame.getInstance().isLocalGame())
 			return;
 
-		if(!cheated)
-			return;
+        //* Falsch! Wenn spieler cheat status auf falsch gesetzt wird soll der Host auch informiert werden !
+		//if(!cheated)
+		//	return;
 
         // host nachricht schicken
         GameLogic gameLogic = (GameLogic) DataHolder.getInstance().retrieve(Network.DATAHOLDER_GAMELOGIC);
