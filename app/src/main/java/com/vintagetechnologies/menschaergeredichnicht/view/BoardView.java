@@ -145,7 +145,7 @@ public class BoardView extends View {
 
 
             paint.setStyle(Paint.Style.STROKE);
-            paint.setColor(Color.BLACK);
+            paint.setColor(theme.getColor("BORDER_"+p.getColor().toString()));
             for (GamePiece gp : p.getPieces()) {
                 Spot n = gp.getSpot();
 

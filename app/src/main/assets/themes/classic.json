@@ -9,6 +9,11 @@
     "GREEN": "0x00CD00",
     "YELLOW": "0xFFFF00",
 
+    "BORDER_RED": "0x000000",
+    "BORDER_BLUE": "0xFFFFFF",
+    "BORDER_GREEN": "0x000000",
+    "BORDER_YELLOW": "0x000000",
+
     "START_RED": "0xFDA07E",
     "START_BLUE": "0x6697EA",
     "START_GREEN": "0x93EC94",
