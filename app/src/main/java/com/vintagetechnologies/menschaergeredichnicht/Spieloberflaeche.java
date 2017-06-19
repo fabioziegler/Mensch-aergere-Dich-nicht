@@ -601,7 +601,13 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
                             runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
-									btnWuerfelClicked();
+                                    new Thread(){
+                                        @Override
+                                        public void run() {
+                                            btnWuerfelClicked();
+                                        }
+                                    }.start();
+
 								}
 							});
                         }
@@ -671,6 +677,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
         btnWuerfel.setEnabled(true);
         btnWuerfel.setClickable(enabled);
         btnWuerfel.setAlpha(enabled ? 1f : 0.5f);
+        this.setSensorOn(enabled);
     }
 
     public void setRevealEnabled(boolean enabled) {
