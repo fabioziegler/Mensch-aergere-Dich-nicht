@@ -441,6 +441,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      */
     public void playMove() {
         if (gameSettings.isMusicEnabled()) {
+            moveSound.stop();
             moveSound.start();
         }
     }
@@ -450,6 +451,7 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
      */
     public void playDice() {
         if (gameSettings.isMusicEnabled()) {
+            diceSound.stop();
             diceSound.start();
         }
     }
