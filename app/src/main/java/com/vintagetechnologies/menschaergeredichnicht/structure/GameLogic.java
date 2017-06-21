@@ -360,4 +360,7 @@ public class GameLogic {
         this.clientPlayThread = clientPlayThread;
     }
 
+    public void setDice(DiceImpl dice) {
+        this.dice = dice;
+    }
 }

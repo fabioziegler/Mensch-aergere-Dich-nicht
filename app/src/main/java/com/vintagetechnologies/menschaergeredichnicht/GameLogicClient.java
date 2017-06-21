@@ -103,6 +103,7 @@ public class GameLogicClient extends GameLogic implements NetworkListener {
         } else if (object instanceof RealDice){
 
             RealDice.setRealDice((RealDice) object);
+            ActualGame.getInstance().getGameLogic().setDice(RealDice.get());
 
         } else if (object instanceof GameSettings) {
 
