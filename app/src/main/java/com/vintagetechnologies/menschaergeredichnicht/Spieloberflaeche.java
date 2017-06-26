@@ -578,6 +578,8 @@ public class Spieloberflaeche extends AppCompatActivity implements SensorEventLi
 
             // SchüttelSensor: löst Würfeln aus. Nur einmal dann wird shook auf false gesetzt. (nach dem Würfeln wieder auf true)
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+                System.out.println("Hallo!");
                 //Shook wird nach dem würfeln wieder auf false gesetzt. bzw wenn dich der Spieler status ändert geändert.
                 if (!shook) {
 
